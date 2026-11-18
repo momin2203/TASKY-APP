@@ -1,193 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TASKY - Modern Task Management & Service Marketplace Ecosystem</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
-    <div class="max-w-md mx-auto p-4 space-y-6">
-        <!-- Header Section -->
-        <header class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
-            <div class="flex items-center space-x-2">
-                <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold">T</div>
-                <div>
-                    <h1 class="font-bold text-lg">TASKY</h1>
-                    <p class="text-xs text-slate-500">Secure Marketplace</p>
-                </div>
-            </div>
-            <button id="google-login-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
-                Sign in with Google
-            </button>
-        </header>
-
-        <!-- Post a New Task Section -->
-        <section class="bg-white p-5 rounded-2xl shadow-sm space-y-4">
-            <h2 class="font-bold text-lg flex items-center gap-2">
-                <span class="bg-indigo-100 text-indigo-600 p-1 rounded-full text-xs">+</span> Post a New Task
-            </h2>
-            
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Task Title / Service</label>
-                    <input type="text" id="task-title" placeholder="e.g., Electrical Wiring & Maintenance" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Category</label>
-                    <select id="task-category" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option>Electrical & Wiring</option>
-                        <option>Plumbing & Maintenance</option>
-                        <option>Tech Support</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Description</label>
-                    <textarea id="task-desc" rows="3" placeholder="Provide task specifications..." class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Budget ($)</label>
-                    <input type="number" id="task-budget" value="100" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-
-                <button id="publish-btn" class="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-xl hover:bg-indigo-700 transition">
-                    Publish Task
-                </button>
-            </div>
-        </section>
-
-        <!-- Marketplace Tasks -->
-        <section class="space-y-3">
-            <h2 class="font-bold text-lg">Available Marketplace Tasks</h2>
-            <div id="tasks-container" class="space-y-3">
-                <div class="text-sm text-slate-500">Loading tasks...</div>
-            </div>
-        </section>
-    </div>
-    <!-- Firebase SDK & App Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyCrDNpRQXFEOahpyDA_jxTmI5N5nC3KdRg",
-  authDomain: "tasky-b8e5b.firebaseapp.com",
-  projectId: "tasky-b8e5b",
-  storageBucket: "tasky-b8e5b.firebasestorage.app",
-  messagingSenderId: "27035947125",
-  appId: "1:27035947125:web:dc66829cb61eded04ea83c",
-  measurementId: "G-TEBQZKPRSQ"
-};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        let currentUser = null;
-
-        // Auth state listener
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            const loginBtn = document.getElementById('google-login-btn');
-            if (user) {
-                loginBtn.textContent = user.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Logged In';
-                loginBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                loginBtn.classList.add('bg-emerald-600');
-            } else {
-                loginBtn.textContent = 'Sign in with Google';
-                loginBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                loginBtn.classList.remove('bg-emerald-600');
-            }
-        });
-
-        // Google Login Button
-        document.getElementById('google-login-btn').addEventListener('click', async () => {
-            try {
-                await signInWithPopup(auth, provider);
-                alert('Successfully Logged In!');
-            } catch (error) {
-                console.error(error);
-                alert('Login Failed: ' + error.message);
-            }
-        });
-
-        // Publish Task Button
-        document.getElementById('publish-btn').addEventListener('click', async () => {
-            if (!currentUser) {
-                alert('Please sign in with Google to post a task!');
-                return;
-            }
-
-            const title = document.getElementById('task-title').value;
-            const category = document.getElementById('task-category').value;
-            const description = document.getElementById('task-desc').value;
-            const budget = document.getElementById('task-budget').value;
-
-            if (!title) {
-                alert('Please enter a task title!');
-                return;
-            }
-
-            try {
-                await addDoc(collection(db, "tasks"), {
-                    title,
-                    category,
-                    description,
-                    budget: Number(budget),
-                    userEmail: currentUser.email,
-                    createdAt: new Date()
-                });
-                alert('Task Published Successfully!');
-                // Reset form
-                document.getElementById('task-title').value = '';
-                document.getElementById('task-desc').value = '';
-                loadTasks();
-            } catch (error) {
-                console.error(error);
-                alert('Error publishing task: ' + error.message);
-            }
-        });
-
-        // Load Tasks from Firestore
-        async function loadTasks() {
-            const container = document.getElementById('tasks-container');
-            try {
-                const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    container.innerHTML = '<div class="text-sm text-slate-500">0 Tasks found. Post your first task above!</div>';
-                    return;
-                }
-
-                let html = '';
-                querySnapshot.forEach((doc) => {
-                    const task = doc.data();
-                    html += `
-                        <div class="bg-white p-4 rounded-xl shadow-sm space-y-2 border border-slate-100">
-                            <div class="flex justify-between items-start">
-                                <h3 class="font-bold text-sm text-slate-800">${task.title}</h3>
-                                <span class="bg-indigo-50 text-indigo-600 text-xs px-2 py-0.5 rounded-full font-medium">${task.category}</span>
-                            </div>
-                            <div class="flex justify-between items-center pt-2 text-xs text-slate-500 font-semibold">
-
-                                <span>By: ${task.userEmail ? task.userEmail.split('@')[0] : 'User'}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } catch (error) {
-                console.error(error);
-                container.innerHTML = '<div class="text-sm text-red-500">Error loading tasks.</div>';
-            }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TASKY - Ultimate Secure Marketplace Ecosystem</title>
+<!-- Tailwind CSS & FontAwesome -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          900: '#312e81'
         }
+      }
+    }
+  }
+}
+</script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
-        loadTasks();
-    </script>
-</body>
-</html>
+<!-- Header / Navbar -->
+<header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
+<div class="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
+<div class="flex items-center space-x-3">
+<div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md">
+<i class="fa-solid fa-layer-group text-xl"></i>
+</div>
+<div>
+<span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">TASKY</span>
+<span class="block text-xs text-gray-500 dark:text-gray-400">Elite Professional Marketplace</span>
+</div>
+</div>
+
+<div class="flex items-center space-x-4">
+<!-- Theme Toggle Button -->
+<button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">
+<i id="theme-icon" class="fa-solid fa-moon"></i>
+</button>
+
+<!-- Auth Section with Special Styling -->
+<div id="auth-section">
+<button id="login-btn" onclick="loginWithGoogle()" class="hidden bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white px-5 py-2.5 rounded-2xl font-bold shadow-lg shadow-brand-500/30 transition transform hover:-translate-y-0.5 flex items-center space-x-2.5 text-sm border border-indigo-400/30">
+<div class="bg-white p-1 rounded-full text-brand-600">
+<i class="fa-brands fa-google text-xs"></i>
+</div>
+<span>Sign in with Google</span>
+</button>
+<div id="user-profile" class="hidden flex items-center space-x-3 bg-gradient-to-r from-indigo-50 to-brand-50 dark:from-gray-700/60 dark:to-gray-800 p-1.5 pr-4 rounded-full border border-indigo-100 dark:border-gray-600 shadow-sm">
+<img id="user-avatar" src="" alt="User" class="w-9 h-9 rounded-full object-cover ring-2 ring-brand-500">
+<div class="hidden sm:block text-left">
+<span id="user-name" class="block text-xs font-extrabold text-gray-900 dark:text-white leading-tight"></span>
+<span class="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold tracking-wide">⚡ Verified Elite Pro</span>
+</div>
+<button onclick="logout()" class="ml-2 text-gray-400 hover:text-red-500 transition p-1.5 rounded-full hover:bg-white dark:hover:bg-gray-700" title="Logout">
+<i class="fa-solid fa-right-from-bracket"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<!-- Main Dashboard Container -->
+<main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+<!-- Left Column: Post a Task Form (Without Budget) -->
+<div class="space-y-6 lg:col-span-1">
+<section class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+<i class="fa-solid fa-circle-plus text-brand-600"></i>
+<span>Post a New Task</span>
+</h2>
+<form id="task-form" onsubmit="handleAddTask(event)" class="space-y-4">
+<div>
+<label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Task Title / Service</label>
+<input type="text" id="task-title" required placeholder="e.g., Electrician & Plumber maintenance" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+</div>
+<div>
+<label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+<select id="task-category" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+<option value="Electrical">Electrical & Wiring</option>
+<option value="Plumbing">Plumbing & Repairs</option>
+<option value="Technology">IT & Software</option>
+<option value="General">General Maintenance</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Location / Area</label>
+<input type="text" id="task-location" required placeholder="e.g., Al Ruwais, Abu Dhabi" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+</div>
+<div>
+<label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">WhatsApp / Phone Number</label>
+<input type="text" id="task-phone" required placeholder="+971 50 XXXXXXX" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+</div>
+<div>
+<label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
+<textarea id="task-desc" required rows="3" placeholder="Provide task specifications..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition"></textarea>
+</div>
+<button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-brand-500/20 text-sm flex items-center justify-center space-x-2">
+<i class="fa-solid fa-paper-plane"></i>
+<span>Publish Task</span>
+</button>
+</form>
+</section>
+</div>
+
+<!-- Right Column: Marketplace Feed with Advanced Search & Filter -->
+<section class="lg:col-span-2 space-y-6">
+<!-- Search & Filter Controls -->
+<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row gap-4 justify-between items-center">
+<div class="relative w-full sm:w-72">
+<i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+<input type="text" id="search-input" oninput="filterTasks()" placeholder="Search title or location..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+</div>
+<div class="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+<button onclick="filterCategory('All')" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition">All</button>
+<button onclick="filterCategory('Electrical')" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">Electrical</button>
+<button onclick="filterCategory('Plumbing')" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">Plumbing</button>
+<button onclick="filterCategory('Technology')" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">Tech</button>
+</div>
+</div>
+
+<!-- Feed Header -->
+<div class="flex justify-between items-center px-1">
+<h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
+<i class="fa-solid fa-list-check text-brand-600"></i>
+<span>Available Marketplace Tasks</span>
+</h2>
+<span id="task-count" class="bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-bold px-3 py-1 rounded-full border border-brand-100 dark:border-brand-800">0 Tasks</span>
+</div>
+
+<!-- Task List Container -->
+<div id="tasks-container" class="space-y-4">
+<div class="text-center py-16 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+<i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-brand-600"></i>
+<p class="text-sm">Synchronizing secure database...</p>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
+&copy; 2026 TASKY Ecosystem. Secured with Firebase Production Rules & App Check.
+</footer>
+
+<!-- Firebase SDK Scripts -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCrDNpRQXFEOahpyDA_jxTmI5N5nC3KdRg",
+authDomain: "tasky-b8e5b.firebaseapp.com",
+projectId: "tasky-b8e5b",
+storageBucket: "tasky-b8e5b.firebasestorage.app",
+messagingSenderId: "27035947125",
+appId: "1:27035947125:web:dc66829cb61eded04ea83c",
+measurementId: "G-TEBQZKPRSQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let allTasks = [];
+let currentCategory = 'All';
+
+// Dark Mode Logic
+window.toggleDarkMode = function() {
+const html = document.documentElement;
+const icon = document.getElementById('theme-icon');
+if (html.classList.contains('dark')) {
+html.classList.remove('dark');
+icon.className = "fa-solid fa-moon";
+localStorage.setItem('theme', 'light');
+} else {
+html.classList.add('dark');
+icon.className = "fa-solid fa-sun";
+localStorage.setItem('theme', 'dark');
+}
+};
+
+if (localStorage.getItem('theme') === 'dark') {
+document.documentElement.classList.add('dark');
+document.getElementById('theme-icon').className = "fa-solid fa-sun";
+}
+
+// Auth State Observer
+onAuthStateChanged(auth, (user) => {
+currentUser = user;
+const loginBtn = document.getElementById('login-btn');
+const userProfile = document.getElementById('user-profile');
+const userAvatar = document.getElementById('user-avatar');
+const userName = document.getElementById('user-name');
+
+if (user) {
+loginBtn.classList.add('hidden');
+userProfile.classList.remove('hidden');
+userAvatar.src = user.photoURL || 'https://via.placeholder.com/150';
+userName.textContent = user.displayName;
+} else {
+loginBtn.classList.remove('hidden');
+userProfile.classList.add('hidden');
+}
+loadTasks();
+});
+
+window.loginWithGoogle = async function() {
+try {
+await signInWithPopup(auth, provider);
+} catch (error) {
+console.error("Login Error:", error);
+alert("Google sign-in failed. Please ensure your domain is authorized in Firebase console.");
+}
+};
+
+window.logout = async function() {
+try {
+await signOut(auth);
+} catch (error) {
+console.error("Logout Error:", error);
+}
+};
+
+window.handleAddTask = async function(e) {
+e.preventDefault();
+if (!currentUser) {
+alert("Please sign in with Google to post a task!");
+return;
+}
+
+const title = document.getElementById('task-title').value;
+const category = document.getElementById('task-category').value;
+const location = document.getElementById('task-location').value;
+const phone = document.getElementById('task-phone').value;
+const description = document.getElementById('task-desc').value;
+
+try {
+await addDoc(collection(db, "tasks"), {
+title,
+category,
+location,
+phone,
+description,
+authorName: currentUser.displayName,
+authorEmail: currentUser.email,
+authorPhoto: currentUser.photoURL,
+createdAt: serverTimestamp()
+});
+
+document.getElementById('task-form').reset();
+loadTasks();
+alert("Task Published Successfully!");
+} catch (error) {
+console.error("Error adding task:", error);
+alert("Failed to post task due to security rules or network issue.");
+}
+};
+
+async function loadTasks() {
+try {
+const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
+const querySnapshot = await getDocs(q);
+
+allTasks = [];
+querySnapshot.forEach((docSnap) => {
+allTasks.push({ id: docSnap.id, ...docSnap.data() });
+});
+
+renderTasks(allTasks);
+} catch (error) {
+console.error("Error loading tasks:", error);
+document.getElementById('tasks-container').innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center text-red-500 border border-gray-100 dark:border-gray-700 text-sm">Failed to load tasks. Verify Firestore rules.</div>`;
+}
+}
+
+window.filterCategory = function(cat) {
+currentCategory = cat;
+document.querySelectorAll('.cat-btn').forEach(btn => {
+if (btn.textContent.includes(cat) || (cat === 'All' && btn.textContent === 'All')) {
+btn.className = "cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-
