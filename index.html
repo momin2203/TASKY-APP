@@ -210,7 +210,7 @@
           <input type="text" id="tech-role" placeholder="e.g., Electrician / AC Tech" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
         </div>
         <button onclick="confirmAssignTechnician()" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition">
-          Confirm & Assign Provider
+          Confirm &amp; Assign Provider
         </button>
       </div>
     </div>
@@ -220,7 +220,7 @@
   <div id="booking-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-xl">
       <div class="flex justify-between items-center mb-3">
-        <h3 id="modal-title" class="text-lg font-bold">Book Task & Pay</h3>
+        <h3 id="modal-title" class="text-lg font-bold">Book Task &amp; Pay</h3>
         <button onclick="closeBookingModal()" class="text-gray-400 hover:text-red-500 text-xl">&times;</button>
       </div>
       <p id="modal-task-summary" class="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 p-3 rounded-xl mb-4"></p>
@@ -252,12 +252,13 @@
 
   <!-- Footer -->
   <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
-    &copy; 2026 TASKY Ecosystem. Real-Time Firestore Sync &amp; Secure Marketplace.
+    &copy; 2026 TASKY Ecosystem. Real-Time Firestore Sync &amp; App Check Protected.
   </footer>
 
-  <!-- Firebase SDK Scripts -->
+  <!-- Firebase SDK Scripts (with App Check) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -272,6 +273,16 @@
     };
 
     const app = initializeApp(firebaseConfig);
+
+    // Firebase App Check Setup (reCAPTCHA v3 Site Key এখানে বসাও)
+    const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_V3_SITE_KEY";
+    if (RECAPTCHA_SITE_KEY && RECAPTCHA_SITE_KEY !== "YOUR_RECAPTCHA_V3_SITE_KEY") {
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),
+        isTokenAutoRefreshEnabled: true
+      });
+    }
+
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
@@ -376,7 +387,7 @@
         filterTasks();
       }, (error) => {
         console.error("Realtime listener error:", error);
-        document.getElementById('tasks-container').innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center text-red-500 border border-gray-100 dark:border-gray-700 text-sm">Failed to sync live tasks. Verify Firestore rules.</div>`;
+        document.getElementById('tasks-container').innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center text-red-500 border border-gray-100 dark:border-gray-700 text-sm">Failed to sync live tasks. Verify Firestore rules &amp; App Check.</div>`;
       });
     }
 
@@ -409,7 +420,7 @@
         document.getElementById('task-form').reset();
       } catch (error) {
         console.error("Error adding task:", error);
-        alert("Failed to post task due to security rules or network issue.");
+        alert("Failed to post task due to security rules, App Check, or network issue.");
       }
     };
 
