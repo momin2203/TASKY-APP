@@ -1,539 +1,692 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TASKY - Elite Professional Marketplace</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#312e81',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col justify-between transition-colors duration-200">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TASKY — Live Secure Marketplace</title>
 
-    <!-- Header / Navbar -->
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="bg-brand-600 text-white p-2 rounded-xl shadow-sm">
-                    <i class="fa-solid fa-bolt text-lg"></i>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS with Dark Mode & Custom Brand Color -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
+
+  <!-- Header / Navbar -->
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md">
+          <i class="fa-solid fa-layer-group text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">TASKY</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1 animate-pulse"></span> LIVE
+            </span>
+          </div>
+          <span id="tagline-text" class="block text-xs text-gray-500 dark:text-gray-400">Real-Time Home Service Marketplace</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Language Toggle Button -->
+        <button onclick="toggleLang()" id="lang-btn" class="px-3 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 text-xs font-bold transition">
+          বাংলা
+        </button>
+
+        <!-- Theme Toggle Button -->
+        <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition" title="Toggle Theme">
+          <i id="theme-icon" class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Auth Section -->
+        <div id="auth-section">
+          <button id="login-btn" onclick="loginWithGoogle()" class="hidden bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2.5 rounded-xl font-semibold shadow-md transition flex items-center space-x-2 text-xs sm:text-sm">
+            <i class="fa-brands fa-google"></i>
+            <span id="login-btn-text">Sign in with Google</span>
+          </button>
+          <div id="user-profile" class="hidden flex items-center space-x-2.5 bg-gray-50 dark:bg-gray-700/50 p-1.5 pr-3 rounded-full border border-gray-200 dark:border-gray-600">
+            <img id="user-avatar" src="" alt="User" class="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500">
+            <div class="hidden sm:block text-left">
+              <span id="user-name" class="block text-xs font-bold text-gray-900 dark:text-white leading-tight"></span>
+              <span class="block text-[10px] text-green-600 dark:text-green-400 font-medium">● Online</span>
+            </div>
+            <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition p-1" title="Logout">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Container -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Left Column: Post a Task Form + Booking History -->
+    <div class="space-y-6 lg:col-span-1">
+      <section class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+          <i class="fa-solid fa-circle-plus text-brand-600"></i>
+          <span id="form-title">Post a New Task</span>
+        </h2>
+        <form id="task-form" onsubmit="handleAddTask(event)" class="space-y-4">
+          <div>
+            <label id="lbl-title" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Task Title / Service</label>
+            <input type="text" id="task-title" required placeholder="e.g., AC Servicing & Electrical Wiring" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+          </div>
+          <div>
+            <label id="lbl-category" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+            <select id="task-category" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              <option value="Electrical">Electrical & Wiring</option>
+              <option value="Plumbing">Plumbing & Repairs</option>
+              <option value="AC">AC Technician</option>
+              <option value="Carpenter">Carpenter & Furniture</option>
+              <option value="Painter">Painter & Renovation</option>
+              <option value="General">General Maintenance</option>
+            </select>
+          </div>
+          <div>
+            <label id="lbl-desc" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Description & Location</label>
+            <textarea id="task-desc" required rows="3" placeholder="Provide task details and address..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition"></textarea>
+          </div>
+          <div>
+            <label id="lbl-budget" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Budget (৳ / $)</label>
+            <input type="number" id="task-budget" min="1" required placeholder="500" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+          </div>
+          <button type="submit" id="submit-task-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-brand-500/20 text-sm flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Publish Task</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Booking & Payment Orders Box -->
+      <section class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <h2 class="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
+          <i class="fa-solid fa-receipt text-brand-600"></i>
+          <span id="orders-heading">Recent Bookings & Payments</span>
+        </h2>
+        <div id="bookings-list" class="space-y-2.5 text-xs text-gray-500 dark:text-gray-400">
+          No bookings yet.
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Marketplace Feed with Search & Filter -->
+    <section class="lg:col-span-2 space-y-6">
+      <!-- Search & Filter Controls -->
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <div class="relative w-full sm:w-64">
+          <i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+          <input type="text" id="search-input" oninput="filterTasks()" placeholder="Search tasks..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div class="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+          <button onclick="filterCategory('All')" data-cat="All" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition whitespace-nowrap">All</button>
+          <button onclick="filterCategory('Electrical')" data-cat="Electrical" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition whitespace-nowrap">Electrical</button>
+          <button onclick="filterCategory('Plumbing')" data-cat="Plumbing" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition whitespace-nowrap">Plumbing</button>
+          <button onclick="filterCategory('AC')" data-cat="AC" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition whitespace-nowrap">AC</button>
+          <button onclick="filterCategory('Carpenter')" data-cat="Carpenter" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition whitespace-nowrap">Carpenter</button>
+          <button onclick="filterCategory('Painter')" data-cat="Painter" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition whitespace-nowrap">Painter</button>
+        </div>
+      </div>
+
+      <!-- Feed Header -->
+      <div class="flex justify-between items-center px-1">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
+          <i class="fa-solid fa-list-check text-brand-600"></i>
+          <span id="feed-heading">Live Marketplace Tasks</span>
+        </h2>
+        <span id="task-count" class="bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-bold px-3 py-1 rounded-full border border-brand-100 dark:border-brand-800">0 Tasks</span>
+      </div>
+
+      <!-- Task List Container -->
+      <div id="tasks-container" class="space-y-4">
+        <div class="text-center py-16 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+          <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-brand-600"></i>
+          <p class="text-sm">Connecting to live Firestore stream...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Technician / Service Provider Assign Modal -->
+  <div id="assign-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-xl">
+      <div class="flex justify-between items-center mb-3">
+        <h3 id="assign-modal-title" class="text-lg font-bold flex items-center space-x-2">
+          <i class="fa-solid fa-user-gear text-brand-600"></i>
+          <span>Assign Service Provider</span>
+        </h3>
+        <button onclick="closeAssignModal()" class="text-gray-400 hover:text-red-500 text-xl">&times;</button>
+      </div>
+      <p id="assign-task-summary" class="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 p-3 rounded-xl mb-4"></p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Quick Select Verified Technician</label>
+          <select id="preset-tech" onchange="fillPresetTech()" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
+            <option value="">-- Custom / Enter Manually --</option>
+            <option value="Ariful Islam|01711223344|Senior Electrician">Ariful Islam (Senior Electrician)</option>
+            <option value="Kamrul Hasan|01819283746|Master Plumber">Kamrul Hasan (Master Plumber)</option>
+            <option value="Sajib Ahmed|01912345678|AC & HVAC Specialist">Sajib Ahmed (AC & HVAC Specialist)</option>
+            <option value="Rashedul Karim|01611998877|Carpenter & Painter">Rashedul Karim (Carpenter & Painter)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Technician / Provider Name</label>
+          <input type="text" id="tech-name" placeholder="e.g., Ariful Islam" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Technician Phone Number</label>
+          <input type="tel" id="tech-phone" placeholder="01XXXXXXXXX" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Specialty / Role</label>
+          <input type="text" id="tech-role" placeholder="e.g., Electrician / AC Tech" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
+        </div>
+        <button onclick="confirmAssignTechnician()" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition">
+          Confirm & Assign Provider
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking & Payment Modal (bKash / Nagad / Rocket / Cash) -->
+  <div id="booking-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-xl">
+      <div class="flex justify-between items-center mb-3">
+        <h3 id="modal-title" class="text-lg font-bold">Book Task & Pay</h3>
+        <button onclick="closeBookingModal()" class="text-gray-400 hover:text-red-500 text-xl">&times;</button>
+      </div>
+      <p id="modal-task-summary" class="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 p-3 rounded-xl mb-4"></p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Customer Phone Number</label>
+          <input type="tel" id="booking-phone" placeholder="01XXXXXXXXX" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Payment Method</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button type="button" onclick="selectPayMethod('bKash')" data-pay="bKash" class="pay-btn py-2 rounded-xl border-2 border-brand-600 bg-brand-50 dark:bg-brand-900/30 text-xs font-bold">bKash</button>
+            <button type="button" onclick="selectPayMethod('Nagad')" data-pay="Nagad" class="pay-btn py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-xs font-bold">Nagad</button>
+            <button type="button" onclick="selectPayMethod('Rocket')" data-pay="Rocket" class="pay-btn py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-xs font-bold">Rocket</button>
+            <button type="button" onclick="selectPayMethod('Cash')" data-pay="Cash" class="pay-btn py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-xs font-bold">Cash</button>
+          </div>
+        </div>
+        <div id="trx-field">
+          <label class="block text-xs font-semibold mb-1">Transaction ID (TrxID)</label>
+          <input type="text" id="booking-trx" placeholder="e.g., 9A8B7C6D5E" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm">
+        </div>
+        <button onclick="confirmTaskBooking()" class="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl text-sm transition">
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
+    &copy; 2026 TASKY Ecosystem. Real-Time Firestore Sync &amp; Secure Marketplace.
+  </footer>
+
+  <!-- Firebase SDK Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCrDNpRQXFEOahpyDA_jxTmI5N5nC3KdRg",
+      authDomain: "tasky-b8e5b.firebaseapp.com",
+      projectId: "tasky-b8e5b",
+      storageBucket: "tasky-b8e5b.firebasestorage.app",
+      messagingSenderId: "27035947125",
+      appId: "1:27035947125:web:dc66829cb61eded04ea83c",
+      measurementId: "G-TEBQZKPRSQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+    let allTasks = [];
+    let currentCategory = 'All';
+    let currentLang = 'en';
+    let selectedTaskForBooking = null;
+    let selectedTaskForAssign = null;
+    let selectedPaymentMethod = 'bKash';
+    let unsubscribeTasks = null;
+    let bookings = JSON.parse(localStorage.getItem('tasky_bookings')) || [];
+
+    // Dark Mode Logic
+    window.toggleDarkMode = function () {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        icon.className = "fa-solid fa-moon";
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        icon.className = "fa-solid fa-sun";
+        localStorage.setItem('theme', 'dark');
+      }
+    };
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.getElementById('theme-icon').className = "fa-solid fa-sun";
+    }
+
+    // Bilingual Toggle (English / বাংলা)
+    window.toggleLang = function () {
+      currentLang = currentLang === 'en' ? 'bn' : 'en';
+      const isBn = currentLang === 'bn';
+      document.getElementById('lang-btn').textContent = isBn ? 'English' : 'বাংলা';
+      document.getElementById('tagline-text').textContent = isBn ? 'রিয়েল-টাইম হোম সার্ভিস মার্কেটপ্লেস' : 'Real-Time Home Service Marketplace';
+      document.getElementById('login-btn-text').textContent = isBn ? 'গুগলে সাইন ইন' : 'Sign in with Google';
+      document.getElementById('form-title').textContent = isBn ? 'নতুন টাস্ক পোস্ট করুন' : 'Post a New Task';
+      document.getElementById('lbl-title').textContent = isBn ? 'টাস্ক বা সার্ভিসের নাম' : 'Task Title / Service';
+      document.getElementById('lbl-category').textContent = isBn ? 'ক্যাটাগরি' : 'Category';
+      document.getElementById('lbl-desc').textContent = isBn ? 'বিস্তারিত বিবরণ ও ঠিকানা' : 'Description & Location';
+      document.getElementById('lbl-budget').textContent = isBn ? 'বাজেট (৳ / $)' : 'Budget (৳ / $)';
+      document.getElementById('submit-task-btn').innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>${isBn ? 'টাস্ক প্রকাশ করুন' : 'Publish Task'}</span>`;
+      document.getElementById('orders-heading').textContent = isBn ? 'সাম্প্রতিক বুকিং ও পেমেন্ট' : 'Recent Bookings & Payments';
+      document.getElementById('feed-heading').textContent = isBn ? 'লাইভ মার্কেটপ্লেস টাস্ক' : 'Live Marketplace Tasks';
+      document.getElementById('search-input').placeholder = isBn ? 'টাস্ক বা টেকনিশিয়ান খুঁজুন...' : 'Search tasks or technicians...';
+      renderBookings();
+      filterTasks();
+    };
+
+    // Auth State Observer
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      const loginBtn = document.getElementById('login-btn');
+      const userProfile = document.getElementById('user-profile');
+      const userAvatar = document.getElementById('user-avatar');
+      const userName = document.getElementById('user-name');
+
+      if (user) {
+        loginBtn.classList.add('hidden');
+        userProfile.classList.remove('hidden');
+        userAvatar.src = user.photoURL || 'https://via.placeholder.com/150';
+        userName.textContent = user.displayName || 'User';
+      } else {
+        loginBtn.classList.remove('hidden');
+        userProfile.classList.add('hidden');
+      }
+      startRealtimeTasksListener();
+    });
+
+    window.loginWithGoogle = async function () {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error("Login Error:", error);
+        alert("Google sign-in failed. Please ensure your domain is authorized in Firebase console.");
+      }
+    };
+
+    window.logout = async function () {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error("Logout Error:", error);
+      }
+    };
+
+    // Real-time Firestore Listener (onSnapshot)
+    function startRealtimeTasksListener() {
+      if (unsubscribeTasks) unsubscribeTasks();
+
+      const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
+      unsubscribeTasks = onSnapshot(q, (querySnapshot) => {
+        allTasks = [];
+        querySnapshot.forEach((docSnap) => {
+          allTasks.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        filterTasks();
+      }, (error) => {
+        console.error("Realtime listener error:", error);
+        document.getElementById('tasks-container').innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center text-red-500 border border-gray-100 dark:border-gray-700 text-sm">Failed to sync live tasks. Verify Firestore rules.</div>`;
+      });
+    }
+
+    window.handleAddTask = async function (e) {
+      e.preventDefault();
+      if (!currentUser) {
+        alert(currentLang === 'bn' ? "টাস্ক পোস্ট করতে গুগলে সাইন ইন করুন!" : "Please sign in with Google to post a task!");
+        return;
+      }
+
+      const title = document.getElementById('task-title').value.trim();
+      const category = document.getElementById('task-category').value;
+      const description = document.getElementById('task-desc').value.trim();
+      const budget = Number(document.getElementById('task-budget').value);
+
+      try {
+        await addDoc(collection(db, "tasks"), {
+          title,
+          category,
+          description,
+          budget,
+          status: 'Open',
+          assignedTech: null,
+          authorName: currentUser.displayName || 'Anonymous',
+          authorEmail: currentUser.email || '',
+          authorPhoto: currentUser.photoURL || 'https://via.placeholder.com/150',
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById('task-form').reset();
+      } catch (error) {
+        console.error("Error adding task:", error);
+        alert("Failed to post task due to security rules or network issue.");
+      }
+    };
+
+    window.filterCategory = function (cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        const isActive = btn.dataset.cat === cat;
+        btn.className = isActive
+          ? "cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition whitespace-nowrap"
+          : "cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition whitespace-nowrap";
+      });
+      filterTasks();
+    };
+
+    window.filterTasks = function () {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const filtered = allTasks.filter(task => {
+        const title = (task.title || '').toLowerCase();
+        const desc = (task.description || '').toLowerCase();
+        const techName = (task.assignedTech?.name || '').toLowerCase();
+        const cat = task.category || 'General';
+        const matchesCat = (currentCategory === 'All' || cat === currentCategory);
+        const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm) || techName.includes(searchTerm);
+        return matchesCat && matchesSearch;
+      });
+      renderTasks(filtered);
+    };
+
+    function renderTasks(tasksToRender) {
+      const container = document.getElementById('tasks-container');
+      const countBadge = document.getElementById('task-count');
+      const isBn = currentLang === 'bn';
+
+      container.innerHTML = "";
+      countBadge.textContent = `${tasksToRender.length} ${isBn ? 'টি টাস্ক' : (tasksToRender.length !== 1 ? 'Tasks' : 'Task')}`;
+
+      if (tasksToRender.length === 0) {
+        container.innerHTML = `<div class="bg-white dark:bg-gray-800 p-12 rounded-2xl text-center text-gray-400 border border-gray-100 dark:border-gray-700 text-sm">${isBn ? 'কোনো টাস্ক পাওয়া যায়নি।' : 'No tasks found matching your criteria.'}</div>`;
+        return;
+      }
+
+      tasksToRender.forEach((task) => {
+        const isOwner = currentUser && currentUser.email && currentUser.email === task.authorEmail;
+        const status = task.status || 'Open';
+        const tech = task.assignedTech;
+
+        const statusBadgeClass = status === 'Completed'
+          ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+          : status === 'Assigned'
+            ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+            : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300';
+
+        const card = document.createElement('div');
+        card.className = "bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition";
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">${escapeHtml(task.category || 'General')}</span>
+                <span class="${statusBadgeClass} text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">${escapeHtml(status)}</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mt-2">${escapeHtml(task.title || '')}</h3>
+            </div>
+            <span class="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-bold px-3 py-1 rounded-xl border border-green-200 dark:border-green-800/50">${escapeHtml(String(task.budget ?? 0))}</span>
+          </div>
+
+          <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">${escapeHtml(task.description || '')}</p>
+
+          ${tech && tech.name ? `
+            <div class="mb-4 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-2.5">
+                <div class="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center">
+                  <i class="fa-solid fa-user-gear text-xs"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">TASKY</h1>
-                    <p id="app-subtitle" class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Elite Professional Marketplace</p>
+                  <div class="font-bold text-gray-900 dark:text-white">${escapeHtml(tech.name)} <span class="text-[11px] font-normal text-gray-500">(${escapeHtml(tech.role || 'Technician')})</span></div>
+                  <div class="text-[11px] text-blue-600 dark:text-blue-400"><i class="fa-solid fa-phone mr-1"></i>${escapeHtml(tech.phone || '')}</div>
                 </div>
-            </div>
-
-            <div class="flex items-center space-x-3">
-                <!-- Language Toggle -->
-                <button onclick="toggleLanguage()" id="lang-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 transition">
-                    বাংলা
+              </div>
+              ${status !== 'Completed' && currentUser ? `
+                <button onclick="markTaskCompleted('${escapeHtml(task.id)}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg font-semibold text-[11px] transition">
+                  ${isBn ? 'সম্পন্ন করুন' : 'Complete'}
                 </button>
-
-                <!-- Dark Mode Toggle -->
-                <button onclick="toggleDarkMode()" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                </button>
-
-                <!-- User Profile & Sign Out -->
-                <div id="user-nav" class="hidden flex items-center space-x-2">
-                    <img id="nav-user-photo" src="" alt="User" class="w-8 h-8 rounded-full border border-brand-500 object-cover">
-                    <button onclick="handleSignOut()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
+              ` : ''}
             </div>
-        </div>
-    </header>
+          ` : ''}
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-grow">
-
-        <!-- Auth Gateway (Login Screen) -->
-        <div id="auth-gateway" class="max-w-md mx-auto mt-12 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 text-center">
-            <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-5 text-3xl">
-                <i class="fa-solid fa-shield-halved"></i>
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700/60 pt-4">
+            <div class="flex items-center space-x-2.5">
+              <img src="${task.authorPhoto || 'https://via.placeholder.com/150'}" class="w-7 h-7 rounded-full object-cover" alt="Author">
+              <span class="font-medium text-gray-700 dark:text-gray-300">${escapeHtml(task.authorName || 'User')}</span>
+              <span>• ${task.createdAt && task.createdAt.seconds ? new Date(task.createdAt.seconds * 1000).toLocaleDateString() : (isBn ? 'এইমাত্র' : 'Just now')}</span>
             </div>
-            <h2 id="gateway-title" class="text-2xl font-extrabold mb-2">Welcome to TASKY</h2>
-            <p id="gateway-desc" class="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
-                Please sign in with your Google account to access the secure elite marketplace, post services, and connect with professionals.
-            </p>
-            <button onclick="handleGoogleSignIn()" class="w-full py-3.5 px-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-sm flex items-center justify-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-600 transition font-bold text-sm">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
-                <span id="gateway-btn-text">Sign in with Google</span>
-            </button>
-        </div>
 
-        <!-- Authenticated App Workspace -->
-        <div id="app-workspace" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="flex items-center space-x-2">
+              <button onclick="openAssignModal('${escapeHtml(task.id)}')" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg font-semibold transition flex items-center space-x-1">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>${tech && tech.name ? (isBn ? 'টেকনিশিয়ান বদলান' : 'Reassign') : (isBn ? 'টেকনিশিয়ান দিন' : 'Assign Tech')}</span>
+              </button>
 
-            <!-- Left Column: Multi-Step Task Creation Form -->
-            <section class="lg:col-span-1">
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
-                    <h2 id="form-heading" class="text-lg font-extrabold mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-plus text-brand-600"></i> Post a New Task
-                    </h2>
+              <button onclick="openBookingModal('${escapeHtml(task.id)}')" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">
+                ${isBn ? 'বুক করুন' : 'Book'}
+              </button>
 
-                    <!-- Step Indicators -->
-                    <div class="flex items-center justify-between mb-6 text-xs font-bold">
-                        <span id="step1-badge" class="px-3 py-1 rounded-full bg-brand-600 text-white">1. Details</span>
-                        <div class="h-0.5 flex-grow bg-gray-200 dark:bg-gray-700 mx-2"></div>
-                        <span id="step2-badge" class="px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">2. Payment</span>
-                    </div>
+              ${isOwner ? `<button onclick="deleteTask('${escapeHtml(task.id)}')" class="text-red-500 hover:text-red-700 transition p-1" title="Delete Task"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-                    <form id="task-form" onsubmit="handleTaskSubmit(event)">
-                        <!-- Step 1: Service Details -->
-                        <div id="form-step-1" class="space-y-4">
-                            <div>
-                                <label id="lbl-title" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">Task Title / Service</label>
-                                <input type="text" id="task-title" required placeholder="e.g., AC Repair & Maintenance" class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none">
-                            </div>
+    // Technician Assign Functions
+    window.openAssignModal = function (taskId) {
+      if (!currentUser) {
+        alert(currentLang === 'bn' ? "টেকনিশিয়ান অ্যাসাইন করতে গুগলে সাইন ইন করুন!" : "Please sign in with Google to assign a technician!");
+        return;
+      }
+      const task = allTasks.find(t => t.id === taskId);
+      if (!task) return;
+      selectedTaskForAssign = task;
+      document.getElementById('assign-task-summary').textContent = `${task.title} (${task.category})`;
+      document.getElementById('tech-name').value = task.assignedTech?.name || '';
+      document.getElementById('tech-phone').value = task.assignedTech?.phone || '';
+      document.getElementById('tech-role').value = task.assignedTech?.role || '';
+      document.getElementById('preset-tech').value = '';
+      document.getElementById('assign-modal').classList.remove('hidden');
+    };
 
-                            <div>
-                                <label id="lbl-cat" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">Category</label>
-                                <select id="task-category" class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none">
-                                    <option value="Electrical">Electrical</option>
-                                    <option value="Plumbing">Plumbing</option>
-                                    <option value="Technology">Technology</option>
-                                    <option value="General">General Maintenance</option>
-                                </select>
-                            </div>
+    window.closeAssignModal = function () {
+      document.getElementById('assign-modal').classList.add('hidden');
+      selectedTaskForAssign = null;
+    };
 
-                            <div>
-                                <label id="lbl-loc" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">Location / Area</label>
-                                <input type="text" id="task-location" required placeholder="e.g., Abu Dhabi / Dhaka" class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none">
-                            </div>
+    window.fillPresetTech = function () {
+      const val = document.getElementById('preset-tech').value;
+      if (!val) return;
+      const [name, phone, role] = val.split('|');
+      document.getElementById('tech-name').value = name || '';
+      document.getElementById('tech-phone').value = phone || '';
+      document.getElementById('tech-role').value = role || '';
+    };
 
-                            <div>
-                                <label id="lbl-phone" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">WhatsApp / Phone Number</label>
-                                <input type="text" id="task-phone" required placeholder="+971 / +880..." class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none">
-                            </div>
+    window.confirmAssignTechnician = async function () {
+      if (!selectedTaskForAssign) return;
+      const name = document.getElementById('tech-name').value.trim();
+      const phone = document.getElementById('tech-phone').value.trim();
+      const role = document.getElementById('tech-role').value.trim();
 
-                            <div>
-                                <label id="lbl-desc" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">Description</label>
-                                <textarea id="task-desc" rows="3" required placeholder="Describe requirements & budget..." class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
-                            </div>
+      if (!name || !phone) {
+        alert(currentLang === 'bn' ? "টেকনিশিয়ানের নাম ও ফোন নম্বর দিন।" : "Please enter technician name and phone number.");
+        return;
+      }
 
-                            <button type="button" onclick="nextStep()" id="btn-next-step" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl transition">
-                                Next: Payment Options <i class="fa-solid fa-arrow-right ml-1"></i>
-                            </button>
-                        </div>
-
-                        <!-- Step 2: Payment & Publish -->
-                        <div id="form-step-2" class="hidden space-y-4">
-                            <div>
-                                <label id="lbl-pay-method" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">Payment Method</label>
-                                <select id="payment-method" class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none">
-                                    <option value="Cash on Delivery">Cash on Completion</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Mobile Banking (bKash / e& money)">Mobile Banking (bKash / e& money)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label id="lbl-pay-num" class="block text-xs font-bold mb-1 text-gray-600 dark:text-gray-300">Account / Reference Note (Optional)</label>
-                                <input type="text" id="payment-number" placeholder="e.g., Budget 200 AED or Account No" class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-brand-500 outline-none">
-                            </div>
-
-                            <div class="flex space-x-2 pt-2">
-                                <button type="button" onclick="prevStep()" class="w-1/3 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-sm rounded-xl transition">
-                                    Back
-                                </button>
-                                <button type="submit" id="btn-publish" class="w-2/3 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-xl transition shadow-md">
-                                    Publish Task
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Right Column: Marketplace Feed with Search, Filters, Status & Reviews -->
-            <section class="lg:col-span-2 space-y-5">
-                
-                <!-- Search & Filter Controls -->
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div class="relative w-full sm:w-72">
-                        <i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-400 text-sm"></i>
-                        <input type="text" id="search-input" oninput="filterTasks()" placeholder="Search title or location..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-
-                    <div class="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                        <button onclick="filterCategory('All')" data-cat="All" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition">All</button>
-                        <button onclick="filterCategory('Electrical')" data-cat="Electrical" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition">Electrical</button>
-                        <button onclick="filterCategory('Plumbing')" data-cat="Plumbing" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition">Plumbing</button>
-                        <button onclick="filterCategory('Technology')" data-cat="Technology" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition">Technology</button>
-                    </div>
-                </div>
-
-                <!-- Feed Header -->
-                <div class="flex justify-between items-center px-1">
-                    <h2 id="feed-heading" class="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                        <i class="fa-solid fa-list-check text-brand-600"></i>
-                        <span>Available Marketplace Tasks</span>
-                    </h2>
-                    <span id="task-count" class="bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-bold px-3 py-1 rounded-full">0 Tasks</span>
-                </div>
-
-                <!-- Task List Container -->
-                <div id="tasks-container" class="space-y-4">
-                    <div class="text-center py-16 text-gray-400 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700">
-                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-brand-600"></i>
-                        <p class="text-sm">Synchronizing secure database...</p>
-                    </div>
-                </div>
-
-            </section>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 text-center text-xs text-gray-500 mt-12">
-        &copy; 2026 TASKY Ecosystem. Secured with Firebase Production Rules & App Check.
-    </footer>
-
-    <!-- Firebase SDK Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCrDNpRQXIEOahpyDA_jXTmI5N5nC3KDrg",
-            authDomain: "tasky-b8e5b.firebaseapp.com",
-            projectId: "tasky-b8e5b",
-            storageBucket: "tasky-b8e5b.appspot.com",
-            messagingSenderId: "27035947125",
-            appId: "1:27035947125:web:dc6829cb61eded04ea83c",
-            measurementId: "G-TEBQZKPRSQ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        let currentUser = null;
-        let allTasks = [];
-        let currentCategory = 'All';
-        let currentLang = 'en';
-
-        // Bilingual Dictionary
-        const translations = {
-            en: {
-                appSubtitle: "Elite Professional Marketplace",
-                gatewayTitle: "Welcome to TASKY",
-                gatewayDesc: "Please sign in with your Google account to access the secure elite marketplace, post services, and connect with professionals.",
-                gatewayBtnText: "Sign in with Google",
-                formHeading: "Post a New Task",
-                lblTitle: "Task Title / Service",
-                lblCat: "Category",
-                lblLoc: "Location / Area",
-                lblPhone: "WhatsApp / Phone Number",
-                lblDesc: "Description",
-                btnNextStep: "Next: Payment Options",
-                lblPayMethod: "Payment Method",
-                lblPayNum: "Account / Reference Note (Optional)",
-                feedHeading: "Available Marketplace Tasks",
-                langBtn: "বাংলা"
-            },
-            bn: {
-                appSubtitle: "প্রফেশনাল সার্ভিস মার্কেটপ্লেস",
-                gatewayTitle: "TASKY-তে স্বাগতম",
-                gatewayDesc: "নিরাপদ মার্কেটপ্লেসে প্রবেশ করতে এবং নতুন সার্ভিস বা কাজ পোস্ট করতে আপনার গুগল অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।",
-                gatewayBtnText: "গুগল দিয়ে সাইন-ইন করুন",
-                formHeading: "নতুন কাজ পোস্ট করুন",
-                lblTitle: "কাজের শিরোনাম / সার্ভিস",
-                lblCat: "ক্যাটাগরি",
-                lblLoc: "লোকেশন / এলাকা",
-                lblPhone: "হোয়াটসঅ্যাপ / ফোন নম্বর",
-                lblDesc: "বিস্তারিত বিবরণ",
-                btnNextStep: "পরবর্তী: পেমেন্ট অপশন",
-                lblPayMethod: "পেমেন্ট পদ্ধতি",
-                lblPayNum: "অ্যাকাউন্ট / বাজেট নোট (ঐচ্ছিক)",
-                feedHeading: "মার্কেটপ্লেসের কাজসমূহ",
-                langBtn: "English"
-            }
-        };
-
-        // Language Switcher
-        window.toggleLanguage = function() {
-            currentLang = currentLang === 'en' ? 'bn' : 'en';
-            const t = translations[currentLang];
-            document.getElementById('app-subtitle').innerText = t.appSubtitle;
-            document.getElementById('gateway-title').innerText = t.gatewayTitle;
-            document.getElementById('gateway-desc').innerText = t.gatewayDesc;
-            document.getElementById('gateway-btn-text').innerText = t.gatewayBtnText;
-            document.getElementById('form-heading').innerHTML = `<i class="fa-solid fa-circle-plus text-brand-600"></i> ${t.formHeading}`;
-            document.getElementById('lbl-title').innerText = t.lblTitle;
-            document.getElementById('lbl-cat').innerText = t.lblCat;
-            document.getElementById('lbl-loc').innerText = t.lblLoc;
-            document.getElementById('lbl-phone').innerText = t.lblPhone;
-            document.getElementById('lbl-desc').innerText = t.lblDesc;
-            document.getElementById('btn-next-step').innerHTML = `${t.btnNextStep} <i class="fa-solid fa-arrow-right ml-1"></i>`;
-            document.getElementById('lbl-pay-method').innerText = t.lblPayMethod;
-            document.getElementById('lbl-pay-num').innerText = t.lblPayNum;
-            document.getElementById('feed-heading').innerHTML = `<i class="fa-solid fa-list-check text-brand-600"></i> <span>${t.feedHeading}</span>`;
-            document.getElementById('lang-btn').innerText = t.langBtn;
-        };
-
-        // Dark Mode Toggle
-        window.toggleDarkMode = function() {
-            document.documentElement.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon';
-        };
-
-        // Form Steps
-        window.nextStep = function() {
-            const title = document.getElementById('task-title').value;
-            const loc = document.getElementById('task-location').value;
-            const phone = document.getElementById('task-phone').value;
-            if (!title || !loc || !phone) {
-                alert(currentLang === 'en' ? "Please fill in Title, Location, and Phone first." : "দয়া করে শিরোনাম, লোকেশন এবং ফোন নম্বর পূরণ করুন।");
-                return;
-            }
-            document.getElementById('form-step-1').classList.add('hidden');
-            document.getElementById('form-step-2').classList.remove('hidden');
-            document.getElementById('step2-badge').className = "px-3 py-1 rounded-full bg-brand-600 text-white";
-        };
-
-        window.prevStep = function() {
-            document.getElementById('form-step-2').classList.add('hidden');
-            document.getElementById('form-step-1').classList.remove('hidden');
-            document.getElementById('step2-badge').className = "px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500";
-        };
-
-        // Auth Functions (Optimized with Redirect for Mobile & GitHub Pages)
-        window.handleGoogleSignIn = function() {
-            signInWithRedirect(auth, provider);
-        };
-
-        window.handleSignOut = function() {
-            signOut(auth).then(() => window.location.reload());
-        };
-
-        getRedirectResult(auth).catch((error) => {
-            console.error("Redirect Sign-In Error:", error);
+      try {
+        await updateDoc(doc(db, "tasks", selectedTaskForAssign.id), {
+          status: 'Assigned',
+          assignedTech: {
+            name,
+            phone,
+            role: role || 'Service Provider',
+            assignedBy: currentUser.email,
+            assignedAt: new Date().toISOString()
+          }
         });
+        closeAssignModal();
+      } catch (error) {
+        console.error("Assign error:", error);
+        alert("Failed to assign technician. Check Firestore update rules.");
+      }
+    };
 
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                document.getElementById('auth-gateway').classList.add('hidden');
-                document.getElementById('app-workspace').classList.remove('hidden');
-                document.getElementById('user-nav').classList.remove('hidden');
-                document.getElementById('nav-user-photo').src = user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User');
-                loadTasks();
-            } else {
-                document.getElementById('auth-gateway').classList.remove('hidden');
-                document.getElementById('app-workspace').classList.add('hidden');
-                document.getElementById('user-nav').classList.add('hidden');
-            }
+    window.markTaskCompleted = async function (taskId) {
+      try {
+        await updateDoc(doc(db, "tasks", taskId), {
+          status: 'Completed'
         });
+      } catch (error) {
+        console.error("Complete error:", error);
+        alert("Failed to update task status.");
+      }
+    };
 
-        // Submit Task to Firestore
-        window.handleTaskSubmit = async function(e) {
-            e.preventDefault();
-            if (!currentUser) return;
+    // Booking & Payment Functions
+    window.openBookingModal = function (taskId) {
+      const task = allTasks.find(t => t.id === taskId);
+      if (!task) return;
+      selectedTaskForBooking = task;
+      document.getElementById('modal-task-summary').textContent = `${task.title} — Budget: ${task.budget}`;
+      document.getElementById('booking-modal').classList.remove('hidden');
+    };
 
-            const title = document.getElementById('task-title').value;
-            const category = document.getElementById('task-category').value;
-            const location = document.getElementById('task-location').value;
-            const phone = document.getElementById('task-phone').value;
-            const paymentMethod = document.getElementById('payment-method').value;
-            const paymentNumber = document.getElementById('payment-number').value;
-            const description = document.getElementById('task-desc').value;
+    window.closeBookingModal = function () {
+      document.getElementById('booking-modal').classList.add('hidden');
+      selectedTaskForBooking = null;
+    };
 
-            try {
-                await addDoc(collection(db, "tasks"), {
-                    title,
-                    category,
-                    location,
-                    phone,
-                    paymentMethod,
-                    paymentNumber,
-                    description,
-                    status: 'Pending / In Progress',
-                    reviews: [],
-                    authorName: currentUser.displayName,
-                    authorEmail: currentUser.email,
-                    authorPhoto: currentUser.photoURL,
-                    createdAt: serverTimestamp()
-                });
+    window.selectPayMethod = function (method) {
+      selectedPaymentMethod = method;
+      document.querySelectorAll('.pay-btn').forEach(btn => {
+        const active = btn.dataset.pay === method;
+        btn.className = active
+          ? "pay-btn py-2 rounded-xl border-2 border-brand-600 bg-brand-50 dark:bg-brand-900/30 text-xs font-bold"
+          : "pay-btn py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-xs font-bold";
+      });
+      document.getElementById('trx-field').style.display = method === 'Cash' ? 'none' : 'block';
+    };
 
-                document.getElementById('task-form').reset();
-                prevStep();
-                loadTasks();
-                alert(currentLang === 'en' ? "Task Published Successfully!" : "কাজটি সফলভাবে পাবলিশ করা হয়েছে!");
-            } catch (error) {
-                console.error("Error adding task:", error);
-                alert("Failed to post task due to security rules.");
-            }
-        };
+    window.confirmTaskBooking = function () {
+      if (!selectedTaskForBooking) return;
+      const phone = document.getElementById('booking-phone').value.trim();
+      const trx = document.getElementById('booking-trx').value.trim();
 
-        // Load Tasks
-        async function loadTasks() {
-            try {
-                const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                allTasks = [];
-                querySnapshot.forEach((docSnap) => {
-                    allTasks.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderTasks(allTasks);
-            } catch (error) {
-                console.error("Error loading tasks:", error);
-                document.getElementById('tasks-container').innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-3xl text-center text-red-500 text-sm">Failed to load tasks. Check Firestore permissions.</div>`;
-            }
+      if (!phone) {
+        alert(currentLang === 'bn' ? "মোবাইল নম্বর দিন।" : "Please enter a phone number.");
+        return;
+      }
+      if (selectedPaymentMethod !== 'Cash' && !trx) {
+        alert(currentLang === 'bn' ? "পেমেন্টের TrxID দিন।" : "Please enter a payment TrxID.");
+        return;
+      }
+
+      bookings.unshift({
+        id: 'TSK-' + Math.floor(100000 + Math.random() * 900000),
+        taskTitle: selectedTaskForBooking.title,
+        budget: selectedTaskForBooking.budget,
+        phone,
+        method: selectedPaymentMethod,
+        trx: trx || 'COD'
+      });
+
+      localStorage.setItem('tasky_bookings', JSON.stringify(bookings));
+      renderBookings();
+      closeBookingModal();
+      document.getElementById('booking-phone').value = '';
+      document.getElementById('booking-trx').value = '';
+      alert(currentLang === 'bn' ? "বুকিং সফলভাবে রেকর্ড হয়েছে!" : "Booking confirmed!");
+    };
+
+    function renderBookings() {
+      const box = document.getElementById('bookings-list');
+      if (!bookings.length) {
+        box.textContent = currentLang === 'bn' ? 'এখনো কোনো বুকিং করা হয়নি।' : 'No bookings yet.';
+        return;
+      }
+      box.innerHTML = bookings.slice(0, 5).map(b => `
+        <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-gray-800 dark:text-gray-200">${escapeHtml(b.id)} • ${escapeHtml(b.method)}</div>
+            <div class="text-[11px] text-gray-500">${escapeHtml(b.taskTitle)} (${escapeHtml(b.phone)})</div>
+          </div>
+          <span class="font-bold text-green-600 dark:text-green-400">${escapeHtml(String(b.budget))}</span>
+        </div>
+      `).join('');
+    }
+
+    window.deleteTask = async function (taskId) {
+      if (confirm("Are you sure you want to delete this task?")) {
+        try {
+          await deleteDoc(doc(db, "tasks", taskId));
+        } catch (error) {
+          console.error("Error deleting task:", error);
+          alert("Unauthorized to delete this task.");
         }
+      }
+    };
 
-        // Filter by Category
-        window.filterCategory = function(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                if (btn.dataset.cat === cat) {
-                    btn.className = "cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition";
-                } else {
-                    btn.className = "cat-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition";
-                }
-            });
-            filterTasks();
-        };
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-        // Search & Filter
-        window.filterTasks = function() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const filtered = allTasks.filter(task => {
-                const matchesCat = (currentCategory === 'All' || task.category === currentCategory);
-                const matchesSearch = task.title.toLowerCase().includes(searchTerm) || task.description.toLowerCase().includes(searchTerm) || task.location.toLowerCase().includes(searchTerm);
-                return matchesCat && matchesSearch;
-            });
-            renderTasks(filtered);
-        };
-
-        // Render Tasks
-        function renderTasks(tasksToRender) {
-            const container = document.getElementById('tasks-container');
-            const countBadge = document.getElementById('task-count');
-            container.innerHTML = "";
-            countBadge.textContent = `${tasksToRender.length} Task${tasksToRender.length !== 1 ? 's' : ''}`;
-
-            if (tasksToRender.length === 0) {
-                container.innerHTML = `<div class="bg-white dark:bg-gray-800 p-12 rounded-3xl text-center text-gray-400 border border-gray-100 dark:border-gray-700 text-sm">No tasks matching your filter.</div>`;
-                return;
-            }
-
-            tasksToRender.forEach((task) => {
-                const isOwner = currentUser && currentUser.email === task.authorEmail;
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-brand-300 transition space-y-4";
-
-                let reviewsHtml = '';
-                if (task.reviews && task.reviews.length > 0) {
-                    task.reviews.forEach(rev => {
-                        reviewsHtml += `<div class="text-[11px] bg-gray-100 dark:bg-gray-900 p-2 rounded-lg mt-1"><strong>${escapeHtml(rev.user)}:</strong> ${escapeHtml(rev.comment)}</div>`;
-                    });
-                }
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start gap-2">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-300">${escapeHtml(task.category)}</span>
-                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-md ${task.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${escapeHtml(task.status || 'Active')}</span>
-                            </div>
-                            <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">${escapeHtml(task.title)}</h3>
-                        </div>
-                        ${isOwner ? `
-                        <div class="flex items-center space-x-1">
-                            <button onclick="markCompleted('${task.id}')" title="Mark Completed" class="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-xl transition"><i class="fa-solid fa-check-circle"></i></button>
-                            <button onclick="deleteTask('${task.id}')" title="Delete Task" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-gray-700 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
-                        </div>` : ''}
-                    </div>
-
-                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">${escapeHtml(task.description)}</p>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-                        <div class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-brand-500"></i> ${escapeHtml(task.location)}</div>
-                        <div class="flex items-center gap-1.5"><i class="fa-brands fa-whatsapp text-green-500"></i> ${escapeHtml(task.phone)}</div>
-                        <div class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-purple-500"></i> ${escapeHtml(task.paymentMethod || 'Cash')}</div>
-                    </div>
-
-                    <!-- Review Section -->
-                    <div class="pt-3 border-t border-gray-100 dark:border-gray-700">
-                        <div class="flex gap-2">
-                            <input type="text" id="rev-input-${task.id}" placeholder="Write a comment or offer..." class="flex-grow text-xs p-2 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 outline-none">
-                            <button onclick="addReview('${task.id}')" class="px-3 py-1.5 bg-brand-600 text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition">Send</button>
-                        </div>
-                        <div class="mt-2">${reviewsHtml}</div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // Owner Actions: Mark Completed & Delete
-        window.markCompleted = async function(id) {
-            try {
-                await updateDoc(doc(db, "tasks", id), { status: "Completed" });
-                loadTasks();
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        window.deleteTask = async function(id) {
-            if (!confirm("Are you sure you want to delete this task?")) return;
-            try {
-                await deleteDoc(doc(db, "tasks", id));
-                loadTasks();
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        // Add Review / Comment
-        window.addReview = async function(id) {
-            const input = document.getElementById(`rev-input-${id}`);
-            const comment = input.value.trim();
-            if (!comment || !currentUser) return;
-
-            try {
-                await updateDoc(doc(db, "tasks", id), {
-                    reviews: arrayUnion({
-                        user: currentUser.displayName || "User",
-                        comment: comment
-                    })
-                });
-                input.value = "";
-                loadTasks();
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-    </script>
+    renderBookings();
+  </script>
 </body>
 </html>
