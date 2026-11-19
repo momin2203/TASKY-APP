@@ -40,35 +40,49 @@
           </div>
           <div>
             <h1 class="text-lg font-extrabold">TASKY</h1>
-            <p class="text-[11px] text-slate-500">Free Service • WhatsApp Deal • AI Ready</p>
+            <p id="gate-sub" class="text-[11px] text-slate-500">Free Service • WhatsApp Deal • AI Ready</p>
           </div>
         </div>
-        <button onclick="toggleLang()" id="gate-lang-btn" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
+        <button type="button" onclick="toggleLang()" id="gate-lang-btn" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold">বাংলা</button>
       </div>
 
       <div class="flex gap-2 mb-4">
-        <button onclick="setAuthMode('signin')" id="tab-signin" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-brand-600 text-white">Sign In</button>
-        <button onclick="setAuthMode('signup')" id="tab-signup" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Sign Up</button>
+        <button type="button" onclick="setAuthMode('signin')" id="tab-signin" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-brand-600 text-white">Sign In</button>
+        <button type="button" onclick="setAuthMode('signup')" id="tab-signup" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Sign Up</button>
       </div>
 
       <div class="space-y-3">
         <div id="signup-name-box" class="hidden">
-          <input type="text" id="otp-fullname" placeholder="Full Name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+          <label id="lbl-fullname" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Full Name</label>
+          <input type="text" id="otp-fullname" placeholder="Enter full name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
-        <select id="otp-channel" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
-          <option value="phone">Mobile Number (OTP)</option>
-          <option value="email">Gmail / Email (OTP)</option>
-        </select>
-        <input type="text" id="otp-contact" placeholder="01XXXXXXXXX or example@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
-        <button onclick="sendOtpCode()" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs">Send OTP</button>
+
+        <div>
+          <label id="lbl-channel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">OTP Method</label>
+          <select id="otp-channel" onchange="updateContactPlaceholder()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+            <option value="email">Gmail / Email (OTP)</option>
+            <option value="phone">Mobile Number (OTP)</option>
+          </select>
+        </div>
+
+        <div>
+          <label id="lbl-contact" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Gmail or Mobile Number</label>
+          <input type="text" id="otp-contact" placeholder="example@gmail.com or 01XXXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+        </div>
+
+        <button type="button" onclick="sendOtpCode()" id="send-otp-btn" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i><span>Send OTP</span>
+        </button>
 
         <div id="otp-verify-box" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-          <p id="otp-demo-hint" class="text-[11px] text-emerald-500 font-semibold"></p>
-          <input type="text" id="otp-input" maxlength="6" placeholder="6-digit OTP" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold text-center">
-          <button onclick="verifyOtpAndLogin()" class="w-full py-2.5 rounded-xl bg-brand-600 text-white font-extrabold text-xs">Verify &amp; Enter</button>
+          <p id="otp-demo-hint" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"></p>
+          <input type="text" id="otp-input" maxlength="6" placeholder="6-digit OTP" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
+          <button type="button" onclick="verifyOtpAndLogin()" id="verify-otp-btn" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs">
+            Verify &amp; Enter
+          </button>
         </div>
 
-        <button onclick="loginWithGoogleAuth()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-xs flex items-center justify-center gap-2">
+        <button type="button" onclick="loginWithGoogleAuth()" id="google-login-btn" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs flex items-center justify-center gap-2">
           <i class="fa-brands fa-google text-brand-600"></i><span>Continue with Google</span>
         </button>
       </div>
@@ -92,13 +106,13 @@
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">
-        <button onclick="toggleLang()" id="lang-btn" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
-        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center" title="Settings &amp; AI">
+        <button type="button" onclick="toggleLang()" id="lang-btn" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
+        <button type="button" onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center" title="Settings &amp; AI">
           <i class="fa-solid fa-sliders text-xs text-brand-600"></i>
         </button>
         <div id="user-profile" class="hidden flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 pl-1 pr-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           <img id="user-avatar" src="https://via.placeholder.com/150" alt="User" class="w-6 h-6 rounded-full object-cover">
-          <button onclick="logoutAll()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Logout">
+          <button type="button" onclick="logoutAll()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Logout">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
@@ -118,7 +132,7 @@
           </span>
           <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">Smart Home Services &amp; Emergency Help</h1>
         </div>
-        <button onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
+        <button type="button" onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
           <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
           <span id="emergency-lbl">Emergency</span>
         </button>
@@ -131,7 +145,7 @@
 
       <div class="flex items-center justify-between gap-2 text-[11px] bg-black/15 rounded-xl px-3 py-2">
         <span id="loc-status-text" class="truncate">Location tracking off</span>
-        <button onclick="trackCurrentLocation()" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold shrink-0">
+        <button type="button" onclick="trackCurrentLocation()" id="track-now-btn" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold shrink-0">
           <i class="fa-solid fa-location-crosshairs mr-1"></i>Track Now
         </button>
       </div>
@@ -139,15 +153,15 @@
 
     <!-- Categories -->
     <section class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-      <button onclick="filterCategory('All')" data-cat="All" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shrink-0">All</button>
-      <button onclick="filterCategory('Electrical')" data-cat="Electrical" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Electrical</button>
-      <button onclick="filterCategory('Plumbing')" data-cat="Plumbing" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Plumbing</button>
-      <button onclick="filterCategory('AC')" data-cat="AC" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">AC Tech</button>
-      <button onclick="filterCategory('Carpenter')" data-cat="Carpenter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Carpenter</button>
-      <button onclick="filterCategory('Painter')" data-cat="Painter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Painter</button>
+      <button type="button" onclick="filterCategory('All')" data-cat="All" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shrink-0">All</button>
+      <button type="button" onclick="filterCategory('Electrical')" data-cat="Electrical" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Electrical</button>
+      <button type="button" onclick="filterCategory('Plumbing')" data-cat="Plumbing" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Plumbing</button>
+      <button type="button" onclick="filterCategory('AC')" data-cat="AC" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">AC Tech</button>
+      <button type="button" onclick="filterCategory('Carpenter')" data-cat="Carpenter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Carpenter</button>
+      <button type="button" onclick="filterCategory('Painter')" data-cat="Painter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Painter</button>
     </section>
 
-    <!-- Tab 1: Free Tasks Feed (No money numbers shown) -->
+    <!-- Tab 1: Free Tasks Feed -->
     <section id="tab-home" class="space-y-3">
       <div class="flex items-center justify-between">
         <h2 id="feed-heading" class="text-base font-extrabold">Free Service Requests</h2>
@@ -166,24 +180,24 @@
   <!-- Bottom Navigation -->
   <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-40">
     <div class="max-w-md mx-auto px-6 py-2 flex items-center justify-between">
-      <button onclick="switchMobileTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-brand-600 font-bold text-[11px]">
+      <button type="button" onclick="switchMobileTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-brand-600 font-bold text-[11px]">
         <i class="fa-solid fa-house text-base"></i><span id="nav-home-lbl">Home</span>
       </button>
-      <button onclick="openPostModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg -mt-5 border-4 border-slate-50 dark:border-slate-950">
+      <button type="button" onclick="openPostModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg -mt-5 border-4 border-slate-50 dark:border-slate-950">
         <i class="fa-solid fa-plus"></i><span id="nav-post-lbl">Post Free</span>
       </button>
-      <button onclick="switchMobileTab('deals')" id="nav-deals" class="flex flex-col items-center gap-0.5 text-slate-500 font-semibold text-[11px]">
+      <button type="button" onclick="switchMobileTab('deals')" id="nav-deals" class="flex flex-col items-center gap-0.5 text-slate-500 font-semibold text-[11px]">
         <i class="fa-solid fa-comments text-base"></i><span id="nav-deals-lbl">Deals</span>
       </button>
     </div>
   </nav>
 
-  <!-- Post Free Task Modal (No amount field) -->
+  <!-- Post Free Task Modal -->
   <div id="post-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-base font-extrabold">Post Free Service Request</h3>
-        <button onclick="closePostModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
+        <button type="button" onclick="closePostModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
       <form id="task-form" onsubmit="handleAddTask(event)" class="space-y-3">
         <input type="text" id="task-title" required placeholder="Service Title (e.g., AC Leak Fix)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
@@ -208,18 +222,18 @@
     </div>
   </div>
 
-  <!-- Message Deal & Booking Modal (Deal via message + WhatsApp price negotiation) -->
+  <!-- Message Deal & Booking Modal -->
   <div id="deal-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-base font-extrabold">Book via Message &amp; WhatsApp Deal</h3>
-        <button onclick="closeDealModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
+        <button type="button" onclick="closeDealModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
       <p id="deal-task-info" class="text-xs bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl mb-3"></p>
       <div class="space-y-2.5">
         <textarea id="deal-message" rows="3" placeholder="Write your deal message (time, work details, price discussion on WhatsApp)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
-        <button onclick="confirmMessageDeal(false)" class="w-full bg-brand-600 text-white font-bold py-2.5 rounded-xl text-xs">Send Deal Message &amp; Book</button>
-        <button onclick="confirmMessageDeal(true)" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
+        <button type="button" onclick="confirmMessageDeal(false)" class="w-full bg-brand-600 text-white font-bold py-2.5 rounded-xl text-xs">Send Deal Message &amp; Book</button>
+        <button type="button" onclick="confirmMessageDeal(true)" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
           <i class="fa-brands fa-whatsapp text-sm"></i><span>Book &amp; Deal Price on WhatsApp</span>
         </button>
       </div>
@@ -233,111 +247,198 @@
         <h3 class="text-base font-extrabold flex items-center gap-2">
           <i class="fa-solid fa-sliders text-brand-600"></i><span>Settings &amp; AI System</span>
         </h3>
-        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
+        <button type="button" onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
 
-      <!-- Appearance & Location Settings -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
         <div class="font-bold">App Settings</div>
         <div class="flex items-center justify-between">
           <span>Dark Mode</span>
-          <button onclick="toggleDarkMode()" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">Toggle Theme</button>
+          <button type="button" onclick="toggleDarkMode()" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">Toggle Theme</button>
         </div>
         <div class="flex items-center justify-between">
           <span>Live Location Tracking</span>
-          <button onclick="trackCurrentLocation()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">Update GPS</button>
+          <button type="button" onclick="trackCurrentLocation()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">Update GPS</button>
         </div>
       </div>
 
-      <!-- Modern AI Assistant -->
       <div class="p-3.5 rounded-2xl bg-gradient-to-br from-brand-50 to-amber-50 dark:from-slate-900 dark:to-slate-950 border border-brand-200/70 dark:border-slate-800 space-y-2.5">
         <div class="flex items-center gap-2 text-xs font-extrabold text-brand-700 dark:text-brand-400">
           <i class="fa-solid fa-wand-magic-sparkles"></i><span>TASKY Smart AI Assistant</span>
         </div>
         <p class="text-[11px] text-slate-600 dark:text-slate-400">Describe your issue to get category, emergency check &amp; WhatsApp deal message.</p>
         <input type="text" id="ai-prompt-input" placeholder="e.g., AC water leaking urgent at night..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
-        <button onclick="runTaskyAi()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-bold text-xs">Generate AI Suggestion</button>
+        <button type="button" onclick="runTaskyAi()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-bold text-xs">Generate AI Suggestion</button>
         <div id="ai-output-box" class="hidden p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs space-y-1.5"></div>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { db } from "./src/config/firebase-config.js";
-    import { setAuthMode, sendOtpCode, verifyOtpAndLogin, loginWithGoogleAuth, logoutAll, initAuthGate } from "./src/auth/otp-auth.js";
-    import { getUserLocation, formatLocationLabel } from "./src/location/location-tracker.js";
-    import { saveMessageDeal, renderMessageDeals, buildWhatsAppDealUrl } from "./src/deals/message-deal.js";
-    import { analyzeServiceWithAi } from "./src/ai/smart-ai.js";
-
-    let currentUser = null;
-    let allTasks = [];
-    let currentCategory = "All";
-    let emergencyOnly = false;
-    let currentLang = "en";
-    let currentLocation = null;
+  <!-- Standalone Core UI & Auth Script (Guaranteed to work even if module path has any issue) -->
+  <script>
+    let generatedOtp = null;
+    let pendingOtpTarget = null;
+    let pendingMode = "signin";
+    let currentLang = localStorage.getItem("tasky_lang") || "en";
+    let currentLocation = JSON.parse(localStorage.getItem("tasky_last_location") || "null");
+    let deals = JSON.parse(localStorage.getItem("tasky_message_deals") || "[]");
     let selectedTaskForDeal = null;
-    let unsubscribeTasks = null;
+    let emergencyOnly = false;
+    let currentCategory = "All";
+    let allTasks = [];
 
     function escapeHtml(str) {
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    // Auth
-    window.setAuthMode = setAuthMode;
-    window.sendOtpCode = sendOtpCode;
-    window.verifyOtpAndLogin = () => verifyOtpAndLogin((u) => applyUserSession(u));
-    window.loginWithGoogleAuth = async () => { await loginWithGoogleAuth(); };
-    window.logoutAll = async () => { await logoutAll(() => applyUserSession(null)); };
+    window.setAuthMode = function (mode) {
+      pendingMode = mode;
+      const isSignup = mode === "signup";
+      document.getElementById("tab-signin").className = !isSignup
+        ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-brand-600 text-white"
+        : "flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
+      document.getElementById("tab-signup").className = isSignup
+        ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-brand-600 text-white"
+        : "flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
+      document.getElementById("signup-name-box").classList.toggle("hidden", !isSignup);
+    };
 
-    function applyUserSession(user) {
-      currentUser = user;
+    window.updateContactPlaceholder = function () {
+      const ch = document.getElementById("otp-channel").value;
+      const inp = document.getElementById("otp-contact");
+      if (ch === "email") {
+        inp.placeholder = currentLang === "bn" ? "example@gmail.com" : "example@gmail.com";
+      } else {
+        inp.placeholder = currentLang === "bn" ? "01XXXXXXXXX বা +9715XXXXXXXX" : "01XXXXXXXXX or +9715XXXXXXXX";
+      }
+    };
+
+    window.sendOtpCode = function () {
+      const channel = document.getElementById("otp-channel").value;
+      const contact = document.getElementById("otp-contact").value.trim();
+      const fullName = document.getElementById("otp-fullname").value.trim();
+
+      if (!contact) {
+        alert(currentLang === "bn"
+          ? (channel === "phone" ? "মোবাইল নম্বর দিন।" : "জিমেইল অ্যাড্রেস দিন।")
+          : (channel === "phone" ? "Please enter mobile number." : "Please enter Gmail address."));
+        return;
+      }
+      if (pendingMode === "signup" && !fullName) {
+        alert(currentLang === "bn" ? "সাইন আপ করতে আপনার নাম লিখুন।" : "Please enter your name to sign up.");
+        return;
+      }
+
+      generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+      pendingOtpTarget = {
+        channel,
+        contact,
+        name: fullName || contact.split("@")[0]
+      };
+
+      document.getElementById("otp-verify-box").classList.remove("hidden");
+      document.getElementById("otp-demo-hint").textContent = currentLang === "bn"
+        ? `OTP পাঠানো হয়েছে (${contact}) — কোড: ${generatedOtp}`
+        : `OTP sent to (${contact}) — Code: ${generatedOtp}`;
+    };
+
+    window.verifyOtpAndLogin = function () {
+      const entered = document.getElementById("otp-input").value.trim();
+      if (!generatedOtp || entered !== generatedOtp) {
+        alert(currentLang === "bn" ? "সঠিক ৬ ডিজিটের OTP কোড দিন।" : "Please enter the valid 6-digit OTP.");
+        return;
+      }
+
+      const sessionUser = {
+        displayName: pendingOtpTarget.name,
+        email: pendingOtpTarget.channel === "email" ? pendingOtpTarget.contact : "",
+        phoneNumber: pendingOtpTarget.channel === "phone" ? pendingOtpTarget.contact : "",
+        photoURL: "https://via.placeholder.com/150"
+      };
+      localStorage.setItem("tasky_otp_user", JSON.stringify(sessionUser));
+      generatedOtp = null;
+      document.getElementById("otp-input").value = "";
+      document.getElementById("otp-verify-box").classList.add("hidden");
+      applyLocalSession(sessionUser);
+    };
+
+    window.logoutAll = function () {
+      localStorage.removeItem("tasky_otp_user");
+      applyLocalSession(null);
+    };
+
+    function applyLocalSession(user) {
       const gate = document.getElementById("auth-gate");
       const profile = document.getElementById("user-profile");
       if (user) {
         gate.classList.add("hidden");
         profile.classList.remove("hidden");
         document.getElementById("user-avatar").src = user.photoURL || "https://via.placeholder.com/150";
-        startTasksStream();
-        trackCurrentLocation();
+        window.dispatchEvent(new CustomEvent("tasky:authenticated", { detail: user }));
       } else {
         gate.classList.remove("hidden");
         profile.classList.add("hidden");
       }
     }
-    initAuthGate(applyUserSession);
 
-    // Location Tracking
-    window.trackCurrentLocation = async function () {
-      document.getElementById("loc-status-text").textContent = "Tracking GPS location...";
-      try {
-        currentLocation = await getUserLocation();
-        const label = formatLocationLabel(currentLocation);
-        document.getElementById("live-loc-badge").textContent = `📍 ${label}`;
-        document.getElementById("loc-status-text").textContent = `Tracked: ${label}`;
-      } catch (err) {
-        document.getElementById("loc-status-text").textContent = "Location permission needed";
-      }
+    window.toggleLang = function () {
+      currentLang = currentLang === "en" ? "bn" : "en";
+      localStorage.setItem("tasky_lang", currentLang);
+      const isBn = currentLang === "bn";
+
+      document.getElementById("lang-btn").textContent = isBn ? "English" : "বাংলা";
+      document.getElementById("gate-lang-btn").textContent = isBn ? "English" : "বাংলা";
+      document.getElementById("tab-signin").textContent = isBn ? "লগইন" : "Sign In";
+      document.getElementById("tab-signup").textContent = isBn ? "সাইন আপ" : "Sign Up";
+      document.getElementById("send-otp-btn").innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>${isBn ? "OTP পাঠান" : "Send OTP"}</span>`;
+      document.getElementById("verify-otp-btn").textContent = isBn ? "ভেরিফাই ও প্রবেশ করুন" : "Verify & Enter";
+      document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-brand-600"></i><span>${isBn ? "গুগল দিয়ে চালিয়ে যান" : "Continue with Google"}</span>`;
+      document.getElementById("hero-title").textContent = isBn ? "ফ্রি সার্ভিস, ইমারজেন্সি ও সরাসরি মেসেজ ডিল" : "Smart Home Services & Emergency Help";
+      document.getElementById("feed-heading").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট" : "Free Service Requests";
+      document.getElementById("deals-heading").textContent = isBn ? "মেসেজ ডিল ও বুকিং" : "Message Deals & Bookings";
+      document.getElementById("nav-home-lbl").textContent = isBn ? "হোম" : "Home";
+      document.getElementById("nav-post-lbl").textContent = isBn ? "ফ্রি পোস্ট" : "Post Free";
+      document.getElementById("nav-deals-lbl").textContent = isBn ? "ডিল" : "Deals";
+      document.getElementById("emergency-lbl").textContent = isBn ? "ইমারজেন্সি" : "Emergency";
+      renderDealsList();
+      renderTasksList(getFilteredTasks());
     };
 
-    // Theme & Language
     window.toggleDarkMode = function () {
       const isDark = document.documentElement.classList.toggle("dark");
       localStorage.setItem("theme", isDark ? "dark" : "light");
     };
     if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark");
 
-    window.toggleLang = function () {
-      currentLang = currentLang === "en" ? "bn" : "en";
-      const isBn = currentLang === "bn";
-      document.getElementById("lang-btn").textContent = isBn ? "English" : "বাংলা";
-      document.getElementById("gate-lang-btn").textContent = isBn ? "English" : "বাংলা";
-      document.getElementById("hero-title").textContent = isBn ? "ফ্রি সার্ভিস, ইমারজেন্সি ও সরাসরি মেসেজ ডিল" : "Smart Home Services & Emergency Help";
-      document.getElementById("nav-home-lbl").textContent = isBn ? "হোম" : "Home";
-      document.getElementById("nav-post-lbl").textContent = isBn ? "ফ্রি পোস্ট" : "Post Free";
-      document.getElementById("nav-deals-lbl").textContent = isBn ? "ডিল" : "Deals";
-      renderMessageDeals(currentLang, escapeHtml);
-      filterTasks();
+    window.trackCurrentLocation = function () {
+      const statusEl = document.getElementById("loc-status-text");
+      const badgeEl = document.getElementById("live-loc-badge");
+      statusEl.textContent = currentLang === "bn" ? "লোকেশন ট্র্যাক করা হচ্ছে..." : "Tracking GPS location...";
+      if (!navigator.geolocation) {
+        statusEl.textContent = currentLang === "bn" ? "এই ডিভাইসে GPS সাপোর্ট নেই" : "Geolocation unsupported";
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          currentLocation = {
+            lat: Number(pos.coords.latitude.toFixed(5)),
+            lng: Number(pos.coords.longitude.toFixed(5))
+          };
+          localStorage.setItem("tasky_last_location", JSON.stringify(currentLocation));
+          const txt = `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
+          badgeEl.textContent = `📍 ${txt}`;
+          statusEl.textContent = currentLang === "bn" ? `ট্র্যাকড: ${txt}` : `Tracked: ${txt}`;
+        },
+        () => {
+          statusEl.textContent = currentLang === "bn" ? "লোকেশন অনুমতি দিন" : "Location permission needed";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
     };
 
     window.switchMobileTab = function (tab) {
@@ -346,7 +447,7 @@
       if (tab === "deals") {
         homeSec.classList.add("hidden", "md:block");
         dealSec.classList.remove("hidden");
-        renderMessageDeals(currentLang, escapeHtml);
+        renderDealsList();
       } else {
         homeSec.classList.remove("hidden");
         dealSec.classList.add("hidden", "md:block");
@@ -358,47 +459,12 @@
     window.openSettingsModal = () => document.getElementById("settings-modal").classList.remove("hidden");
     window.closeSettingsModal = () => document.getElementById("settings-modal").classList.add("hidden");
 
-    // Tasks Stream (Free model — no budget numbers displayed)
-    function startTasksStream() {
-      if (unsubscribeTasks) unsubscribeTasks();
-      const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
-      unsubscribeTasks = onSnapshot(q, (snap) => {
-        allTasks = [];
-        snap.forEach((d) => allTasks.push({ id: d.id, ...d.data() }));
-        filterTasks();
-      });
-    }
-
-    window.handleAddTask = async function (e) {
-      e.preventDefault();
-      if (!currentUser) return;
-      const title = document.getElementById("task-title").value.trim();
-      const category = document.getElementById("task-category").value;
-      const whatsapp = document.getElementById("task-whatsapp").value.trim();
-      const isEmergency = document.getElementById("task-emergency").checked;
-      const description = document.getElementById("task-desc").value.trim();
-
-      await addDoc(collection(db, "tasks"), {
-        title,
-        category,
-        whatsapp,
-        isEmergency,
-        description,
-        location: currentLocation ? formatLocationLabel(currentLocation) : "Not shared",
-        authorName: currentUser.displayName,
-        createdAt: serverTimestamp()
-      });
-      document.getElementById("task-form").reset();
-      closePostModal();
-    };
-
     window.toggleEmergencyFilter = function () {
       emergencyOnly = !emergencyOnly;
-      const btn = document.getElementById("emergency-btn");
-      btn.className = emergencyOnly
+      document.getElementById("emergency-btn").className = emergencyOnly
         ? "px-3 py-2 rounded-xl bg-white text-red-600 border border-white text-xs font-extrabold flex items-center gap-1.5 shadow-md"
         : "px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md";
-      filterTasks();
+      renderTasksList(getFilteredTasks());
     };
 
     window.filterCategory = function (cat) {
@@ -408,33 +474,39 @@
           ? "cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shrink-0"
           : "cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0";
       });
-      filterTasks();
+      renderTasksList(getFilteredTasks());
     };
 
     window.filterTasks = function () {
-      const term = document.getElementById("search-input").value.toLowerCase();
-      const filtered = allTasks.filter((t) => {
+      renderTasksList(getFilteredTasks());
+    };
+
+    function getFilteredTasks() {
+      const term = (document.getElementById("search-input").value || "").toLowerCase();
+      return allTasks.filter((t) => {
         const matchCat = currentCategory === "All" || (t.category || "General") === currentCategory;
         const matchEmerg = !emergencyOnly || Boolean(t.isEmergency);
         const matchSearch = (t.title || "").toLowerCase().includes(term) || (t.description || "").toLowerCase().includes(term);
         return matchCat && matchEmerg && matchSearch;
       });
-      renderTasks(filtered);
+    }
+
+    window.setLiveTasksData = function (list) {
+      allTasks = Array.isArray(list) ? list : [];
+      renderTasksList(getFilteredTasks());
     };
 
-    function renderTasks(tasks) {
+    function renderTasksList(tasks) {
       const container = document.getElementById("tasks-container");
-      document.getElementById("task-count").textContent = `${tasks.length} Tasks`;
+      document.getElementById("task-count").textContent = `${tasks.length} ${currentLang === "bn" ? "টি কাজ" : "Tasks"}`;
       if (!tasks.length) {
-        container.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-8 rounded-2xl text-center text-xs text-slate-400">No free service requests found.</div>`;
+        container.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-8 rounded-2xl text-center text-xs text-slate-400">${currentLang === "bn" ? "কোনো ফ্রি সার্ভিস রিকোয়েস্ট পাওয়া যায়নি।" : "No free service requests found."}</div>`;
         return;
       }
-
       container.innerHTML = tasks.map((task) => {
-        const emergBadge = task.isEmergency
+        const badge = task.isEmergency
           ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">EMERGENCY</span>`
-          : `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">FREE POST</span>`;
-
+          : `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">FREE</span>`;
         return `
           <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
             <div>
@@ -442,7 +514,7 @@
                 <div>
                   <div class="flex items-center gap-1.5 mb-0.5">
                     <span class="text-[10px] font-extrabold uppercase text-brand-600">${escapeHtml(task.category || "General")}</span>
-                    ${emergBadge}
+                    ${badge}
                   </div>
                   <h3 class="text-sm font-extrabold">${escapeHtml(task.title || "")}</h3>
                 </div>
@@ -453,8 +525,8 @@
             </div>
             <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
               <span class="text-[11px] text-slate-500">${escapeHtml(task.authorName || "User")}</span>
-              <button onclick="openDealModal('${escapeHtml(task.id)}')" class="px-3.5 py-1.5 rounded-lg bg-brand-600 text-white text-[11px] font-bold">
-                Message &amp; Book
+              <button type="button" onclick="openDealModal('${escapeHtml(task.id)}')" class="px-3.5 py-1.5 rounded-lg bg-brand-600 text-white text-[11px] font-bold">
+                ${currentLang === "bn" ? "মেসেজ ও বুক" : "Message & Book"}
               </button>
             </div>
           </div>
@@ -462,8 +534,7 @@
       }).join("");
     }
 
-    // Message Deal & WhatsApp
-    window.openDealModal = (id) => {
+    window.openDealModal = function (id) {
       const task = allTasks.find((t) => t.id === id);
       if (!task) return;
       selectedTaskForDeal = task;
@@ -473,41 +544,9 @@
     };
     window.closeDealModal = () => document.getElementById("deal-modal").classList.add("hidden");
 
-    window.confirmMessageDeal = async function (openWhatsApp) {
+    window.confirmMessageDeal = function (openWhatsApp) {
       if (!selectedTaskForDeal) return;
-      const msg = document.getElementById("deal-message").value.trim() || "Interested in this service. Let's finalize details.";
-      await saveMessageDeal({
-        task: selectedTaskForDeal,
-        messageText: msg,
-        senderName: currentUser?.displayName || "User",
-        locationText: currentLocation ? formatLocationLabel(currentLocation) : "",
-        lang: currentLang,
-        escapeHtml
-      });
-
-      if (openWhatsApp && selectedTaskForDeal.whatsapp) {
-        const url = buildWhatsAppDealUrl(selectedTaskForDeal.whatsapp, selectedTaskForDeal.title, msg);
-        window.open(url, "_blank");
-      }
-
-      closeDealModal();
-      alert(currentLang === "bn" ? "মেসেজ ডিল রেকর্ড হয়েছে!" : "Deal message sent & booked!");
-    };
-
-    // AI Assistant
-    window.runTaskyAi = function () {
-      const prompt = document.getElementById("ai-prompt-input").value.trim();
-      if (!prompt) return;
-      const res = analyzeServiceWithAi(prompt);
-      const box = document.getElementById("ai-output-box");
-      box.classList.remove("hidden");
-      box.innerHTML = `
-        <div><strong>Category:</strong> ${escapeHtml(res.category)} ${res.isEmergency ? '<span class="text-red-600 font-bold">(Emergency Detected)</span>' : ''}</div>
-        <div><strong>Suggested Deal Message:</strong> ${escapeHtml(res.suggestedMessage)}</div>
-      `;
-    };
-
-    renderMessageDeals(currentLang, escapeHtml);
-  </script>
-</body>
-</html>
+      const msg = document.getElementById("deal-message").value.trim() || "Interested in this free service. Let's finalize details.";
+      const record = {
+        id: "DEAL-" + Math.floor(100000 + Math.random() * 900000),
+        taskTitle: selectedTaskForDeal
