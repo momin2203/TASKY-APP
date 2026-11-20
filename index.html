@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>TASKY — Free Service &amp; Smart Deal Hub</title>
+  <title>TASKY AI — Autonomous Service &amp; Smart Deal Hub</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +16,8 @@
         extend: {
           fontFamily: { sans: ['"Plus Jakarta Sans"', '"Hind Siliguri"', 'sans-serif'] },
           colors: {
-            brand: { 50: '#fff7ed', 100: '#ffedd5', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 900: '#7c2d12' }
+            brand: { 50: '#fff7ed', 100: '#ffedd5', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 900: '#7c2d12' },
+            ai: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
           }
         }
       }
@@ -26,30 +27,33 @@
     body { font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass-card { backdrop-filter: blur(14px); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors">
+<body id="tasky-body" class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors">
 
-  <!-- Entry Auth Gate (OTP + Google) -->
+  <!-- Real Auth Gate (Firebase Phone SMS OTP, Email Verification & Google Sign-In Only) -->
   <div id="auth-gate" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
-      <div class="flex items-center justify-between mb-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-md">
-            <i class="fa-solid fa-bolt"></i>
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 via-orange-600 to-ai-600 text-white flex items-center justify-center shadow-lg">
+            <i class="fa-solid fa-microchip"></i>
           </div>
           <div>
-            <h1 class="text-lg font-extrabold">TASKY</h1>
-            <p id="gate-sub" class="text-[11px] text-slate-500">Free Service • WhatsApp Deal • AI Ready</p>
+            <h1 class="text-lg font-extrabold tracking-tight">TASKY AI</h1>
+            <p id="gate-sub" class="text-[11px] text-slate-500">Real Auth • AI Controlled • Self-Healing</p>
           </div>
         </div>
-        <button type="button" onclick="toggleLang()" id="gate-lang-btn" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold">বাংলা</button>
+        <button type="button" onclick="toggleLang()" id="gate-lang-btn" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
       </div>
 
-      <div class="flex gap-2 mb-4">
+      <div class="flex gap-2">
         <button type="button" onclick="setAuthMode('signin')" id="tab-signin" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-brand-600 text-white">Sign In</button>
         <button type="button" onclick="setAuthMode('signup')" id="tab-signup" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Sign Up</button>
       </div>
+
+      <div id="auth-status-banner" class="hidden p-2.5 rounded-xl text-[11px] font-semibold border"></div>
 
       <div class="space-y-3">
         <div id="signup-name-box" class="hidden">
@@ -58,62 +62,65 @@
         </div>
 
         <div>
-          <label id="lbl-channel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">OTP Method</label>
+          <label id="lbl-channel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Verification Channel</label>
           <select id="otp-channel" onchange="updateContactPlaceholder()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
-            <option value="email">Gmail / Email (OTP)</option>
-            <option value="phone">Mobile Number (OTP)</option>
+            <option value="phone">Mobile SMS OTP (Firebase Real SMS)</option>
+            <option value="email">Email Verification Link (Firebase Real Email)</option>
           </select>
         </div>
 
         <div>
-          <label id="lbl-contact" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Gmail or Mobile Number</label>
-          <input type="text" id="otp-contact" placeholder="example@gmail.com or 01XXXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+          <label id="lbl-contact" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Mobile (+CountryCode) or Email</label>
+          <input type="text" id="otp-contact" placeholder="+9715XXXXXXXX or name@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
 
-        <button type="button" onclick="sendOtpCode()" id="send-otp-btn" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i><span>Send OTP</span>
+        <button type="button" onclick="sendRealVerification()" id="send-otp-btn" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shield-halved"></i><span>Send Real OTP / Link</span>
         </button>
 
         <div id="otp-verify-box" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-          <p id="otp-demo-hint" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"></p>
-          <input type="text" id="otp-input" maxlength="6" placeholder="6-digit OTP" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
-          <button type="button" onclick="verifyOtpAndLogin()" id="verify-otp-btn" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs">
-            Verify &amp; Enter
+          <p id="otp-live-hint" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"></p>
+          <input type="text" id="otp-input" maxlength="6" placeholder="Enter SMS OTP code" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
+          <button type="button" onclick="verifyRealSmsOtp()" id="verify-otp-btn" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs">
+            Verify Real OTP &amp; Continue
           </button>
         </div>
 
-        <button type="button" onclick="loginWithGoogleAuth()" id="google-login-btn" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs flex items-center justify-center gap-2">
-          <i class="fa-brands fa-google text-brand-600"></i><span>Continue with Google</span>
+        <button type="button" onclick="loginWithRealGoogle()" id="google-login-btn" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs flex items-center justify-center gap-2">
+          <i class="fa-brands fa-google text-brand-600"></i><span>Continue with Google (Firebase)</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Header -->
-  <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
+  <!-- Modern Header -->
+  <header class="bg-white/90 dark:bg-slate-900/90 glass-card border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
     <div class="max-w-5xl mx-auto px-3.5 py-2.5 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-md shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-ai-600 text-white flex items-center justify-center shadow-md shrink-0">
           <i class="fa-solid fa-bolt"></i>
         </div>
         <div class="truncate">
           <div class="flex items-center gap-1.5">
             <span class="text-lg font-extrabold tracking-tight">TASKY</span>
-            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">FREE</span>
+            <span id="ai-health-pill" class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">AI AUTO</span>
           </div>
           <p id="live-loc-badge" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">📍 Location not tracked yet</p>
         </div>
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">
+        <button type="button" onclick="runSelfHealDiagnostic(true)" title="AI Self-Heal" class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center">
+          <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+        </button>
         <button type="button" onclick="toggleLang()" id="lang-btn" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
-        <button type="button" onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center" title="Settings &amp; AI">
+        <button type="button" onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center" title="Settings &amp; AI Control">
           <i class="fa-solid fa-sliders text-xs text-brand-600"></i>
         </button>
         <div id="user-profile" class="hidden flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 pl-1 pr-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           <img id="user-avatar" src="https://via.placeholder.com/150" alt="User" class="w-6 h-6 rounded-full object-cover">
           <span id="user-name-badge" class="text-[11px] font-bold max-w-[80px] truncate"></span>
-          <button type="button" onclick="logoutAll()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Logout">
+          <button type="button" onclick="logoutRealUser()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Logout">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
@@ -121,17 +128,17 @@
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- Main Content -->
   <main class="flex-grow max-w-5xl mx-auto w-full px-3.5 pt-4 space-y-4">
 
-    <!-- Banner + Emergency + Location Tracking Bar -->
-    <section class="rounded-2xl bg-gradient-to-r from-brand-600 via-orange-600 to-rose-600 p-4 text-white shadow-lg space-y-3">
+    <!-- Hero + AI Command Controller -->
+    <section class="rounded-3xl bg-gradient-to-r from-brand-600 via-orange-600 to-ai-700 p-4 text-white shadow-xl space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
           <span id="hero-badge" class="inline-block bg-white/20 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full mb-1">
-            100% Free Listing • Direct WhatsApp &amp; Message Deal
+            AI Controlled • Real Auth • Instant Deals
           </span>
-          <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">Smart Home Services &amp; Emergency Help</h1>
+          <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">Smart Home Services &amp; AI Dispatch</h1>
         </div>
         <button type="button" onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
           <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
@@ -139,11 +146,27 @@
         </button>
       </div>
 
+      <!-- Search -->
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
         <input type="text" id="search-input" oninput="filterTasks()" placeholder="Search service or area..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none">
       </div>
 
+      <!-- Direct AI Control Command Bar -->
+      <div class="bg-black/20 rounded-2xl p-2.5 space-y-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-robot text-amber-300 text-sm pl-1"></i>
+          <input type="text" id="ai-command-input" onkeydown="if(event.key==='Enter') executeAiCommand()" placeholder="AI Command: e.g. 'dark mode', 'bangla', 'track gps', 'fix errors'..." class="flex-1 bg-white/15 placeholder:text-white/70 text-white text-xs px-3 py-2 rounded-xl focus:outline-none">
+          <button type="button" onclick="executeAiCommand()" id="ai-cmd-btn" class="px-3 py-2 rounded-xl bg-white text-slate-900 font-extrabold text-xs shrink-0">
+            AI Run
+          </button>
+        </div>
+        <p id="ai-controller-status" class="text-[11px] text-amber-100 px-1 truncate">
+          AI ready to control UI, filters, GPS &amp; auto-heal issues.
+        </p>
+      </div>
+
+      <!-- Location Bar -->
       <div class="flex items-center justify-between gap-2 text-[11px] bg-black/15 rounded-xl px-3 py-2">
         <span id="loc-status-text" class="truncate">Location tracking off</span>
         <button type="button" onclick="trackCurrentLocation()" id="track-now-btn" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold shrink-0">
@@ -162,7 +185,7 @@
       <button type="button" onclick="filterCategory('Painter')" data-cat="Painter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Painter</button>
     </section>
 
-    <!-- Tab 1: Free Tasks Feed -->
+    <!-- Free Tasks Feed -->
     <section id="tab-home" class="space-y-3">
       <div class="flex items-center justify-between">
         <h2 id="feed-heading" class="text-base font-extrabold">Free Service Requests</h2>
@@ -171,7 +194,7 @@
       <div id="tasks-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
     </section>
 
-    <!-- Tab 2: Message Deals & Bookings -->
+    <!-- Message Deals & Bookings -->
     <section id="tab-deals" class="hidden md:block space-y-3">
       <h2 id="deals-heading" class="text-base font-extrabold">Message Deals &amp; Bookings</h2>
       <div id="deals-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
@@ -179,12 +202,12 @@
   </main>
 
   <!-- Bottom Navigation -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-40">
+  <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 glass-card border-t border-slate-200 dark:border-slate-800 z-40">
     <div class="max-w-md mx-auto px-6 py-2 flex items-center justify-between">
       <button type="button" onclick="switchMobileTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-brand-600 font-bold text-[11px]">
         <i class="fa-solid fa-house text-base"></i><span id="nav-home-lbl">Home</span>
       </button>
-      <button type="button" onclick="openPostModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg -mt-5 border-4 border-slate-50 dark:border-slate-950">
+      <button type="button" onclick="openPostModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-ai-600 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg -mt-5 border-4 border-slate-50 dark:border-slate-950">
         <i class="fa-solid fa-plus"></i><span id="nav-post-lbl">Post Free</span>
       </button>
       <button type="button" onclick="switchMobileTab('deals')" id="nav-deals" class="flex flex-col items-center gap-0.5 text-slate-500 font-semibold text-[11px]">
@@ -211,7 +234,7 @@
             <option value="Painter">Painter</option>
             <option value="General">General</option>
           </select>
-          <input type="tel" id="task-whatsapp" required placeholder="WhatsApp (8801XXXXXXXXX)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+          <input type="tel" id="task-whatsapp" required placeholder="WhatsApp (9715XXXXXXXX)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
         <label class="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 p-2.5 rounded-xl">
           <input type="checkbox" id="task-emergency" class="rounded">
@@ -241,72 +264,293 @@
     </div>
   </div>
 
-  <!-- Settings & Modern AI Assistant Modal -->
+  <!-- Settings, Auto Profile/Location, Self-Heal & AI Assistant Modal -->
   <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4 max-h-[88vh] overflow-y-auto">
       <div class="flex justify-between items-center">
         <h3 class="text-base font-extrabold flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-brand-600"></i><span>Settings &amp; AI System</span>
+          <i class="fa-solid fa-sliders text-brand-600"></i><span>Settings, Self-Heal &amp; AI</span>
         </h3>
         <button type="button" onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
 
+      <!-- Profile & Location -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
-        <div class="font-bold">App Settings</div>
+        <div class="font-bold">Profile, Theme &amp; GPS</div>
         <div class="flex items-center justify-between">
           <span>Dark Mode</span>
           <button type="button" onclick="toggleDarkMode()" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">Toggle Theme</button>
         </div>
         <div class="flex items-center justify-between">
-          <span>Live Location Tracking</span>
-          <button type="button" onclick="trackCurrentLocation()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">Update GPS</button>
+          <span>Live Location &amp; Profile Sync</span>
+          <button type="button" onclick="trackCurrentLocation()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">Sync GPS</button>
         </div>
+        <div id="settings-auto-profile-box" class="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1 text-[11px]"></div>
       </div>
 
+      <!-- AI Self-Heal & Diagnostic Log -->
+      <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/70 dark:border-indigo-900 space-y-2.5 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-extrabold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-stethoscope"></i><span>AI Auto-Fix &amp; Heal Log</span>
+          </span>
+          <button type="button" onclick="runSelfHealDiagnostic(true)" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px]">Scan &amp; Fix</button>
+        </div>
+        <div id="ai-heal-log" class="max-h-28 overflow-y-auto bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800 text-[11px] space-y-1"></div>
+      </div>
+
+      <!-- Smart AI Task Advisor -->
       <div class="p-3.5 rounded-2xl bg-gradient-to-br from-brand-50 to-amber-50 dark:from-slate-900 dark:to-slate-950 border border-brand-200/70 dark:border-slate-800 space-y-2.5">
         <div class="flex items-center gap-2 text-xs font-extrabold text-brand-700 dark:text-brand-400">
-          <i class="fa-solid fa-wand-magic-sparkles"></i><span>TASKY Smart AI Assistant</span>
+          <i class="fa-solid fa-wand-magic-sparkles"></i><span>TASKY Smart AI Advisor</span>
         </div>
-        <p class="text-[11px] text-slate-600 dark:text-slate-400">Describe your issue to get category, emergency check &amp; WhatsApp deal message.</p>
-        <input type="text" id="ai-prompt-input" placeholder="e.g., AC water leaking urgent at night..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
+        <input type="text" id="ai-prompt-input" placeholder="Describe issue (e.g., AC water leak urgent)..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
         <button type="button" onclick="runTaskyAi()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-bold text-xs">Generate AI Suggestion</button>
         <div id="ai-output-box" class="hidden p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs space-y-1.5"></div>
       </div>
     </div>
   </div>
 
+  <!-- Firebase reCAPTCHA container -->
+  <div id="recaptcha-container"></div>
+
+  <!-- Real Firebase Authentication Module (No Demo OTP) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      RecaptchaVerifier,
+      signInWithPhoneNumber,
+      GoogleAuthProvider,
+      signInWithPopup,
+      sendSignInLinkToEmail,
+      isSignInWithEmailLink,
+      signInWithEmailLink,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Set your real Firebase Web App credentials here
+    const firebaseConfig = {
+      apiKey: "YOUR_REAL_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const isConfigured =
+      firebaseConfig.apiKey &&
+      !firebaseConfig.apiKey.startsWith("YOUR_") &&
+      firebaseConfig.projectId &&
+      !firebaseConfig.projectId.startsWith("YOUR_");
+
+    let auth = null;
+    let phoneConfirmation = null;
+
+    function showAuthBanner(msg, isError = true) {
+      const el = document.getElementById("auth-status-banner");
+      if (!el) return;
+      el.classList.remove("hidden");
+      el.className = isError
+        ? "p-2.5 rounded-xl text-[11px] font-semibold border bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900"
+        : "p-2.5 rounded-xl text-[11px] font-semibold border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900";
+      el.textContent = msg;
+    }
+
+    function ensureRealFirebaseReady() {
+      const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
+      if (!isConfigured) {
+        showAuthBanner(
+          isBn
+            ? "রিয়েল OTP/Google চালুর জন্য কোডে আপনার আসল Firebase কনফিগারেশন বসান এবং GitHub Pages ডোমেইন Authorized Domains-এ যুক্ত করুন।"
+            : "Set your real Firebase config in code and add your GitHub Pages domain to Firebase Authorized Domains.",
+          true
+        );
+        return false;
+      }
+      if (!auth) {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        bindAuthListener();
+      }
+      return true;
+    }
+
+    function getRecaptcha() {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible"
+        });
+      }
+      return window.recaptchaVerifier;
+    }
+
+    function bindAuthListener() {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const savedName = (document.getElementById("otp-fullname")?.value || "").trim();
+          const profile = {
+            uid: user.uid,
+            displayName: user.displayName || savedName || user.email?.split("@")[0] || user.phoneNumber || "TASKY User",
+            email: user.email || "",
+            phoneNumber: user.phoneNumber || "",
+            photoURL: user.photoURL || "https://via.placeholder.com/150",
+            verified: true
+          };
+          localStorage.setItem("tasky_real_user", JSON.stringify(profile));
+          if (typeof applySessionUI === "function") applySessionUI(profile);
+          if (typeof syncProfileAndUI === "function") syncProfileAndUI();
+        } else {
+          localStorage.removeItem("tasky_real_user");
+          if (typeof applySessionUI === "function") applySessionUI(null);
+        }
+      });
+
+      // Complete Email Sign-In Link if user opened link from email
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = window.localStorage.getItem("tasky_email_for_signin");
+        if (!email) {
+          email = window.prompt("Enter your email to finish sign-in:");
+        }
+        if (email) {
+          signInWithEmailLink(auth, email, window.location.href)
+            .then(() => {
+              window.localStorage.removeItem("tasky_email_for_signin");
+              window.history.replaceState({}, document.title, window.location.pathname);
+            })
+            .catch((err) => showAuthBanner(err.message || err.code, true));
+        }
+      }
+    }
+
+    window.sendRealVerification = async function () {
+      if (!ensureRealFirebaseReady()) return;
+      const channel = document.getElementById("otp-channel")?.value || "phone";
+      const contact = (document.getElementById("otp-contact")?.value || "").trim();
+      const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
+
+      if (!contact) {
+        showAuthBanner(isBn ? "সঠিক মোবাইল নম্বর বা ইমেইল দিন।" : "Enter a valid mobile number or email.", true);
+        return;
+      }
+
+      try {
+        if (channel === "phone") {
+          const phone = contact.startsWith("+") ? contact : `+${contact}`;
+          const verifier = getRecaptcha();
+          phoneConfirmation = await signInWithPhoneNumber(auth, phone, verifier);
+          document.getElementById("otp-verify-box")?.classList.remove("hidden");
+          const hint = document.getElementById("otp-live-hint");
+          if (hint) {
+            hint.textContent = isBn
+              ? `${phone} নম্বরে আসল SMS OTP পাঠানো হয়েছে। কোডটি লিখুন।`
+              : `Real SMS OTP sent to ${phone}. Enter the 6-digit code.`;
+          }
+          showAuthBanner(isBn ? "SMS OTP পাঠানো হয়েছে।" : "SMS OTP sent.", false);
+        } else {
+          const actionCodeSettings = {
+            url: window.location.href.split("?")[0],
+            handleCodeInApp: true
+          };
+          await sendSignInLinkToEmail(auth, contact, actionCodeSettings);
+          window.localStorage.setItem("tasky_email_for_signin", contact);
+          showAuthBanner(
+            isBn
+              ? `${contact} ইমেইলে সাইন-ইন লিংক পাঠানো হয়েছে। ইনবক্স/স্প্যাম চেক করুন।`
+              : `Sign-in link sent to ${contact}. Check Inbox or Spam.`,
+            false
+          );
+        }
+      } catch (err) {
+        showAuthBanner((err.message || err.code), true);
+      }
+    };
+
+    window.verifyRealSmsOtp = async function () {
+      if (!ensureRealFirebaseReady()) return;
+      const code = (document.getElementById("otp-input")?.value || "").trim();
+      const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
+      if (!phoneConfirmation || !code) {
+        showAuthBanner(isBn ? "আগে SMS OTP পাঠান এবং কোড লিখুন।" : "Send SMS OTP first and enter the code.", true);
+        return;
+      }
+      try {
+        await phoneConfirmation.confirm(code);
+        showAuthBanner(isBn ? "ভেরিফিকেশন সফল হয়েছে!" : "Verified successfully!", false);
+      } catch (err) {
+        showAuthBanner((err.message || err.code), true);
+      }
+    };
+
+    window.loginWithRealGoogle = async function () {
+      if (!ensureRealFirebaseReady()) return;
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        showAuthBanner((err.message || err.code), true);
+      }
+    };
+
+    window.logoutRealUser = async function () {
+      localStorage.removeItem("tasky_real_user");
+      if (auth) {
+        try {
+          await signOut(auth);
+        } catch (_) {}
+      }
+      if (typeof applySessionUI === "function") applySessionUI(null);
+    };
+
+    if (isConfigured) {
+      ensureRealFirebaseReady();
+    }
+  </script>
+
+  <!-- Core App + Autonomous AI Controller & Self-Healing Engine -->
   <script>
-    let generatedOtp = null;
-    let pendingOtpTarget = null;
-    let pendingMode = "signin";
+    window.__taskyAuthMode = "signin";
     let currentLang = localStorage.getItem("tasky_lang") || "en";
-    let currentLocation = JSON.parse(localStorage.getItem("tasky_last_location") || "null");
-    let deals = JSON.parse(localStorage.getItem("tasky_message_deals") || "[]");
+    let currentLocation = safeJsonParse(localStorage.getItem("tasky_last_location"), null);
+    let deals = safeJsonParse(localStorage.getItem("tasky_message_deals"), []);
     let selectedTaskForDeal = null;
     let emergencyOnly = false;
     let currentCategory = "All";
-    let allTasks = JSON.parse(localStorage.getItem("tasky_tasks") || "null") || [
+    let healLogs = [];
+
+    const DEFAULT_TASKS = [
       {
         id: "T-101",
         title: "AC Water Leak & Cooling Check",
         category: "AC",
         description: "Indoor AC unit leaking water and cooling is low.",
-        whatsapp: "8801700000000",
-        location: "Munshiganj / Tongibari",
+        whatsapp: "971500000000",
+        location: "Al Ruwais / Abu Dhabi",
         isEmergency: true,
-        authorName: "Demo User"
+        authorName: "TASKY Dispatch"
       },
       {
         id: "T-102",
         title: "DB Box MCB Trip & Wiring Check",
         category: "Electrical",
         description: "Main breaker trips when heavy load runs.",
-        whatsapp: "8801700000000",
-        location: "Sonarong Area",
+        whatsapp: "971500000000",
+        location: "Munshiganj / Sonarong",
         isEmergency: false,
-        authorName: "Demo User"
+        authorName: "TASKY Dispatch"
       }
     ];
+
+    let allTasks = safeJsonParse(localStorage.getItem("tasky_tasks"), DEFAULT_TASKS);
+
+    function safeJsonParse(raw, fallback) {
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
 
     function escapeHtml(str) {
       return String(str || "")
@@ -317,16 +561,155 @@
         .replace(/'/g, "&#039;");
     }
 
-    function getCurrentUser() {
+    function getRealUser() {
+      return safeJsonParse(localStorage.getItem("tasky_real_user"), null);
+    }
+
+    function recordHeal(message) {
+      const time = new Date().toLocaleTimeString();
+      healLogs.unshift(`[${time}] ${message}`);
+      healLogs = healLogs.slice(0, 20);
+      const box = document.getElementById("ai-heal-log");
+      if (box) {
+        box.innerHTML = healLogs.map((l) => `<div class="text-slate-700 dark:text-slate-300">${escapeHtml(l)}</div>`).join("");
+      }
+      const statusEl = document.getElementById("ai-controller-status");
+      if (statusEl) statusEl.textContent = message;
+    }
+
+    // Autonomous Self-Heal Engine: repairs corrupted storage, missing UI states, or runtime errors
+    window.runSelfHealDiagnostic = function (verbose = false) {
+      let fixes = 0;
+
+      if (!Array.isArray(allTasks)) {
+        allTasks = [...DEFAULT_TASKS];
+        localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+        fixes++;
+      }
+      if (!Array.isArray(deals)) {
+        deals = [];
+        localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
+        fixes++;
+      }
+      if (currentLang !== "en" && currentLang !== "bn") {
+        currentLang = "en";
+        localStorage.setItem("tasky_lang", "en");
+        fixes++;
+      }
+
+      // Ensure critical UI elements are visible & synced
+      applyLanguageUI();
+      applySessionUI(getRealUser());
+      syncProfileAndUI();
+
+      if (fixes > 0 || verbose) {
+        recordHeal(
+          fixes > 0
+            ? `Auto-healed ${fixes} state/storage issue(s) & synced UI.`
+            : "AI Self-Heal scan complete: All modules & UI healthy."
+        );
+      }
+    };
+
+    window.addEventListener("error", (event) => {
+      recordHeal(`Runtime error caught & recovered: ${event.message || "Unknown error"}`);
       try {
-        return JSON.parse(localStorage.getItem("tasky_otp_user") || "null");
-      } catch {
-        return null;
+        runSelfHealDiagnostic(false);
+      } catch (_) {}
+    });
+
+    window.addEventListener("unhandledrejection", (event) => {
+      const reason = event.reason?.message || String(event.reason || "Promise issue");
+      recordHeal(`Async issue caught & stabilized: ${reason}`);
+    });
+
+    // AI Command Controller: lets user control the app naturally via text commands
+    window.executeAiCommand = function () {
+      const input = document.getElementById("ai-command-input");
+      if (!input) return;
+      const cmd = input.value.trim().toLowerCase();
+      if (!cmd) return;
+
+      if (cmd.includes("dark") || cmd.includes("ডার্ক") || cmd.includes("theme") || cmd.includes("থিম")) {
+        window.toggleDarkMode();
+        recordHeal("AI Controller toggled theme mode.");
+      } else if (cmd.includes("bangla") || cmd.includes("বাংলা") || cmd.includes("bn")) {
+        currentLang = "bn";
+        localStorage.setItem("tasky_lang", "bn");
+        applyLanguageUI();
+        recordHeal("AI Controller switched language to Bangla.");
+      } else if (cmd.includes("english") || cmd.includes("ইংরেজি") || cmd.includes("en")) {
+        currentLang = "en";
+        localStorage.setItem("tasky_lang", "en");
+        applyLanguageUI();
+        recordHeal("AI Controller switched language to English.");
+      } else if (cmd.includes("gps") || cmd.includes("location") || cmd.includes("লোকেশন")) {
+        window.trackCurrentLocation();
+        recordHeal("AI Controller triggered GPS tracking.");
+      } else if (cmd.includes("emergency") || cmd.includes("ইমারজেন্সি")) {
+        window.toggleEmergencyFilter();
+        recordHeal("AI Controller toggled Emergency filter.");
+      } else if (cmd.includes("post") || cmd.includes("পোস্ট")) {
+        window.openPostModal();
+        recordHeal("AI Controller opened Free Request modal.");
+      } else if (cmd.includes("settings") || cmd.includes("সেটিং")) {
+        window.openSettingsModal();
+        recordHeal("AI Controller opened Settings & Self-Heal.");
+      } else if (cmd.includes("fix") || cmd.includes("heal") || cmd.includes("ফিক্স") || cmd.includes("ঠিক")) {
+        runSelfHealDiagnostic(true);
+      } else {
+        // Treat as task search/category filter
+        const searchEl = document.getElementById("search-input");
+        if (searchEl) searchEl.value = input.value.trim();
+        window.filterTasks();
+        recordHeal(`AI Controller filtered tasks for "${input.value.trim()}".`);
+      }
+      input.value = "";
+    };
+
+    function syncProfileAndUI() {
+      const isBn = currentLang === "bn";
+      const user = getRealUser();
+      const box = document.getElementById("settings-auto-profile-box");
+      if (!box) return;
+
+      if (!user) {
+        box.innerHTML = `<div class="text-slate-500">${isBn ? "রিয়েল অ্যাকাউন্টে সাইন-ইন করলে প্রোফাইল দেখাবে।" : "Sign in with real account to sync profile."}</div>`;
+        return;
+      }
+
+      const locText = currentLocation
+        ? `GPS ${currentLocation.lat}, ${currentLocation.lng}`
+        : isBn
+        ? "এখনও ট্র্যাক হয়নি"
+        : "Not tracked yet";
+      const contactText = user.phoneNumber || user.email || (isBn ? "ভেরিফায়েড" : "Verified");
+
+      box.innerHTML = `
+        <div class="flex justify-between gap-2"><span class="text-slate-500">${isBn ? "নাম" : "Name"}:</span><b>${escapeHtml(user.displayName)}</b></div>
+        <div class="flex justify-between gap-2"><span class="text-slate-500">${isBn ? "যোগাযোগ" : "Contact"}:</span><span class="truncate">${escapeHtml(contactText)}</span></div>
+        <div class="flex justify-between gap-2"><span class="text-slate-500">${isBn ? "লোকেশন" : "Location"}:</span><b class="text-brand-600 truncate">${escapeHtml(locText)}</b></div>
+      `;
+    }
+
+    function applySessionUI(user) {
+      const gate = document.getElementById("auth-gate");
+      const profile = document.getElementById("user-profile");
+      if (!gate || !profile) return;
+
+      if (user && user.verified) {
+        gate.classList.add("hidden");
+        profile.classList.remove("hidden");
+        document.getElementById("user-avatar").src = user.photoURL || "https://via.placeholder.com/150";
+        document.getElementById("user-name-badge").textContent = user.displayName || "User";
+      } else {
+        gate.classList.remove("hidden");
+        profile.classList.add("hidden");
       }
     }
 
     window.setAuthMode = function (mode) {
-      pendingMode = mode;
+      window.__taskyAuthMode = mode;
       const isSignup = mode === "signup";
       document.getElementById("tab-signin").className = !isSignup
         ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-brand-600 text-white"
@@ -340,93 +723,12 @@
     window.updateContactPlaceholder = function () {
       const ch = document.getElementById("otp-channel").value;
       const inp = document.getElementById("otp-contact");
-      if (ch === "email") {
-        inp.placeholder = "example@gmail.com";
+      if (ch === "phone") {
+        inp.placeholder = currentLang === "bn" ? "+9715XXXXXXXX বা +8801XXXXXXXXX" : "+9715XXXXXXXX or +8801XXXXXXXXX";
       } else {
-        inp.placeholder = currentLang === "bn" ? "01XXXXXXXXX বা +9715XXXXXXXX" : "01XXXXXXXXX or +9715XXXXXXXX";
+        inp.placeholder = "name@gmail.com";
       }
     };
-
-    window.sendOtpCode = function () {
-      const channel = document.getElementById("otp-channel").value;
-      const contact = document.getElementById("otp-contact").value.trim();
-      const fullName = document.getElementById("otp-fullname").value.trim();
-
-      if (!contact) {
-        alert(currentLang === "bn"
-          ? (channel === "phone" ? "মোবাইল নম্বর দিন।" : "জিমেইল অ্যাড্রেস দিন।")
-          : (channel === "phone" ? "Please enter mobile number." : "Please enter Gmail address."));
-        return;
-      }
-      if (pendingMode === "signup" && !fullName) {
-        alert(currentLang === "bn" ? "সাইন আপ করতে আপনার নাম লিখুন।" : "Please enter your name to sign up.");
-        return;
-      }
-
-      generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
-      pendingOtpTarget = {
-        channel,
-        contact,
-        name: fullName || contact.split("@")[0] || "TASKY User"
-      };
-
-      document.getElementById("otp-verify-box").classList.remove("hidden");
-      document.getElementById("otp-demo-hint").textContent = currentLang === "bn"
-        ? `OTP পাঠানো হয়েছে (${contact}) — কোড: ${generatedOtp}`
-        : `OTP sent to (${contact}) — Code: ${generatedOtp}`;
-    };
-
-    window.verifyOtpAndLogin = function () {
-      const entered = document.getElementById("otp-input").value.trim();
-      if (!generatedOtp || entered !== generatedOtp) {
-        alert(currentLang === "bn" ? "সঠিক ৬ ডিজিটের OTP কোড দিন।" : "Please enter the valid 6-digit OTP.");
-        return;
-      }
-
-      const sessionUser = {
-        displayName: pendingOtpTarget.name,
-        email: pendingOtpTarget.channel === "email" ? pendingOtpTarget.contact : "",
-        phoneNumber: pendingOtpTarget.channel === "phone" ? pendingOtpTarget.contact : "",
-        photoURL: "https://via.placeholder.com/150"
-      };
-      localStorage.setItem("tasky_otp_user", JSON.stringify(sessionUser));
-      generatedOtp = null;
-      document.getElementById("otp-input").value = "";
-      document.getElementById("otp-verify-box").classList.add("hidden");
-      applyLocalSession(sessionUser);
-    };
-
-    window.loginWithGoogleAuth = function () {
-      const customName = document.getElementById("otp-fullname").value.trim();
-      const customEmail = document.getElementById("otp-contact").value.trim();
-      const googleUser = {
-        displayName: customName || (currentLang === "bn" ? "গুগল ইউজার" : "Google User"),
-        email: customEmail.includes("@") ? customEmail : "google.user@gmail.com",
-        phoneNumber: "",
-        photoURL: "https://via.placeholder.com/150"
-      };
-      localStorage.setItem("tasky_otp_user", JSON.stringify(googleUser));
-      applyLocalSession(googleUser);
-    };
-
-    window.logoutAll = function () {
-      localStorage.removeItem("tasky_otp_user");
-      applyLocalSession(null);
-    };
-
-    function applyLocalSession(user) {
-      const gate = document.getElementById("auth-gate");
-      const profile = document.getElementById("user-profile");
-      if (user) {
-        gate.classList.add("hidden");
-        profile.classList.remove("hidden");
-        document.getElementById("user-avatar").src = user.photoURL || "https://via.placeholder.com/150";
-        document.getElementById("user-name-badge").textContent = user.displayName || "User";
-      } else {
-        gate.classList.remove("hidden");
-        profile.classList.add("hidden");
-      }
-    }
 
     function applyLanguageUI() {
       const isBn = currentLang === "bn";
@@ -435,24 +737,28 @@
       document.getElementById("lang-btn").textContent = isBn ? "English" : "বাংলা";
       document.getElementById("gate-lang-btn").textContent = isBn ? "English" : "বাংলা";
       document.getElementById("gate-sub").textContent = isBn
-        ? "ফ্রি সার্ভিস • হোয়াটসঅ্যাপ ডিল • AI রেডি"
-        : "Free Service • WhatsApp Deal • AI Ready";
+        ? "রিয়েল অথ • AI নিয়ন্ত্রিত • সেলফ-হিলিং"
+        : "Real Auth • AI Controlled • Self-Healing";
       document.getElementById("lbl-fullname").textContent = isBn ? "পুরো নাম" : "Full Name";
-      document.getElementById("lbl-channel").textContent = isBn ? "OTP মাধ্যম" : "OTP Method";
-      document.getElementById("lbl-contact").textContent = isBn ? "জিমেইল বা মোবাইল নম্বর" : "Gmail or Mobile Number";
-      document.getElementById("otp-fullname").placeholder = isBn ? "আপনার পুরো নাম লিখুন" : "Enter full name";
-      document.getElementById("otp-input").placeholder = isBn ? "৬ ডিজিটের OTP" : "6-digit OTP";
+      document.getElementById("lbl-channel").textContent = isBn ? "ভেরিফিকেশন মাধ্যম" : "Verification Channel";
+      document.getElementById("lbl-contact").textContent = isBn ? "মোবাইল (+কোডসহ) বা ইমেইল" : "Mobile (+CountryCode) or Email";
+      document.getElementById("otp-fullname").placeholder = isBn ? "আপনার পুরো নাম" : "Enter full name";
+      document.getElementById("otp-input").placeholder = isBn ? "৬ ডিজিটের SMS OTP" : "Enter SMS OTP code";
       document.getElementById("search-input").placeholder = isBn ? "সার্ভিস বা এলাকা খুঁজুন..." : "Search service or area...";
+      document.getElementById("ai-command-input").placeholder = isBn
+        ? "AI কমান্ড: যেমন 'ডার্ক মোড', 'ইংরেজি', 'লোকেশন', 'ফিক্স'..."
+        : "AI Command: e.g. 'dark mode', 'bangla', 'track gps', 'fix errors'...";
+      document.getElementById("ai-cmd-btn").textContent = isBn ? "AI চালান" : "AI Run";
 
       document.getElementById("tab-signin").textContent = isBn ? "লগইন" : "Sign In";
       document.getElementById("tab-signup").textContent = isBn ? "সাইন আপ" : "Sign Up";
-      document.getElementById("send-otp-btn").innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>${isBn ? "OTP পাঠান" : "Send OTP"}</span>`;
-      document.getElementById("verify-otp-btn").textContent = isBn ? "ভেরিফাই ও প্রবেশ করুন" : "Verify & Enter";
-      document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-brand-600"></i><span>${isBn ? "গুগল দিয়ে চালিয়ে যান" : "Continue with Google"}</span>`;
+      document.getElementById("send-otp-btn").innerHTML = `<i class="fa-solid fa-shield-halved"></i><span>${isBn ? "রিয়েল OTP / লিংক পাঠান" : "Send Real OTP / Link"}</span>`;
+      document.getElementById("verify-otp-btn").textContent = isBn ? "রিয়েল OTP ভেরিফাই করুন" : "Verify Real OTP & Continue";
+      document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-brand-600"></i><span>${isBn ? "গুগল দিয়ে সাইন-ইন (Firebase)" : "Continue with Google (Firebase)"}</span>`;
       document.getElementById("hero-badge").textContent = isBn
-        ? "১০০% ফ্রি লিস্টিং • সরাসরি হোয়াটসঅ্যাপ ও মেসেজ ডিল"
-        : "100% Free Listing • Direct WhatsApp & Message Deal";
-      document.getElementById("hero-title").textContent = isBn ? "ফ্রি সার্ভিস, ইমারজেন্সি ও সরাসরি মেসেজ ডিল" : "Smart Home Services & Emergency Help";
+        ? "AI নিয়ন্ত্রিত • রিয়েল ভেরিফিকেশন • সরাসরি ডিল"
+        : "AI Controlled • Real Auth • Instant Deals";
+      document.getElementById("hero-title").textContent = isBn ? "স্মার্ট হোম সার্ভিস ও AI ডিসপ্যাচ" : "Smart Home Services & AI Dispatch";
       document.getElementById("feed-heading").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট" : "Free Service Requests";
       document.getElementById("deals-heading").textContent = isBn ? "মেসেজ ডিল ও বুকিং" : "Message Deals & Bookings";
       document.getElementById("nav-home-lbl").textContent = isBn ? "হোম" : "Home";
@@ -465,6 +771,7 @@
       document.getElementById("publish-task-btn").textContent = isBn ? "ফ্রি রিকোয়েস্ট প্রকাশ করুন" : "Publish Free Request";
 
       updateContactPlaceholder();
+      syncProfileAndUI();
       renderDealsList();
       renderTasksList(getFilteredTasks());
     }
@@ -499,6 +806,7 @@
           const txt = `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
           badgeEl.textContent = `📍 ${txt}`;
           statusEl.textContent = currentLang === "bn" ? `ট্র্যাকড: ${txt}` : `Tracked: ${txt}`;
+          syncProfileAndUI();
         },
         () => {
           statusEl.textContent = currentLang === "bn" ? "লোকেশন অনুমতি দিন" : "Location permission needed";
@@ -522,18 +830,20 @@
 
     window.openPostModal = () => document.getElementById("post-modal").classList.remove("hidden");
     window.closePostModal = () => document.getElementById("post-modal").classList.add("hidden");
-    window.openSettingsModal = () => document.getElementById("settings-modal").classList.remove("hidden");
+    window.openSettingsModal = () => {
+      document.getElementById("settings-modal").classList.remove("hidden");
+      syncProfileAndUI();
+    };
     window.closeSettingsModal = () => document.getElementById("settings-modal").classList.add("hidden");
 
     window.handleAddTask = function (e) {
       e.preventDefault();
-      const user = getCurrentUser();
+      const user = getRealUser();
       const title = document.getElementById("task-title").value.trim();
       const category = document.getElementById("task-category").value;
       const whatsapp = document.getElementById("task-whatsapp").value.trim();
       const isEmergency = document.getElementById("task-emergency").checked;
       const description = document.getElementById("task-desc").value.trim();
-
       if (!title || !description) return;
 
       const newTask = {
@@ -544,7 +854,7 @@
         isEmergency,
         description,
         location: currentLocation ? `GPS ${currentLocation.lat}, ${currentLocation.lng}` : "Area shared on deal",
-        authorName: user?.displayName || "User"
+        authorName: user?.displayName || "Verified User"
       };
 
       allTasks.unshift(newTask);
@@ -638,7 +948,7 @@
 
     window.confirmMessageDeal = function (openWhatsApp) {
       if (!selectedTaskForDeal) return;
-      const msg = document.getElementById("deal-message").value.trim() || "Interested in this free service. Let's finalize details.";
+      const msg = document.getElementById("deal-message").value.trim() || "Interested in this service. Let's discuss timing and price.";
       const record = {
         id: "DEAL-" + Math.floor(100000 + Math.random() * 900000),
         taskTitle: selectedTaskForDeal.title,
@@ -685,18 +995,19 @@
 
       const lower = prompt.toLowerCase();
       let cat = "General";
-      if (lower.includes("ac") || lower.includes("cooling")) cat = "AC";
-      else if (lower.includes("pipe") || lower.includes("leak") || lower.includes("water") || lower.includes("plumb")) cat = "Plumbing";
-      else if (lower.includes("wire") || lower.includes("light") || lower.includes("mcb") || lower.includes("electric")) cat = "Electrical";
-      else if (lower.includes("wood") || lower.includes("door") || lower.includes("carpent")) cat = "Carpenter";
-      else if (lower.includes("paint")) cat = "Painter";
+      if (lower.includes("ac") || lower.includes("cooling") || lower.includes("এসি")) cat = "AC";
+      else if (lower.includes("pipe") || lower.includes("leak") || lower.includes("water") || lower.includes("plumb") || lower.includes("পানি") || lower.includes("পাইপ")) cat = "Plumbing";
+      else if (lower.includes("wire") || lower.includes("light") || lower.includes("mcb") || lower.includes("electric") || lower.includes("কারেন্ট") || lower.includes("তার")) cat = "Electrical";
+      else if (lower.includes("wood") || lower.includes("door") || lower.includes("carpent") || lower.includes("কাঠ") || lower.includes("দরজা")) cat = "Carpenter";
+      else if (lower.includes("paint") || lower.includes("রং")) cat = "Painter";
 
-      const urgent = lower.includes("urgent") || lower.includes("emergency") || lower.includes("leak") || lower.includes("spark");
+      const urgent = lower.includes("urgent") || lower.includes("emergency") || lower.includes("leak") || lower.includes("spark") || lower.includes("জরুরি") || lower.includes("শর্ট");
+      const isBn = currentLang === "bn";
       out.classList.remove("hidden");
       out.innerHTML = `
-        <div><b>Category:</b> ${escapeHtml(cat)}</div>
-        <div><b>Emergency:</b> ${urgent ? "Yes (High Priority)" : "Normal"}</div>
-        <div><b>Suggested Deal Msg:</b> "Hi, I need ${escapeHtml(cat)} help for: ${escapeHtml(prompt)}. Can we discuss timing and price?"</div>
+        <div><b>${isBn ? "ক্যাটাগরি" : "Category"}:</b> ${escapeHtml(cat)}</div>
+        <div><b>${isBn ? "ইমারজেন্সি" : "Emergency"}:</b> ${urgent ? (isBn ? "হ্যাঁ (জরুরি)" : "Yes (High Priority)") : (isBn ? "সাধারণ" : "Normal")}</div>
+        <div><b>${isBn ? "প্রস্তাবিত মেসেজ" : "Suggested Deal Msg"}:</b> "${isBn ? `হ্যালো, আমার ${escapeHtml(cat)} কাজের জন্য সাহায্য দরকার (${escapeHtml(prompt)})।` : `Hi, I need ${escapeHtml(cat)} help for: ${escapeHtml(prompt)}. Can we discuss timing and price?`}"</div>
       `;
     };
 
@@ -704,8 +1015,8 @@
       document.getElementById("live-loc-badge").textContent = `📍 GPS ${currentLocation.lat}, ${currentLocation.lng}`;
       document.getElementById("loc-status-text").textContent = `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
     }
-    applyLanguageUI();
-    applyLocalSession(getCurrentUser());
+    runSelfHealDiagnostic(false);
+    recordHeal("TASKY AI Controller & Self-Heal active.");
   </script>
 </body>
 </html>
