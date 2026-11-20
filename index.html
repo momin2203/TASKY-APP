@@ -112,6 +112,7 @@
         </button>
         <div id="user-profile" class="hidden flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 pl-1 pr-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           <img id="user-avatar" src="https://via.placeholder.com/150" alt="User" class="w-6 h-6 rounded-full object-cover">
+          <span id="user-name-badge" class="text-[11px] font-bold max-w-[80px] truncate"></span>
           <button type="button" onclick="logoutAll()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Logout">
             <i class="fa-solid fa-power-off"></i>
           </button>
@@ -127,7 +128,7 @@
     <section class="rounded-2xl bg-gradient-to-r from-brand-600 via-orange-600 to-rose-600 p-4 text-white shadow-lg space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <span class="inline-block bg-white/20 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full mb-1">
+          <span id="hero-badge" class="inline-block bg-white/20 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full mb-1">
             100% Free Listing • Direct WhatsApp &amp; Message Deal
           </span>
           <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">Smart Home Services &amp; Emergency Help</h1>
@@ -146,7 +147,7 @@
       <div class="flex items-center justify-between gap-2 text-[11px] bg-black/15 rounded-xl px-3 py-2">
         <span id="loc-status-text" class="truncate">Location tracking off</span>
         <button type="button" onclick="trackCurrentLocation()" id="track-now-btn" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold shrink-0">
-          <i class="fa-solid fa-location-crosshairs mr-1"></i>Track Now
+          <i class="fa-solid fa-location-crosshairs mr-1"></i><span id="track-btn-lbl">Track Now</span>
         </button>
       </div>
     </section>
@@ -196,7 +197,7 @@
   <div id="post-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
-        <h3 class="text-base font-extrabold">Post Free Service Request</h3>
+        <h3 id="post-modal-title" class="text-base font-extrabold">Post Free Service Request</h3>
         <button type="button" onclick="closePostModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
       <form id="task-form" onsubmit="handleAddTask(event)" class="space-y-3">
@@ -214,10 +215,10 @@
         </div>
         <label class="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 p-2.5 rounded-xl">
           <input type="checkbox" id="task-emergency" class="rounded">
-          <span>Mark as Emergency Service</span>
+          <span id="lbl-emergency-check">Mark as Emergency Service</span>
         </label>
         <textarea id="task-desc" required rows="3" placeholder="Problem details &amp; area..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
-        <button type="submit" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-sm">Publish Free Request</button>
+        <button type="submit" id="publish-task-btn" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-sm">Publish Free Request</button>
       </form>
     </div>
   </div>
@@ -274,7 +275,6 @@
     </div>
   </div>
 
-  <!-- Standalone Core UI & Auth Script (Guaranteed to work even if module path has any issue) -->
   <script>
     let generatedOtp = null;
     let pendingOtpTarget = null;
@@ -285,7 +285,28 @@
     let selectedTaskForDeal = null;
     let emergencyOnly = false;
     let currentCategory = "All";
-    let allTasks = [];
+    let allTasks = JSON.parse(localStorage.getItem("tasky_tasks") || "null") || [
+      {
+        id: "T-101",
+        title: "AC Water Leak & Cooling Check",
+        category: "AC",
+        description: "Indoor AC unit leaking water and cooling is low.",
+        whatsapp: "8801700000000",
+        location: "Munshiganj / Tongibari",
+        isEmergency: true,
+        authorName: "Demo User"
+      },
+      {
+        id: "T-102",
+        title: "DB Box MCB Trip & Wiring Check",
+        category: "Electrical",
+        description: "Main breaker trips when heavy load runs.",
+        whatsapp: "8801700000000",
+        location: "Sonarong Area",
+        isEmergency: false,
+        authorName: "Demo User"
+      }
+    ];
 
     function escapeHtml(str) {
       return String(str || "")
@@ -294,6 +315,14 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+
+    function getCurrentUser() {
+      try {
+        return JSON.parse(localStorage.getItem("tasky_otp_user") || "null");
+      } catch {
+        return null;
+      }
     }
 
     window.setAuthMode = function (mode) {
@@ -312,7 +341,7 @@
       const ch = document.getElementById("otp-channel").value;
       const inp = document.getElementById("otp-contact");
       if (ch === "email") {
-        inp.placeholder = currentLang === "bn" ? "example@gmail.com" : "example@gmail.com";
+        inp.placeholder = "example@gmail.com";
       } else {
         inp.placeholder = currentLang === "bn" ? "01XXXXXXXXX বা +9715XXXXXXXX" : "01XXXXXXXXX or +9715XXXXXXXX";
       }
@@ -338,7 +367,7 @@
       pendingOtpTarget = {
         channel,
         contact,
-        name: fullName || contact.split("@")[0]
+        name: fullName || contact.split("@")[0] || "TASKY User"
       };
 
       document.getElementById("otp-verify-box").classList.remove("hidden");
@@ -367,6 +396,19 @@
       applyLocalSession(sessionUser);
     };
 
+    window.loginWithGoogleAuth = function () {
+      const customName = document.getElementById("otp-fullname").value.trim();
+      const customEmail = document.getElementById("otp-contact").value.trim();
+      const googleUser = {
+        displayName: customName || (currentLang === "bn" ? "গুগল ইউজার" : "Google User"),
+        email: customEmail.includes("@") ? customEmail : "google.user@gmail.com",
+        phoneNumber: "",
+        photoURL: "https://via.placeholder.com/150"
+      };
+      localStorage.setItem("tasky_otp_user", JSON.stringify(googleUser));
+      applyLocalSession(googleUser);
+    };
+
     window.logoutAll = function () {
       localStorage.removeItem("tasky_otp_user");
       applyLocalSession(null);
@@ -379,25 +421,37 @@
         gate.classList.add("hidden");
         profile.classList.remove("hidden");
         document.getElementById("user-avatar").src = user.photoURL || "https://via.placeholder.com/150";
-        window.dispatchEvent(new CustomEvent("tasky:authenticated", { detail: user }));
+        document.getElementById("user-name-badge").textContent = user.displayName || "User";
       } else {
         gate.classList.remove("hidden");
         profile.classList.add("hidden");
       }
     }
 
-    window.toggleLang = function () {
-      currentLang = currentLang === "en" ? "bn" : "en";
-      localStorage.setItem("tasky_lang", currentLang);
+    function applyLanguageUI() {
       const isBn = currentLang === "bn";
+      document.documentElement.lang = isBn ? "bn" : "en";
 
       document.getElementById("lang-btn").textContent = isBn ? "English" : "বাংলা";
       document.getElementById("gate-lang-btn").textContent = isBn ? "English" : "বাংলা";
+      document.getElementById("gate-sub").textContent = isBn
+        ? "ফ্রি সার্ভিস • হোয়াটসঅ্যাপ ডিল • AI রেডি"
+        : "Free Service • WhatsApp Deal • AI Ready";
+      document.getElementById("lbl-fullname").textContent = isBn ? "পুরো নাম" : "Full Name";
+      document.getElementById("lbl-channel").textContent = isBn ? "OTP মাধ্যম" : "OTP Method";
+      document.getElementById("lbl-contact").textContent = isBn ? "জিমেইল বা মোবাইল নম্বর" : "Gmail or Mobile Number";
+      document.getElementById("otp-fullname").placeholder = isBn ? "আপনার পুরো নাম লিখুন" : "Enter full name";
+      document.getElementById("otp-input").placeholder = isBn ? "৬ ডিজিটের OTP" : "6-digit OTP";
+      document.getElementById("search-input").placeholder = isBn ? "সার্ভিস বা এলাকা খুঁজুন..." : "Search service or area...";
+
       document.getElementById("tab-signin").textContent = isBn ? "লগইন" : "Sign In";
       document.getElementById("tab-signup").textContent = isBn ? "সাইন আপ" : "Sign Up";
       document.getElementById("send-otp-btn").innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>${isBn ? "OTP পাঠান" : "Send OTP"}</span>`;
       document.getElementById("verify-otp-btn").textContent = isBn ? "ভেরিফাই ও প্রবেশ করুন" : "Verify & Enter";
       document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-brand-600"></i><span>${isBn ? "গুগল দিয়ে চালিয়ে যান" : "Continue with Google"}</span>`;
+      document.getElementById("hero-badge").textContent = isBn
+        ? "১০০% ফ্রি লিস্টিং • সরাসরি হোয়াটসঅ্যাপ ও মেসেজ ডিল"
+        : "100% Free Listing • Direct WhatsApp & Message Deal";
       document.getElementById("hero-title").textContent = isBn ? "ফ্রি সার্ভিস, ইমারজেন্সি ও সরাসরি মেসেজ ডিল" : "Smart Home Services & Emergency Help";
       document.getElementById("feed-heading").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট" : "Free Service Requests";
       document.getElementById("deals-heading").textContent = isBn ? "মেসেজ ডিল ও বুকিং" : "Message Deals & Bookings";
@@ -405,8 +459,20 @@
       document.getElementById("nav-post-lbl").textContent = isBn ? "ফ্রি পোস্ট" : "Post Free";
       document.getElementById("nav-deals-lbl").textContent = isBn ? "ডিল" : "Deals";
       document.getElementById("emergency-lbl").textContent = isBn ? "ইমারজেন্সি" : "Emergency";
+      document.getElementById("track-btn-lbl").textContent = isBn ? "ট্র্যাক করুন" : "Track Now";
+      document.getElementById("post-modal-title").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট পোস্ট করুন" : "Post Free Service Request";
+      document.getElementById("lbl-emergency-check").textContent = isBn ? "ইমারজেন্সি সার্ভিস হিসেবে চিহ্নিত করুন" : "Mark as Emergency Service";
+      document.getElementById("publish-task-btn").textContent = isBn ? "ফ্রি রিকোয়েস্ট প্রকাশ করুন" : "Publish Free Request";
+
+      updateContactPlaceholder();
       renderDealsList();
       renderTasksList(getFilteredTasks());
+    }
+
+    window.toggleLang = function () {
+      currentLang = currentLang === "en" ? "bn" : "en";
+      localStorage.setItem("tasky_lang", currentLang);
+      applyLanguageUI();
     };
 
     window.toggleDarkMode = function () {
@@ -459,6 +525,35 @@
     window.openSettingsModal = () => document.getElementById("settings-modal").classList.remove("hidden");
     window.closeSettingsModal = () => document.getElementById("settings-modal").classList.add("hidden");
 
+    window.handleAddTask = function (e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      const title = document.getElementById("task-title").value.trim();
+      const category = document.getElementById("task-category").value;
+      const whatsapp = document.getElementById("task-whatsapp").value.trim();
+      const isEmergency = document.getElementById("task-emergency").checked;
+      const description = document.getElementById("task-desc").value.trim();
+
+      if (!title || !description) return;
+
+      const newTask = {
+        id: "T-" + Math.floor(100000 + Math.random() * 900000),
+        title,
+        category,
+        whatsapp,
+        isEmergency,
+        description,
+        location: currentLocation ? `GPS ${currentLocation.lat}, ${currentLocation.lng}` : "Area shared on deal",
+        authorName: user?.displayName || "User"
+      };
+
+      allTasks.unshift(newTask);
+      localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+      document.getElementById("task-form").reset();
+      closePostModal();
+      renderTasksList(getFilteredTasks());
+    };
+
     window.toggleEmergencyFilter = function () {
       emergencyOnly = !emergencyOnly;
       document.getElementById("emergency-btn").className = emergencyOnly
@@ -486,15 +581,12 @@
       return allTasks.filter((t) => {
         const matchCat = currentCategory === "All" || (t.category || "General") === currentCategory;
         const matchEmerg = !emergencyOnly || Boolean(t.isEmergency);
-        const matchSearch = (t.title || "").toLowerCase().includes(term) || (t.description || "").toLowerCase().includes(term);
+        const matchSearch = (t.title || "").toLowerCase().includes(term)
+          || (t.description || "").toLowerCase().includes(term)
+          || (t.location || "").toLowerCase().includes(term);
         return matchCat && matchEmerg && matchSearch;
       });
     }
-
-    window.setLiveTasksData = function (list) {
-      allTasks = Array.isArray(list) ? list : [];
-      renderTasksList(getFilteredTasks());
-    };
 
     function renderTasksList(tasks) {
       const container = document.getElementById("tasks-container");
@@ -549,4 +641,72 @@
       const msg = document.getElementById("deal-message").value.trim() || "Interested in this free service. Let's finalize details.";
       const record = {
         id: "DEAL-" + Math.floor(100000 + Math.random() * 900000),
-        taskTitle: selectedTaskForDeal
+        taskTitle: selectedTaskForDeal.title,
+        category: selectedTaskForDeal.category,
+        message: msg,
+        whatsapp: (selectedTaskForDeal.whatsapp || "").replace(/\D/g, ""),
+        createdAt: new Date().toLocaleString()
+      };
+      deals.unshift(record);
+      localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
+      renderDealsList();
+      closeDealModal();
+
+      if (openWhatsApp && record.whatsapp) {
+        const text = encodeURIComponent(`TASKY Deal (${record.taskTitle}): ${record.message}`);
+        window.open(`https://wa.me/${record.whatsapp}?text=${text}`, "_blank");
+      } else {
+        alert(currentLang === "bn" ? "মেসেজ ডিল সেভ হয়েছে!" : "Deal message saved!");
+      }
+    };
+
+    function renderDealsList() {
+      const box = document.getElementById("deals-list");
+      if (!deals.length) {
+        box.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-6 rounded-2xl text-center text-xs text-slate-400">${currentLang === "bn" ? "এখনও কোনো ডিল বা বুকিং নেই।" : "No deals or bookings yet."}</div>`;
+        return;
+      }
+      box.innerHTML = deals.map((d) => `
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-brand-600">${escapeHtml(d.taskTitle)}</span>
+            <span class="text-[10px] text-slate-400">${escapeHtml(d.id)}</span>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300">${escapeHtml(d.message)}</p>
+          <div class="text-[10px] text-slate-400">${escapeHtml(d.createdAt)}</div>
+        </div>
+      `).join("");
+    }
+
+    window.runTaskyAi = function () {
+      const prompt = (document.getElementById("ai-prompt-input").value || "").trim();
+      const out = document.getElementById("ai-output-box");
+      if (!prompt) return;
+
+      const lower = prompt.toLowerCase();
+      let cat = "General";
+      if (lower.includes("ac") || lower.includes("cooling")) cat = "AC";
+      else if (lower.includes("pipe") || lower.includes("leak") || lower.includes("water") || lower.includes("plumb")) cat = "Plumbing";
+      else if (lower.includes("wire") || lower.includes("light") || lower.includes("mcb") || lower.includes("electric")) cat = "Electrical";
+      else if (lower.includes("wood") || lower.includes("door") || lower.includes("carpent")) cat = "Carpenter";
+      else if (lower.includes("paint")) cat = "Painter";
+
+      const urgent = lower.includes("urgent") || lower.includes("emergency") || lower.includes("leak") || lower.includes("spark");
+      out.classList.remove("hidden");
+      out.innerHTML = `
+        <div><b>Category:</b> ${escapeHtml(cat)}</div>
+        <div><b>Emergency:</b> ${urgent ? "Yes (High Priority)" : "Normal"}</div>
+        <div><b>Suggested Deal Msg:</b> "Hi, I need ${escapeHtml(cat)} help for: ${escapeHtml(prompt)}. Can we discuss timing and price?"</div>
+      `;
+    };
+
+    // Initial Boot
+    if (currentLocation) {
+      document.getElementById("live-loc-badge").textContent = `📍 GPS ${currentLocation.lat}, ${currentLocation.lng}`;
+      document.getElementById("loc-status-text").textContent = `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
+    }
+    applyLanguageUI();
+    applyLocalSession(getCurrentUser());
+  </script>
+</body>
+</html>
