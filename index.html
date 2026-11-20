@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>TASKY — Smart Home Service &amp; Deal Hub</title>
+  <title>TASKY — Smart Service, Emergency Dispatch &amp; Deal Lock Platform</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: { sans: ['"Plus Jakarta Sans"', '"Hind Siliguri"', 'sans-serif'] },
+          fontFamily: { sans: ['"Hind Siliguri"', '"Plus Jakarta Sans"', 'sans-serif'] },
           colors: {
             brand: { 50: '#fff7ed', 100: '#ffedd5', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 900: '#7c2d12' },
             ai: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
@@ -25,7 +25,7 @@
   </script>
   <style>
     body {
-      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+      font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
       padding-top: env(safe-area-inset-top, 0px);
     }
@@ -36,7 +36,7 @@
 </head>
 <body id="tasky-body" class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 transition-colors">
 
-  <!-- Friendly Real Auth Gate (Google, Email Link & Phone SMS OTP) -->
+  <!-- Real Auth Gate (Google, Email Link & Phone SMS OTP) -->
   <div id="auth-gate" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between">
@@ -45,39 +45,38 @@
             <i class="fa-solid fa-bolt"></i>
           </div>
           <div>
-            <h1 class="text-lg font-extrabold tracking-tight">TASKY</h1>
-            <p id="gate-sub" class="text-[11px] text-slate-500">Fast Sign-In • Free Requests • WhatsApp Deal</p>
+            <h1 class="text-lg font-extrabold tracking-tight">TASKY AI</h1>
+            <p id="gate-sub" class="text-[11px] text-slate-500">কাজের প্রোফাইল • ইমারজেন্সি লাইভ • ডিল লক</p>
           </div>
         </div>
-        <button type="button" onclick="toggleLang()" id="gate-lang-btn" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
+        <button type="button" onclick="toggleLang()" id="gate-lang-btn" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">English</button>
       </div>
 
-      <!-- One-Tap Google Login First for Fastest Onboarding -->
       <button type="button" onclick="loginWithRealGoogle()" id="google-login-btn" class="w-full py-3 rounded-2xl bg-gradient-to-r from-brand-600 to-orange-500 hover:opacity-95 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
-        <i class="fa-brands fa-google text-sm"></i><span>Continue with Google</span>
+        <i class="fa-brands fa-google text-sm"></i><span>গুগল দিয়ে দ্রুত লগইন করুন</span>
       </button>
 
       <div class="relative flex items-center justify-center py-1">
         <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-        <span id="or-divider-lbl" class="bg-white dark:bg-slate-900 px-2.5 text-[10px] font-bold uppercase text-slate-400">or use OTP / Link</span>
+        <span id="or-divider-lbl" class="bg-white dark:bg-slate-900 px-2.5 text-[10px] font-bold uppercase text-slate-400">অথবা ইমেইল / OTP</span>
         <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
       </div>
 
       <div class="flex gap-2">
-        <button type="button" onclick="setAuthMode('signin')" id="tab-signin" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 dark:bg-slate-800 text-white">Sign In</button>
-        <button type="button" onclick="setAuthMode('signup')" id="tab-signup" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Create Account</button>
+        <button type="button" onclick="setAuthMode('signin')" id="tab-signin" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 dark:bg-slate-800 text-white">লগইন</button>
+        <button type="button" onclick="setAuthMode('signup')" id="tab-signup" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">নতুন অ্যাকাউন্ট</button>
       </div>
 
       <div id="auth-status-banner" class="hidden p-3 rounded-xl text-[11px] font-semibold border leading-relaxed"></div>
 
       <div class="space-y-3">
         <div id="signup-name-box" class="hidden">
-          <label id="lbl-fullname" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Your Name</label>
-          <input type="text" id="otp-fullname" placeholder="e.g. Momin Bepary" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+          <label id="lbl-fullname" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">আপনার নাম</label>
+          <input type="text" id="otp-fullname" placeholder="যেমন: মোমিন ব্যাপারী" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
 
         <div>
-          <label id="lbl-channel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Sign-In Method</label>
+          <label id="lbl-channel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">লগইন মাধ্যম</label>
           <select id="otp-channel" onchange="updateContactPlaceholder()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
             <option value="email">Email Sign-In Link (Fast &amp; Reliable)</option>
             <option value="phone">Phone SMS OTP (+CountryCode)</option>
@@ -85,7 +84,7 @@
         </div>
 
         <div>
-          <label id="lbl-contact" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Gmail or Mobile Number</label>
+          <label id="lbl-contact" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">জিমেইল বা মোবাইল নম্বর</label>
           <input type="text" id="otp-contact" oninput="autoDetectChannelFromInput()" placeholder="name@gmail.com or +9715XXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
 
@@ -94,21 +93,21 @@
         </div>
 
         <button type="button" onclick="sendRealVerification()" id="send-otp-btn" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i><span>Send Verification</span>
+          <i class="fa-solid fa-paper-plane"></i><span>ভেরিফিকেশন পাঠান</span>
         </button>
 
         <div id="otp-verify-box" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
           <p id="otp-live-hint" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"></p>
-          <input type="text" id="otp-input" maxlength="6" inputmode="numeric" placeholder="6-digit OTP code" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
+          <input type="text" id="otp-input" maxlength="6" inputmode="numeric" placeholder="৬ ডিজিটের কোড" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
           <button type="button" onclick="verifyRealSmsOtp()" id="verify-otp-btn" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs">
-            Verify &amp; Open TASKY
+            ভেরিফাই করে প্রবেশ করুন
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Top Header -->
+  <!-- Header -->
   <header class="bg-white/90 dark:bg-slate-900/90 glass-card border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40 pt-3">
     <div class="max-w-5xl mx-auto px-3.5 py-2.5 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2.5 min-w-0">
@@ -118,21 +117,24 @@
         <div class="truncate">
           <div class="flex items-center gap-1.5">
             <span class="text-lg font-extrabold tracking-tight">TASKY</span>
-            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">LIVE</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">SMART AI</span>
           </div>
-          <p id="live-loc-badge" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">📍 Area not set yet</p>
+          <p id="live-loc-badge" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">📍 এলাকা সেট করা হয়নি</p>
         </div>
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">
-        <button type="button" onclick="toggleLang()" id="lang-btn" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
-        <button type="button" onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center" title="Preferences &amp; AI">
+        <button type="button" onclick="openWorkerProfileModal()" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-extrabold flex items-center gap-1" title="কাজের প্রোফাইল ও দক্ষতা">
+          <i class="fa-solid fa-id-badge"></i><span id="my-work-prof-lbl">কাজের প্রোফাইল</span>
+        </button>
+        <button type="button" onclick="toggleLang()" id="lang-btn" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">English</button>
+        <button type="button" onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center" title="সেটিংস">
           <i class="fa-solid fa-sliders text-xs text-brand-600"></i>
         </button>
         <div id="user-profile" class="hidden flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 pl-1 pr-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           <img id="user-avatar" src="https://via.placeholder.com/150" alt="User" class="w-6 h-6 rounded-full object-cover">
-          <span id="user-name-badge" class="text-[11px] font-bold max-w-[75px] truncate"></span>
-          <button type="button" onclick="logoutRealUser()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Sign Out">
+          <span id="user-name-badge" class="text-[11px] font-bold max-w-[70px] truncate"></span>
+          <button type="button" onclick="logoutRealUser()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="লগআউট">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
@@ -143,56 +145,71 @@
   <!-- Main Content -->
   <main class="flex-grow max-w-5xl mx-auto w-full px-3.5 pt-4 space-y-4">
 
-    <!-- User-Friendly Hero + Search + Smart AI Bar -->
+    <!-- Nearby Emergency Alert Banner (Shows closest emergency tasks based on GPS distance) -->
+    <section id="nearby-emergency-alert-box" class="hidden rounded-2xl bg-red-600 text-white p-3.5 shadow-lg border border-red-400 space-y-2">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide">
+          <i class="fa-solid fa-tower-broadcast animate-ping text-amber-200"></i>
+          <span id="nearby-alert-title">কাছের লোকেশনে জরুরি অ্যালার্ট!</span>
+        </div>
+        <button type="button" onclick="openEmergencyCenterModal()" class="px-2.5 py-1 rounded-lg bg-white text-red-700 font-extrabold text-[11px]">
+          ইমারজেন্সি হাব
+        </button>
+      </div>
+      <div id="nearby-emergency-items" class="space-y-1.5 text-xs"></div>
+    </section>
+
+    <!-- Hero + Search + Smart AI & Emergency Action -->
     <section class="rounded-3xl bg-gradient-to-r from-brand-600 via-orange-600 to-ai-700 p-4 text-white shadow-xl space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
           <span id="hero-badge" class="inline-block bg-white/20 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full mb-1">
-            Free Service Requests • Direct WhatsApp Deal
+            কাজের প্রোফাইল • লাইভ ইমারজেন্সি • ডিল লক
           </span>
-          <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">Find Trusted Technicians Fast</h1>
+          <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">স্মার্ট সার্ভিস, প্রোফাইল ও ইমারজেন্সি ডিসপ্যাচ</h1>
         </div>
         <div class="flex items-center gap-1.5">
-          <button type="button" onclick="toggleSmartPrioritySort()" id="priority-sort-btn" class="px-2.5 py-2 rounded-xl bg-white text-slate-900 text-xs font-extrabold flex items-center gap-1">
-            <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i><span id="priority-lbl">Best Match</span>
+          <button type="button" onclick="openEmergencyCenterModal()" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/40 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-kit-medical animate-pulse"></i>
+            <span id="emergency-hub-btn-lbl">ইমারজেন্সি রুম</span>
           </button>
-          <button type="button" onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
-            <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
-            <span id="emergency-lbl">Emergency</span>
+          <button type="button" onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-2.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-xs font-bold flex items-center gap-1">
+            <i class="fa-solid fa-filter"></i>
+            <span id="emergency-lbl">জরুরি ফিল্টার</span>
           </button>
         </div>
       </div>
 
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-        <input type="text" id="search-input" oninput="filterTasks()" placeholder="Search AC, electrical, plumbing or area..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none">
+        <input type="text" id="search-input" oninput="filterTasks()" placeholder="কাজ, দক্ষতা (যেমন Electrician, AC, Plumber) বা এলাকা খুঁজুন..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none">
       </div>
 
-      <!-- Smart AI Quick Helper -->
+      <!-- Smart AI Command Bar -->
       <div class="bg-black/20 rounded-2xl p-2.5 space-y-1.5">
         <div class="flex items-center gap-1.5">
-          <button type="button" onclick="startVoiceAiCommand()" id="voice-ai-btn" title="Speak Command" class="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 text-amber-200 flex items-center justify-center shrink-0">
+          <button type="button" onclick="startVoiceAiCommand()" id="voice-ai-btn" title="ভয়েস কমান্ড" class="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 text-amber-200 flex items-center justify-center shrink-0">
             <i class="fa-solid fa-microphone text-xs"></i>
           </button>
-          <input type="text" id="ai-command-input" onkeydown="if(event.key==='Enter') executeAiCommand()" placeholder="Ask AI: e.g. 'dark mode', 'bangla', 'my area', 'AC leak'..." class="flex-1 bg-white/15 placeholder:text-white/75 text-white text-xs px-3 py-2 rounded-xl focus:outline-none min-w-0">
+          <input type="text" id="ai-command-input" onkeydown="if(event.key==='Enter') executeAiCommand()" placeholder="AI কমান্ড: 'ইমারজেন্সি', 'প্রোফাইল', 'লোকেশন', 'ডার্ক মোড'..." class="flex-1 bg-white/15 placeholder:text-white/75 text-white text-xs px-3 py-2 rounded-xl focus:outline-none min-w-0">
           <button type="button" onclick="executeAiCommand()" id="ai-cmd-btn" class="px-3 py-2 rounded-xl bg-white text-slate-900 font-extrabold text-xs shrink-0">
-            Go
+            AI চালান
           </button>
         </div>
         <p id="ai-controller-status" class="text-[11px] text-amber-100 px-1 truncate">
-          Tip: Type or speak what you need or say "dark mode" / "বাংলা".
+          AI সক্রিয়: কাছের লোকেশনের ইমারজেন্সি অ্যালার্ট ও ডিল লক সিস্টেম প্রস্তুত।
         </p>
       </div>
 
-      <!-- Location Bar -->
+      <!-- Live GPS Bar -->
       <div class="flex items-center justify-between gap-2 text-[11px] bg-black/15 rounded-xl px-3 py-2">
-        <span id="loc-status-text" class="truncate">Tap Track Now to detect your area</span>
+        <span id="loc-status-text" class="truncate">কাছের ইমারজেন্সি অ্যালার্ট পেতে লোকেশন ট্র্যাক করুন</span>
         <div class="flex items-center gap-1.5 shrink-0">
           <button type="button" onclick="openCurrentLocationInMaps()" id="open-map-btn" class="hidden px-2 py-1 rounded-lg bg-white/20 text-white font-bold">
             <i class="fa-solid fa-map-location-dot"></i>
           </button>
           <button type="button" onclick="trackCurrentLocation()" id="track-now-btn" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold">
-            <i class="fa-solid fa-location-crosshairs mr-1"></i><span id="track-btn-lbl">Track Now</span>
+            <i class="fa-solid fa-location-crosshairs mr-1"></i><span id="track-btn-lbl">লোকেশন ট্র্যাক</span>
           </button>
         </div>
       </div>
@@ -200,7 +217,7 @@
 
     <!-- Categories -->
     <section class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-      <button type="button" onclick="filterCategory('All')" data-cat="All" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shrink-0">All</button>
+      <button type="button" onclick="filterCategory('All')" data-cat="All" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shrink-0">সব কাজ</button>
       <button type="button" onclick="filterCategory('Electrical')" data-cat="Electrical" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Electrical</button>
       <button type="button" onclick="filterCategory('Plumbing')" data-cat="Plumbing" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Plumbing</button>
       <button type="button" onclick="filterCategory('AC')" data-cat="AC" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">AC Tech</button>
@@ -208,18 +225,18 @@
       <button type="button" onclick="filterCategory('Painter')" data-cat="Painter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Painter</button>
     </section>
 
-    <!-- Live Tasks Feed -->
+    <!-- Live Tasks & Worker Profiles Feed -->
     <section id="tab-home" class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 id="feed-heading" class="text-base font-extrabold">Available Service Requests</h2>
+        <h2 id="feed-heading" class="text-base font-extrabold">কাজের প্রোফাইল ও সার্ভিস রিকোয়েস্ট</h2>
         <span id="task-count" class="bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-400 text-[11px] font-extrabold px-2.5 py-1 rounded-full">0 Tasks</span>
       </div>
       <div id="tasks-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
     </section>
 
-    <!-- Message Deals & Bookings with Status Tracking -->
+    <!-- Message Deals & Bookings -->
     <section id="tab-deals" class="hidden md:block space-y-3">
-      <h2 id="deals-heading" class="text-base font-extrabold">My Deals &amp; Bookings</h2>
+      <h2 id="deals-heading" class="text-base font-extrabold">আমার ডিল ও বুকিং</h2>
       <div id="deals-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
     </section>
   </main>
@@ -228,26 +245,133 @@
   <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 glass-card border-t border-slate-200 dark:border-slate-800 z-40">
     <div class="max-w-md mx-auto px-6 py-2 flex items-center justify-between">
       <button type="button" onclick="switchMobileTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-brand-600 font-bold text-[11px]">
-        <i class="fa-solid fa-house text-base"></i><span id="nav-home-lbl">Home</span>
+        <i class="fa-solid fa-house text-base"></i><span id="nav-home-lbl">হোম</span>
       </button>
       <button type="button" onclick="openPostModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-ai-600 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg -mt-5 border-4 border-slate-50 dark:border-slate-950">
-        <i class="fa-solid fa-plus"></i><span id="nav-post-lbl">Post Free</span>
+        <i class="fa-solid fa-plus"></i><span id="nav-post-lbl">কাজ পোস্ট</span>
       </button>
       <button type="button" onclick="switchMobileTab('deals')" id="nav-deals" class="flex flex-col items-center gap-0.5 text-slate-500 font-semibold text-[11px]">
-        <i class="fa-solid fa-comments text-base"></i><span id="nav-deals-lbl">Deals</span>
+        <i class="fa-solid fa-comments text-base"></i><span id="nav-deals-lbl">ডিল</span>
       </button>
     </div>
   </nav>
 
-  <!-- Post Free Task Modal -->
+  <!-- Worker / Service Provider Profile Modal (Photo, Skills, Work Details & Contact) -->
+  <div id="worker-profile-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-3 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center">
+        <h3 class="text-base font-extrabold flex items-center gap-2">
+          <i class="fa-solid fa-user-gear text-brand-600"></i><span>কাজের প্রোফাইল ও দক্ষতা</span>
+        </h3>
+        <button type="button" onclick="closeWorkerProfileModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
+      </div>
+
+      <form onsubmit="saveWorkerProfile(event)" class="space-y-3 text-xs">
+        <div class="flex items-center gap-3">
+          <img id="wp-preview-img" src="https://via.placeholder.com/150" alt="Worker" class="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shrink-0">
+          <div class="flex-1 space-y-1">
+            <label class="block font-bold text-slate-500">প্রোফাইল ছবি আপলোড</label>
+            <input type="file" id="wp-photo-file" accept="image/*" onchange="handleWorkerPhotoUpload(event)" class="w-full text-[11px]">
+          </div>
+        </div>
+
+        <input type="text" id="wp-name" required placeholder="আপনার নাম (যেমন: Momin Bepary)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+
+        <div class="grid grid-cols-2 gap-2">
+          <select id="wp-main-skill" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+            <option value="Electrical">Electrical</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="AC">AC Tech</option>
+            <option value="Carpenter">Carpenter</option>
+            <option value="Painter">Painter</option>
+          </select>
+          <input type="tel" id="wp-whatsapp" required placeholder="WhatsApp (9715XXXXXXXX)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+        </div>
+
+        <input type="text" id="wp-skills-list" required placeholder="কাজের দক্ষতাসমূহ (কমা দিয়ে লিখুন: DB Box, 3-Phase, Pipe Leak, AC Gas)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+
+        <textarea id="wp-about-work" required rows="3" placeholder="আপনি কী কী কাজ করেন, অভিজ্ঞতা কত বছর এবং কাজের বিবরণ লিখুন..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
+
+        <button type="submit" class="w-full bg-brand-600 text-white font-extrabold py-3 rounded-xl text-sm">
+          কাজের প্রোফাইল সেভ ও প্রকাশ করুন
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Emergency Center Modal (Work Details, Work Photo, Live Chat & Live Location Share) -->
+  <div id="emergency-center-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-5 border border-red-200 dark:border-red-900 space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2.5">
+        <h3 class="text-base font-extrabold text-red-600 dark:text-red-400 flex items-center gap-2">
+          <i class="fa-solid fa-kit-medical animate-pulse"></i><span>ইমারজেন্সি হাব: ছবি, লাইভ লোকেশন ও চ্যাট</span>
+        </h3>
+        <button type="button" onclick="closeEmergencyCenterModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
+      </div>
+
+      <!-- Post Emergency Task with Photo & Live Location -->
+      <form onsubmit="handleAddTask(event, true)" class="p-3.5 rounded-2xl bg-red-50/70 dark:bg-red-950/25 border border-red-200 dark:border-red-900 space-y-2.5 text-xs">
+        <div class="font-extrabold text-red-700 dark:text-red-300">নতুন ইমারজেন্সি কাজ পাঠান (কাছের ইউজারদের অ্যালার্ট যাবে)</div>
+        <input type="text" id="emg-title" required placeholder="জরুরি কাজের শিরোনাম (যেমন: পানির পাইপ ফেটে গেছে / শর্ট সার্কিট)" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+        <div class="grid grid-cols-2 gap-2">
+          <select id="emg-category" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+            <option value="Electrical">Electrical</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="AC">AC Tech</option>
+            <option value="Carpenter">Carpenter</option>
+            <option value="Painter">Painter</option>
+          </select>
+          <input type="tel" id="emg-whatsapp" required placeholder="WhatsApp (9715XXXXXXXX)" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+        </div>
+        <textarea id="emg-desc" required rows="2" placeholder="জরুরি কাজের বিস্তারিত বিবরণ..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm"></textarea>
+
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold cursor-pointer">
+            <i class="fa-solid fa-camera text-brand-600"></i>
+            <span>কাজের ছবি</span>
+            <input type="file" id="emg-photo-input" accept="image/*" onchange="previewEmergencyPhoto(event)" class="hidden">
+          </label>
+          <button type="button" onclick="shareLiveLocationInEmergency()" class="px-3 py-1.5 rounded-xl bg-blue-600 text-white font-bold flex items-center gap-1">
+            <i class="fa-solid fa-location-dot"></i><span>লাইভ লোকেশন যুক্ত করুন</span>
+          </button>
+        </div>
+
+        <div id="emg-photo-preview-box" class="hidden">
+          <img id="emg-photo-preview" src="" alt="Emergency Work" class="w-full h-36 object-cover rounded-xl border border-slate-200 dark:border-slate-700">
+        </div>
+        <div id="emg-live-loc-tag" class="text-[11px] font-bold text-blue-700 dark:text-blue-300"></div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs">
+          ইমারজেন্সি অ্যালার্ট ও কাজ প্রকাশ করুন
+        </button>
+      </form>
+
+      <!-- Live Emergency Conversation Room -->
+      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-extrabold">ইমারজেন্সি লাইভ কথোপকথন ও লোকেশন</span>
+          <button type="button" onclick="sendLiveLocationToChat()" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px]">
+            <i class="fa-solid fa-share-location mr-1"></i>লাইভ লোকেশন পাঠান
+          </button>
+        </div>
+        <div id="emergency-chat-messages" class="max-h-40 overflow-y-auto space-y-2 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+        <div class="flex gap-1.5">
+          <input type="text" id="emg-chat-input" onkeydown="if(event.key==='Enter') sendEmergencyChatMessage()" placeholder="ইমারজেন্সি চ্যাটে মেসেজ লিখুন..." class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
+          <button type="button" onclick="sendEmergencyChatMessage()" class="px-3.5 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs">পাঠান</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Normal Task Modal -->
   <div id="post-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
-        <h3 id="post-modal-title" class="text-base font-extrabold">Post Free Service Request</h3>
+        <h3 id="post-modal-title" class="text-base font-extrabold">সার্ভিস রিকোয়েস্ট পোস্ট করুন</h3>
         <button type="button" onclick="closePostModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
-      <form id="task-form" onsubmit="handleAddTask(event)" class="space-y-3">
-        <input type="text" id="task-title" oninput="smartAutoFillFromInput()" required placeholder="What do you need? (e.g. AC Leak Fix)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+      <form id="task-form" onsubmit="handleAddTask(event, false)" class="space-y-3">
+        <input type="text" id="task-title" oninput="smartAutoFillFromInput()" required placeholder="কাজের শিরোনাম (যেমন: AC Leak Fix)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         <div class="grid grid-cols-2 gap-2.5">
           <select id="task-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
             <option value="Electrical">Electrical</option>
@@ -261,84 +385,66 @@
         </div>
         <label class="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 p-2.5 rounded-xl">
           <input type="checkbox" id="task-emergency" class="rounded">
-          <span id="lbl-emergency-check">Urgent / Emergency Service</span>
+          <span id="lbl-emergency-check">জরুরি / ইমারজেন্সি সার্ভিস</span>
         </label>
-        <textarea id="task-desc" oninput="smartAutoFillFromInput()" required rows="3" placeholder="Describe your issue and area..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
-        <button type="submit" id="publish-task-btn" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-sm">Publish Free Request</button>
+        <textarea id="task-desc" oninput="smartAutoFillFromInput()" required rows="3" placeholder="কাজের বিস্তারিত ও এলাকা লিখুন..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
+        <button type="submit" id="publish-task-btn" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-sm">রিকোয়েস্ট প্রকাশ করুন</button>
       </form>
     </div>
   </div>
 
-  <!-- Message Deal & Booking Modal -->
+  <!-- Deal & Finalize Modal (Finalizing locks booking for everyone) -->
   <div id="deal-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
-        <h3 class="text-base font-extrabold">Send Deal Message &amp; Book</h3>
+        <h3 class="text-base font-extrabold">ডিল মেসেজ, বুকিং ও ডিল ফাইনাল</h3>
         <button type="button" onclick="closeDealModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
       <p id="deal-task-info" class="text-xs bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl mb-3"></p>
       <div class="space-y-2.5">
-        <textarea id="deal-message" rows="3" placeholder="Write preferred time, details or price offer..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
-        <button type="button" onclick="confirmMessageDeal(false)" class="w-full bg-brand-600 text-white font-bold py-2.5 rounded-xl text-xs">Save Booking &amp; Message</button>
-        <button type="button" onclick="confirmMessageDeal(true)" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
-          <i class="fa-brands fa-whatsapp text-sm"></i><span>Chat &amp; Deal on WhatsApp</span>
+        <textarea id="deal-message" rows="3" placeholder="সময়, কাজের শর্ত বা টাকার ডিল মেসেজ লিখুন..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
+        <button type="button" onclick="confirmMessageDeal(false, false)" class="w-full bg-brand-600 text-white font-bold py-2.5 rounded-xl text-xs">মেসেজ ডিল সেভ করুন</button>
+        <button type="button" onclick="confirmMessageDeal(true, false)" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
+          <i class="fa-brands fa-whatsapp text-sm"></i><span>WhatsApp-এ কথা বলুন</span>
+        </button>
+        <button type="button" onclick="confirmMessageDeal(false, true)" class="w-full bg-slate-900 dark:bg-indigo-600 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-lock"></i><span>ডিল ফাইনাল করুন (বুকিং বন্ধ হবে)</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Settings, Custom Profile/Area, Self-Heal & AI Assistant Modal -->
+  <!-- Settings Modal -->
   <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4 max-h-[88vh] overflow-y-auto">
       <div class="flex justify-between items-center">
         <h3 class="text-base font-extrabold flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-brand-600"></i><span>Preferences &amp; Smart AI</span>
+          <i class="fa-solid fa-sliders text-brand-600"></i><span>সেটিংস ও লোকেশন</span>
         </h3>
         <button type="button" onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
 
-      <!-- User Preferences: Name, Preferred Area, Theme -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
-        <div class="font-bold">My Profile &amp; Area</div>
         <div class="flex items-center justify-between">
-          <span>Dark Mode</span>
-          <button type="button" onclick="toggleDarkMode()" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">Switch Theme</button>
+          <span>ডার্ক মোড</span>
+          <button type="button" onclick="toggleDarkMode()" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">থিম বদলান</button>
         </div>
         <div class="space-y-1.5 pt-1">
-          <input type="text" id="pref-name-input" placeholder="Display Name" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
+          <input type="text" id="pref-name-input" placeholder="আপনার নাম" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
           <div class="flex gap-1.5">
-            <input type="text" id="pref-area-input" placeholder="Preferred Area (e.g. Al Ruwais, Abu Dhabi)" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
-            <button type="button" onclick="trackCurrentLocation()" class="px-2.5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs shrink-0" title="Detect GPS">
+            <input type="text" id="pref-area-input" placeholder="এলাকা (যেমন: Al Ruwais, Abu Dhabi)" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
+            <button type="button" onclick="trackCurrentLocation()" class="px-2.5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs shrink-0" title="GPS ট্র্যাক">
               <i class="fa-solid fa-location-crosshairs"></i>
             </button>
           </div>
-          <button type="button" onclick="saveUserPreferences()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-bold text-xs">Save Preferences</button>
+          <button type="button" onclick="saveUserPreferences()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-bold text-xs">সেভ করুন</button>
         </div>
         <div id="settings-auto-profile-box" class="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1 text-[11px]"></div>
-      </div>
-
-      <!-- Smart AI Helper -->
-      <div class="p-3.5 rounded-2xl bg-gradient-to-br from-brand-50 to-amber-50 dark:from-slate-900 dark:to-slate-950 border border-brand-200/70 dark:border-slate-800 space-y-2.5">
-        <div class="flex items-center gap-2 text-xs font-extrabold text-brand-700 dark:text-brand-400">
-          <i class="fa-solid fa-wand-magic-sparkles"></i><span>TASKY Smart AI Helper</span>
-        </div>
-        <input type="text" id="ai-prompt-input" placeholder="Describe your problem to get a ready deal message..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs">
-        <button type="button" onclick="runTaskyAi()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-bold text-xs">Get AI Suggestion</button>
-        <div id="ai-output-box" class="hidden p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs space-y-1.5"></div>
-      </div>
-
-      <!-- Quiet Self-Heal & System Status -->
-      <div class="p-3 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/25 border border-indigo-200/60 dark:border-indigo-900 text-[11px] space-y-1.5">
-        <div class="flex items-center justify-between">
-          <span class="font-bold text-indigo-700 dark:text-indigo-300">App Health &amp; Auto-Fix</span>
-          <button type="button" onclick="runSelfHealDiagnostic(true)" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[10px]">Check Now</button>
-        </div>
-        <div id="ai-heal-log" class="max-h-20 overflow-y-auto text-slate-600 dark:text-slate-400 space-y-0.5"></div>
       </div>
     </div>
   </div>
 
-  <!-- Firebase Auth & Cloud Firestore Sync -->
+  <!-- Firebase Auth & Real-Time Firestore Sync -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
@@ -359,6 +465,8 @@
       getFirestore,
       collection,
       addDoc,
+      doc,
+      updateDoc,
       onSnapshot,
       query,
       orderBy,
@@ -401,9 +509,7 @@
         if (container) container.innerHTML = "";
         window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
           size: "normal",
-          callback: () => {
-            showAuthBanner("Verified. Tap Send Verification now.", false);
-          }
+          callback: () => showAuthBanner("ভেরিফাই সম্পন্ন। এখন Send চাপুন।", false)
         });
         window.recaptchaVerifier.render();
       } catch (_) {}
@@ -431,7 +537,7 @@
     });
 
     getRedirectResult(auth).catch((err) => {
-      if (err && err.code) showAuthBanner("Sign-in could not complete. Please try Google or Email link.", true);
+      if (err && err.code) showAuthBanner("সাইন-ইন সম্পন্ন করা যায়নি।", true);
     });
 
     if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -443,71 +549,48 @@
             window.localStorage.removeItem("tasky_email_for_signin");
             window.history.replaceState({}, document.title, window.location.pathname);
           })
-          .catch(() => showAuthBanner("Invalid or expired sign-in link. Please request a new one.", true));
+          .catch(() => showAuthBanner("লিংকটি মেয়াদোত্তীর্ণ বা ভুল।", true));
       }
     }
 
     window.sendRealVerification = async function () {
       const channel = document.getElementById("otp-channel")?.value || "email";
       const contact = (document.getElementById("otp-contact")?.value || "").trim();
-      const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
-
       if (!contact) {
-        showAuthBanner(isBn ? "আপনার ইমেইল বা ফোন নম্বর লিখুন।" : "Please enter your email or phone number.", true);
+        showAuthBanner("আপনার ইমেইল বা ফোন নম্বর লিখুন।", true);
         return;
       }
-
       try {
         if (channel === "phone") {
           const phone = contact.startsWith("+") ? contact : `+${contact}`;
           if (!window.recaptchaVerifier) renderVisibleRecaptcha();
           phoneConfirmation = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
           document.getElementById("otp-verify-box")?.classList.remove("hidden");
-          const hint = document.getElementById("otp-live-hint");
-          if (hint) {
-            hint.textContent = isBn
-              ? `${phone} নম্বরে SMS কোড পাঠানো হয়েছে। নিচে কোড লিখুন।`
-              : `SMS code sent to ${phone}. Enter the 6-digit code below.`;
-          }
-          showAuthBanner(isBn ? "SMS কোড পাঠানো হয়েছে।" : "SMS code sent.", false);
+          document.getElementById("otp-live-hint").textContent = `${phone} নম্বরে SMS কোড পাঠানো হয়েছে।`;
+          showAuthBanner("SMS কোড পাঠানো হয়েছে।", false);
         } else {
-          const actionCodeSettings = {
-            url: window.location.href.split("?")[0],
-            handleCodeInApp: true
-          };
+          const actionCodeSettings = { url: window.location.href.split("?")[0], handleCodeInApp: true };
           await sendSignInLinkToEmail(auth, contact, actionCodeSettings);
           window.localStorage.setItem("tasky_email_for_signin", contact);
-          showAuthBanner(
-            isBn
-              ? `${contact} ইমেইলে লগইন লিংক পাঠানো হয়েছে। ইনবক্স বা স্প্যাম ফোল্ডার চেক করুন।`
-              : `Sign-in link sent to ${contact}. Check your Inbox or Spam folder.`,
-            false
-          );
+          showAuthBanner(`${contact} ইমেইলে লগইন লিংক পাঠানো হয়েছে। ইনবক্স/স্প্যাম চেক করুন।`, false);
         }
-      } catch (err) {
-        const code = err.code || "";
-        const friendly = code.includes("operation-not-allowed") || code.includes("captcha") || code.includes("invalid-app-credential")
-          ? (isBn
-              ? "এই নম্বরে এখন SMS পাঠানো যাচ্ছে না। দ্রুত লগইনের জন্য 'Continue with Google' বা 'Email Sign-In Link' ব্যবহার করুন।"
-              : "SMS is unavailable for this number right now. Please use 'Continue with Google' or 'Email Sign-In Link' for instant sign-in.")
-          : (isBn ? "ভেরিফিকেশন পাঠানো যায়নি। তথ্য ঠিক আছে কি না দেখুন।" : "Could not send verification. Please check your input.");
-        showAuthBanner(friendly, true);
+      } catch (_) {
+        showAuthBanner("এই নম্বরে এখন SMS পাঠানো যাচ্ছে না। Google বা Email লিংক ব্যবহার করুন।", true);
         if (channel === "phone") renderVisibleRecaptcha();
       }
     };
 
     window.verifyRealSmsOtp = async function () {
       const code = (document.getElementById("otp-input")?.value || "").trim();
-      const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
       if (!phoneConfirmation || !code) {
-        showAuthBanner(isBn ? "আগে কোড পাঠান এবং ৬ ডিজিটের কোড লিখুন।" : "Request a code first and enter the 6-digit code.", true);
+        showAuthBanner("আগে কোড পাঠান এবং ৬ ডিজিটের কোড লিখুন।", true);
         return;
       }
       try {
         await phoneConfirmation.confirm(code);
-        showAuthBanner(isBn ? "লগইন সফল হয়েছে!" : "Signed in successfully!", false);
+        showAuthBanner("লগইন সফল হয়েছে!", false);
       } catch (_) {
-        showAuthBanner(isBn ? "কোডটি সঠিক নয়, আবার চেষ্টা করুন।" : "Incorrect code. Please try again.", true);
+        showAuthBanner("কোডটি সঠিক নয়।", true);
       }
     };
 
@@ -517,98 +600,127 @@
         await signInWithPopup(auth, provider);
       } catch (err) {
         if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
-          try {
-            await signInWithRedirect(auth, provider);
-            return;
-          } catch (_) {}
+          try { await signInWithRedirect(auth, provider); return; } catch (_) {}
         }
-        const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
-        showAuthBanner(isBn ? "Google সাইন-ইন সম্পন্ন করা যায়নি, আবার চেষ্টা করুন।" : "Google sign-in could not complete. Please try again.", true);
+        showAuthBanner("Google সাইন-ইন সম্পন্ন করা যায়নি।", true);
       }
     };
 
     window.logoutRealUser = async function () {
       localStorage.removeItem("tasky_real_user");
-      try {
-        await signOut(auth);
-      } catch (_) {}
+      try { await signOut(auth); } catch (_) {}
       if (typeof applySessionUI === "function") applySessionUI(null);
     };
 
     window.saveTaskToCloud = async function (taskObj) {
       try {
-        await addDoc(collection(db, "tasky_requests"), {
-          ...taskObj,
-          createdAt: serverTimestamp()
-        });
+        const ref = await addDoc(collection(db, "tasky_requests"), { ...taskObj, createdAt: serverTimestamp() });
+        if (typeof bindCloudTaskDocId === "function") bindCloudTaskDocId(taskObj.id, ref.id);
       } catch (_) {}
     };
 
-    window.saveDealToCloud = async function (dealObj) {
+    window.markTaskFinalizedInCloud = async function (taskObj) {
       try {
-        await addDoc(collection(db, "tasky_deals"), {
-          ...dealObj,
-          cloudTs: serverTimestamp()
-        });
+        if (taskObj.cloudDocId) {
+          await updateDoc(doc(db, "tasky_requests", taskObj.cloudDocId), {
+            dealFinalized: true,
+            bookingClosed: true
+          });
+        }
+      } catch (_) {}
+    };
+
+    window.sendEmergencyChatToCloud = async function (msgObj) {
+      try {
+        await addDoc(collection(db, "tasky_emergency_chat"), { ...msgObj, ts: serverTimestamp() });
       } catch (_) {}
     };
 
     try {
       const qTasks = query(collection(db, "tasky_requests"), orderBy("createdAt", "desc"), limit(30));
       onSnapshot(qTasks, (snap) => {
-        if (!snap.empty && typeof mergeCloudTasks === "function") {
-          const cloudItems = snap.docs.map((d) => ({ ...d.data(), id: d.data().id || d.id }));
-          mergeCloudTasks(cloudItems);
+        if (!snap.empty && typeof syncCloudTasksState === "function") {
+          const items = snap.docs.map((d) => ({ ...d.data(), id: d.data().id || d.id, cloudDocId: d.id }));
+          syncCloudTasksState(items);
         }
       });
 
-      const qDeals = query(collection(db, "tasky_deals"), orderBy("cloudTs", "desc"), limit(30));
-      onSnapshot(qDeals, (snap) => {
-        if (!snap.empty && typeof mergeCloudDeals === "function") {
-          const cloudDeals = snap.docs.map((d) => ({
-            ...d.data(),
-            id: d.data().id || d.id,
-            status: d.data().status || "Pending",
-            createdAt: d.data().createdAt || new Date().toLocaleString()
-          }));
-          mergeCloudDeals(cloudDeals);
+      const qChat = query(collection(db, "tasky_emergency_chat"), orderBy("ts", "asc"), limit(40));
+      onSnapshot(qChat, (snap) => {
+        if (!snap.empty && typeof syncCloudEmergencyChat === "function") {
+          const msgs = snap.docs.map((d) => ({ ...d.data(), id: d.id }));
+          syncCloudEmergencyChat(msgs);
         }
       });
     } catch (_) {}
   </script>
 
-  <!-- Core App + User Preferences + Deal Status + AI Helper -->
+  <!-- Core App: Worker Profiles, Proximity Emergency Alerts, Live Chat/Location & Deal Lock -->
   <script>
     window.__taskyAuthMode = "signin";
-    let currentLang = localStorage.getItem("tasky_lang") || "en";
+    let currentLang = localStorage.getItem("tasky_lang") || "bn";
     let currentLocation = safeJsonParse(localStorage.getItem("tasky_last_location"), null);
     let deals = safeJsonParse(localStorage.getItem("tasky_message_deals"), []);
+    let workerProfile = safeJsonParse(localStorage.getItem("tasky_worker_profile"), {
+      name: "Momin Bepary",
+      photo: "https://via.placeholder.com/150",
+      mainSkill: "Electrical",
+      skills: ["3-Phase Wiring", "DB Box & MCB", "Plumbing & Leak Fix", "AC Maintenance"],
+      about: "অভিজ্ঞ ইলেকট্রিশিয়ান, প্লাম্বার ও বিল্ডিং মেইনটেনেন্স টেকনিশিয়ান। দ্রুত ও মানসম্মত কাজ করি।",
+      whatsapp: "971568362867"
+    });
+    let emergencyChat = safeJsonParse(localStorage.getItem("tasky_emergency_chat"), [
+      {
+        id: "C-1",
+        sender: "TASKY Emergency Desk",
+        text: "জরুরি প্রয়োজনে কাজের ছবি ও লাইভ লোকেশন পাঠান—কাছের টেকনিশিয়ান সাড়া দেবেন।",
+        mapUrl: "",
+        time: new Date().toLocaleTimeString()
+      }
+    ]);
+
     let selectedTaskForDeal = null;
     let emergencyOnly = false;
-    let smartPrioritySort = true;
     let currentCategory = "All";
-    let healLogs = [];
+    let pendingEmergencyPhotoData = "";
+    let pendingEmergencyLiveLoc = null;
 
     const DEFAULT_TASKS = [
       {
         id: "T-101",
         title: "AC Water Leak & Cooling Check",
         category: "AC",
-        description: "Indoor AC unit leaking water and cooling is low.",
-        whatsapp: "971500000000",
+        description: "ইনডোর AC থেকে পানি পড়ছে এবং ঠান্ডা কম হচ্ছে।",
+        whatsapp: "971568362867",
         location: "Al Ruwais, Abu Dhabi",
+        coords: { lat: 24.1103, lng: 52.7306 },
+        photo: "",
         isEmergency: true,
-        authorName: "TASKY Verified"
+        dealFinalized: false,
+        worker: {
+          name: "Momin Bepary",
+          photo: "https://via.placeholder.com/150",
+          skills: ["AC Service", "Electrical", "Plumbing"],
+          about: "অভিজ্ঞ টেকনিশিয়ান — দ্রুত এসি, ইলেকট্রিক ও প্লাম্বিং সমাধান।"
+        }
       },
       {
         id: "T-102",
         title: "DB Box MCB Trip & Wiring Check",
         category: "Electrical",
-        description: "Main breaker trips when heavy load runs.",
-        whatsapp: "971500000000",
+        description: "হেভি লোড দিলে মেইন ব্রেকার ট্রিপ করছে, দ্রুত চেক ও ফিক্স দরকার।",
+        whatsapp: "971568362867",
         location: "Munshiganj, Bangladesh",
+        coords: { lat: 23.5422, lng: 90.5305 },
+        photo: "",
         isEmergency: false,
-        authorName: "TASKY Verified"
+        dealFinalized: false,
+        worker: {
+          name: "Momin Bepary",
+          photo: "https://via.placeholder.com/150",
+          skills: ["DB Box", "3-Phase Load", "House Wiring"],
+          about: "ইন্ডাস্ট্রিয়াল ও রেসিডেন্সিয়াল ইলেকট্রিক্যাল এবং মেইনটেনেন্স অভিজ্ঞতা।"
+        }
       }
     ];
 
@@ -636,352 +748,452 @@
       return safeJsonParse(localStorage.getItem("tasky_real_user"), null);
     }
 
-    window.autoDetectChannelFromInput = function () {
-      const val = (document.getElementById("otp-contact")?.value || "").trim();
-      const sel = document.getElementById("otp-channel");
-      if (!sel || !val) return;
-      if (val.includes("@")) {
-        sel.value = "email";
-      } else if (val.startsWith("+") || /^\d{8,}$/.test(val)) {
-        sel.value = "phone";
-      }
-      updateContactPlaceholder();
-    };
-
-    function detectSmartCategoryAndUrgency(text) {
-      const lower = String(text || "").toLowerCase();
-      let category = null;
-      if (lower.includes("ac") || lower.includes("cooling") || lower.includes("split") || lower.includes("এসি")) category = "AC";
-      else if (lower.includes("pipe") || lower.includes("leak") || lower.includes("water") || lower.includes("plumb") || lower.includes("পানি") || lower.includes("পাইপ")) category = "Plumbing";
-      else if (lower.includes("wire") || lower.includes("light") || lower.includes("mcb") || lower.includes("breaker") || lower.includes("electric") || lower.includes("কারেন্ট") || lower.includes("তার")) category = "Electrical";
-      else if (lower.includes("wood") || lower.includes("door") || lower.includes("lock") || lower.includes("carpent") || lower.includes("কাঠ") || lower.includes("দরজা")) category = "Carpenter";
-      else if (lower.includes("paint") || lower.includes("wall") || lower.includes("রং")) category = "Painter";
-
-      const urgent = lower.includes("urgent") || lower.includes("emergency") || lower.includes("leak") || lower.includes("spark") || lower.includes("trip") || lower.includes("জরুরি") || lower.includes("শর্ট");
-      return { category, urgent };
+    // Distance in KM between two GPS coordinates (Haversine formula)
+    function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+      if ([lat1, lon1, lat2, lon2].some((v) => typeof v !== "number")) return null;
+      const R = 6371;
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLon = ((lon2 - lon1) * Math.PI) / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180)
+        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Number((R * c).toFixed(1));
     }
 
-    window.smartAutoFillFromInput = function () {
-      const title = document.getElementById("task-title")?.value || "";
-      const desc = document.getElementById("task-desc")?.value || "";
-      const info = detectSmartCategoryAndUrgency(`${title} ${desc}`);
-      const catSelect = document.getElementById("task-category");
-      const emergCheck = document.getElementById("task-emergency");
-      if (info.category && catSelect) catSelect.value = info.category;
-      if (info.urgent && emergCheck) emergCheck.checked = true;
+    window.bindCloudTaskDocId = function (localId, cloudDocId) {
+      allTasks = allTasks.map((t) => (t.id === localId ? { ...t, cloudDocId } : t));
+      localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
     };
 
-    window.mergeCloudTasks = function (cloudItems) {
-      const existingIds = new Set(allTasks.map((t) => t.id));
-      let added = 0;
-      cloudItems.forEach((item) => {
-        if (!existingIds.has(item.id)) {
-          allTasks.unshift(item);
-          existingIds.add(item.id);
-          added++;
+    window.syncCloudTasksState = function (cloudItems) {
+      const map = new Map(allTasks.map((t) => [t.id, t]));
+      cloudItems.forEach((c) => {
+        const prev = map.get(c.id) || {};
+        map.set(c.id, {
+          ...prev,
+          ...c,
+          dealFinalized: Boolean(c.dealFinalized || prev.dealFinalized)
+        });
+      });
+      allTasks = Array.from(map.values());
+      localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+      renderNearbyEmergencyAlerts();
+      renderTasksList(getFilteredTasks());
+    };
+
+    window.syncCloudEmergencyChat = function (msgs) {
+      const seen = new Set(emergencyChat.map((m) => m.id));
+      msgs.forEach((m) => {
+        if (!seen.has(m.id)) {
+          emergencyChat.push(m);
+          seen.add(m.id);
         }
       });
-      if (added > 0) {
-        localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
-        renderTasksList(getFilteredTasks());
-      }
+      localStorage.setItem("tasky_emergency_chat", JSON.stringify(emergencyChat));
+      renderEmergencyChat();
     };
 
-    window.mergeCloudDeals = function (cloudDeals) {
-      const existingIds = new Set(deals.map((d) => d.id));
-      let added = 0;
-      cloudDeals.forEach((item) => {
-        if (!existingIds.has(item.id)) {
-          deals.unshift({ ...item, status: item.status || "Pending" });
-          existingIds.add(item.id);
-          added++;
+    // Worker Profile Modal Functions
+    window.openWorkerProfileModal = function () {
+      document.getElementById("wp-preview-img").src = workerProfile.photo || "https://via.placeholder.com/150";
+      document.getElementById("wp-name").value = workerProfile.name || "";
+      document.getElementById("wp-main-skill").value = workerProfile.mainSkill || "Electrical";
+      document.getElementById("wp-whatsapp").value = workerProfile.whatsapp || "";
+      document.getElementById("wp-skills-list").value = (workerProfile.skills || []).join(", ");
+      document.getElementById("wp-about-work").value = workerProfile.about || "";
+      document.getElementById("worker-profile-modal").classList.remove("hidden");
+    };
+    window.closeWorkerProfileModal = () => document.getElementById("worker-profile-modal").classList.add("hidden");
+
+    window.handleWorkerPhotoUpload = function (e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        workerProfile.photo = reader.result;
+        document.getElementById("wp-preview-img").src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.saveWorkerProfile = function (e) {
+      e.preventDefault();
+      const skillsArr = (document.getElementById("wp-skills-list").value || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      workerProfile = {
+        name: document.getElementById("wp-name").value.trim() || "TASKY Worker",
+        photo: workerProfile.photo || "https://via.placeholder.com/150",
+        mainSkill: document.getElementById("wp-main-skill").value,
+        whatsapp: document.getElementById("wp-whatsapp").value.trim(),
+        skills: skillsArr.length ? skillsArr : ["General Maintenance"],
+        about: document.getElementById("wp-about-work").value.trim()
+      };
+      localStorage.setItem("tasky_worker_profile", JSON.stringify(workerProfile));
+      closeWorkerProfileModal();
+      renderTasksList(getFilteredTasks());
+      alert("আপনার কাজের প্রোফাইল ও দক্ষতা সেভ হয়েছে!");
+    };
+
+    // Emergency Hub Modal Functions
+    window.openEmergencyCenterModal = function () {
+      document.getElementById("emergency-center-modal").classList.remove("hidden");
+      renderEmergencyChat();
+    };
+    window.closeEmergencyCenterModal = () => document.getElementById("emergency-center-modal").classList.add("hidden");
+
+    window.previewEmergencyPhoto = function (e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingEmergencyPhotoData = reader.result;
+        const box = document.getElementById("emg-photo-preview-box");
+        const img = document.getElementById("emg-photo-preview");
+        if (img && box) {
+          img.src = reader.result;
+          box.classList.remove("hidden");
         }
-      });
-      if (added > 0) {
-        localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
-        renderDealsList();
-      }
+      };
+      reader.readAsDataURL(file);
     };
 
-    function recordHeal(message) {
-      const time = new Date().toLocaleTimeString();
-      healLogs.unshift(`[${time}] ${message}`);
-      healLogs = healLogs.slice(0, 15);
-      const box = document.getElementById("ai-heal-log");
-      if (box) {
-        box.innerHTML = healLogs.map((l) => `<div>${escapeHtml(l)}</div>`).join("");
-      }
-      const statusEl = document.getElementById("ai-controller-status");
-      if (statusEl) statusEl.textContent = message;
-    }
-
-    window.runSelfHealDiagnostic = function (verbose = false) {
-      let fixes = 0;
-      if (!Array.isArray(allTasks)) {
-        allTasks = [...DEFAULT_TASKS];
-        localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
-        fixes++;
-      }
-      if (!Array.isArray(deals)) {
-        deals = [];
-        localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
-        fixes++;
-      }
-      if (currentLang !== "en" && currentLang !== "bn") {
-        currentLang = "en";
-        localStorage.setItem("tasky_lang", "en");
-        fixes++;
-      }
-
-      applyLanguageUI();
-      applySessionUI(getRealUser());
-      syncProfileAndUI();
-
-      if (fixes > 0 || verbose) {
-        recordHeal(
-          currentLang === "bn"
-            ? "অ্যাপ সুস্থ আছে এবং প্রয়োজনীয় সেটিংস সিঙ্ক হয়েছে।"
-            : "App is healthy and settings are synced."
-        );
-      }
-    };
-
-    window.addEventListener("error", () => {
-      try { runSelfHealDiagnostic(false); } catch (_) {}
-    });
-
-    window.addEventListener("unhandledrejection", () => {
-      try { runSelfHealDiagnostic(false); } catch (_) {}
-    });
-
-    window.startVoiceAiCommand = function () {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const isBn = currentLang === "bn";
-      if (!SpeechRecognition) {
-        recordHeal(isBn ? "ভয়েস ইনপুট সাপোর্ট নেই, লিখে কমান্ড দিন।" : "Voice input unavailable; type your command.");
+    window.shareLiveLocationInEmergency = function () {
+      const tag = document.getElementById("emg-live-loc-tag");
+      tag.textContent = "লাইভ লোকেশন সংগ্রহ করা হচ্ছে...";
+      if (!navigator.geolocation) {
+        tag.textContent = "এই ডিভাইসে GPS সাপোর্ট নেই";
         return;
       }
-      const recognition = new SpeechRecognition();
-      recognition.lang = isBn ? "bn-BD" : "en-US";
-      recognition.interimResults = false;
-      recordHeal(isBn ? "শুনছি..." : "Listening...");
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        const input = document.getElementById("ai-command-input");
-        if (input) input.value = transcript;
-        executeAiCommand();
-      };
-      recognition.onerror = () => {
-        recordHeal(isBn ? "ভয়েস শোনা যায়নি, আবার চেষ্টা করুন।" : "Could not hear voice; please try again.");
-      };
-      recognition.start();
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          pendingEmergencyLiveLoc = {
+            lat: Number(pos.coords.latitude.toFixed(5)),
+            lng: Number(pos.coords.longitude.toFixed(5)),
+            areaName: currentLocation?.areaName || `GPS ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`
+          };
+          currentLocation = { ...(currentLocation || {}), ...pendingEmergencyLiveLoc };
+          localStorage.setItem("tasky_last_location", JSON.stringify(currentLocation));
+          tag.textContent = `📍 লাইভ লোকেশন যুক্ত হয়েছে: ${pendingEmergencyLiveLoc.areaName}`;
+          renderNearbyEmergencyAlerts();
+        },
+        () => {
+          tag.textContent = "লোকেশন অনুমতি দিন";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
     };
 
-    window.executeAiCommand = function () {
-      const input = document.getElementById("ai-command-input");
-      if (!input) return;
-      const raw = input.value.trim();
-      const cmd = raw.toLowerCase();
-      if (!cmd) return;
-
-      if (cmd.includes("dark") || cmd.includes("ডার্ক") || cmd.includes("theme") || cmd.includes("থিম")) {
-        window.toggleDarkMode();
-        recordHeal(currentLang === "bn" ? "থিম পরিবর্তন করা হয়েছে।" : "Theme switched.");
-      } else if (cmd.includes("bangla") || cmd.includes("বাংলা") || cmd.includes("bn")) {
-        currentLang = "bn";
-        localStorage.setItem("tasky_lang", "bn");
-        applyLanguageUI();
-        recordHeal("ভাষা বাংলায় পরিবর্তন করা হয়েছে।");
-      } else if (cmd.includes("english") || cmd.includes("ইংরেজি") || cmd.includes("en")) {
-        currentLang = "en";
-        localStorage.setItem("tasky_lang", "en");
-        applyLanguageUI();
-        recordHeal("Language switched to English.");
-      } else if (cmd.includes("gps") || cmd.includes("location") || cmd.includes("লোকেশন") || cmd.includes("my area") || cmd.includes("এলাকা")) {
-        window.trackCurrentLocation();
-      } else if (cmd.includes("emergency") || cmd.includes("ইমারজেন্সি") || cmd.includes("জরুরি")) {
-        window.toggleEmergencyFilter();
-        recordHeal(currentLang === "bn" ? "ইমারজেন্সি ফিল্টার আপডেট হয়েছে।" : "Emergency filter updated.");
-      } else if (cmd.includes("post") || cmd.includes("পোস্ট")) {
-        window.openPostModal();
-      } else if (cmd.includes("deal") || cmd.includes("ডিল")) {
-        window.switchMobileTab("deals");
-      } else {
-        const searchEl = document.getElementById("search-input");
-        if (searchEl) searchEl.value = raw;
-        window.filterTasks();
-        recordHeal(currentLang === "bn" ? `"${raw}" অনুযায়ী কাজ দেখানো হচ্ছে।` : `Showing results for "${raw}".`);
-      }
-      input.value = "";
-    };
-
-    window.saveUserPreferences = function () {
-      const isBn = currentLang === "bn";
-      const nameVal = (document.getElementById("pref-name-input")?.value || "").trim();
-      const areaVal = (document.getElementById("pref-area-input")?.value || "").trim();
-
-      let user = getRealUser() || { displayName: "TASKY User", email: "", phoneNumber: "", photoURL: "https://via.placeholder.com/150", verified: true };
-      if (nameVal) user.displayName = nameVal;
-      localStorage.setItem("tasky_real_user", JSON.stringify(user));
-
-      if (areaVal) {
-        currentLocation = {
-          ...(currentLocation || {}),
-          areaName: areaVal
-        };
-        localStorage.setItem("tasky_last_location", JSON.stringify(currentLocation));
-        document.getElementById("live-loc-badge").textContent = `📍 ${areaVal}`;
-        document.getElementById("loc-status-text").textContent = areaVal;
-      }
-
-      applySessionUI(user);
-      syncProfileAndUI();
-      renderTasksList(getFilteredTasks());
-      recordHeal(isBn ? "আপনার প্রোফাইল ও পছন্দের এলাকা সেভ হয়েছে।" : "Your profile and preferred area have been saved.");
-    };
-
-    function syncProfileAndUI() {
-      const isBn = currentLang === "bn";
+    window.sendEmergencyChatMessage = function () {
+      const inp = document.getElementById("emg-chat-input");
+      const text = (inp?.value || "").trim();
+      if (!text) return;
       const user = getRealUser();
-      const box = document.getElementById("settings-auto-profile-box");
-      const nameInp = document.getElementById("pref-name-input");
-      const areaInp = document.getElementById("pref-area-input");
+      const msg = {
+        id: "C-" + Date.now(),
+        sender: user?.displayName || workerProfile.name || "User",
+        text,
+        mapUrl: "",
+        time: new Date().toLocaleTimeString()
+      };
+      emergencyChat.push(msg);
+      localStorage.setItem("tasky_emergency_chat", JSON.stringify(emergencyChat));
+      if (typeof sendEmergencyChatToCloud === "function") sendEmergencyChatToCloud(msg);
+      renderEmergencyChat();
+      inp.value = "";
+    };
 
-      if (nameInp && user?.displayName) nameInp.value = user.displayName;
-      if (areaInp && currentLocation?.areaName) areaInp.value = currentLocation.areaName;
+    window.sendLiveLocationToChat = function () {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = Number(pos.coords.latitude.toFixed(5));
+        const lng = Number(pos.coords.longitude.toFixed(5));
+        const user = getRealUser();
+        const msg = {
+          id: "LOC-" + Date.now(),
+          sender: user?.displayName || workerProfile.name || "User",
+          text: `📍 লাইভ লোকেশন শেয়ার করেছেন (${lat}, ${lng})`,
+          mapUrl: `https://www.google.com/maps?q=${lat},${lng}`,
+          time: new Date().toLocaleTimeString()
+        };
+        emergencyChat.push(msg);
+        localStorage.setItem("tasky_emergency_chat", JSON.stringify(emergencyChat));
+        if (typeof sendEmergencyChatToCloud === "function") sendEmergencyChatToCloud(msg);
+        renderEmergencyChat();
+      });
+    };
 
+    function renderEmergencyChat() {
+      const box = document.getElementById("emergency-chat-messages");
       if (!box) return;
-      if (!user) {
-        box.innerHTML = `<div class="text-slate-500">${isBn ? "সাইন-ইন করলে আপনার প্রোফাইল তথ্য এখানে দেখাবে।" : "Sign in to view your profile details here."}</div>`;
+      box.innerHTML = emergencyChat.map((m) => `
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800 space-y-1">
+          <div class="flex justify-between text-[10px] font-bold text-slate-500">
+            <span>${escapeHtml(m.sender)}</span>
+            <span>${escapeHtml(m.time)}</span>
+          </div>
+          <div class="text-xs text-slate-800 dark:text-slate-200">${escapeHtml(m.text)}</div>
+          ${m.mapUrl ? `<a href="${escapeHtml(m.mapUrl)}" target="_blank" rel="noopener" class="inline-block text-[11px] font-extrabold text-blue-600 underline">Google Maps-এ লাইভ লোকেশন দেখুন</a>` : ""}
+        </div>
+      `).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function renderNearbyEmergencyAlerts() {
+      const box = document.getElementById("nearby-emergency-alert-box");
+      const listEl = document.getElementById("nearby-emergency-items");
+      if (!box || !listEl) return;
+
+      const openEmergencies = allTasks.filter((t) => t.isEmergency && !t.dealFinalized);
+      if (!openEmergencies.length) {
+        box.classList.add("hidden");
         return;
       }
 
-      const locText = currentLocation
-        ? (currentLocation.areaName || `GPS ${currentLocation.lat}, ${currentLocation.lng}`)
-        : (isBn ? "এলাকা সেট করা হয়নি" : "Area not set");
-      const contactText = user.phoneNumber || user.email || (isBn ? "ভেরিফায়েড অ্যাকাউন্ট" : "Verified Account");
+      const withDist = openEmergencies.map((t) => {
+        const dist = (currentLocation && t.coords)
+          ? calculateDistanceKm(currentLocation.lat, currentLocation.lng, t.coords.lat, t.coords.lng)
+          : null;
+        return { task: t, dist };
+      }).sort((a, b) => {
+        if (a.dist === null && b.dist === null) return 0;
+        if (a.dist === null) return 1;
+        if (b.dist === null) return -1;
+        return a.dist - b.dist;
+      });
 
-      box.innerHTML = `
-        <div class="flex justify-between gap-2"><span class="text-slate-500">${isBn ? "নাম" : "Name"}:</span><b>${escapeHtml(user.displayName)}</b></div>
-        <div class="flex justify-between gap-2"><span class="text-slate-500">${isBn ? "যোগাযোগ" : "Contact"}:</span><span class="truncate">${escapeHtml(contactText)}</span></div>
-        <div class="flex justify-between gap-2"><span class="text-slate-500">${isBn ? "এলাকা" : "Area"}:</span><b class="text-brand-600 truncate">${escapeHtml(locText)}</b></div>
-      `;
+      const closest = withDist.slice(0, 2);
+      box.classList.remove("hidden");
+      listEl.innerHTML = closest.map(({ task, dist }) => {
+        const distLabel = dist !== null ? ` • প্রায় ${dist} কিমি দূরে (সবচেয়ে কাছে)` : " • জরুরি এলাকা";
+        return `
+          <div class="flex items-center justify-between gap-2 bg-black/20 rounded-xl px-3 py-2">
+            <div class="truncate">
+              <b>${escapeHtml(task.title)}</b><span class="text-amber-200">${escapeHtml(distLabel)}</span>
+              <div class="text-[11px] text-white/90 truncate">📍 ${escapeHtml(task.location || "")}</div>
+            </div>
+            <button type="button" onclick="openDealModal('${escapeHtml(task.id)}')" class="px-2.5 py-1 rounded-lg bg-white text-red-700 font-extrabold text-[11px] shrink-0">
+              ডিল করুন
+            </button>
+          </div>
+        `;
+      }).join("");
     }
 
-    function applySessionUI(user) {
-      const gate = document.getElementById("auth-gate");
-      const profile = document.getElementById("user-profile");
-      if (!gate || !profile) return;
+    window.handleAddTask = function (e, fromEmergencyHub = false) {
+      e.preventDefault();
+      const user = getRealUser();
+      const title = document.getElementById(fromEmergencyHub ? "emg-title" : "task-title").value.trim();
+      const category = document.getElementById(fromEmergencyHub ? "emg-category" : "task-category").value;
+      const whatsapp = document.getElementById(fromEmergencyHub ? "emg-whatsapp" : "task-whatsapp").value.trim();
+      const description = document.getElementById(fromEmergencyHub ? "emg-desc" : "task-desc").value.trim();
+      const isEmergency = fromEmergencyHub ? true : document.getElementById("task-emergency").checked;
 
-      if (user && user.verified) {
-        gate.classList.add("hidden");
-        profile.classList.remove("hidden");
-        document.getElementById("user-avatar").src = user.photoURL || "https://via.placeholder.com/150";
-        document.getElementById("user-name-badge").textContent = user.displayName || "User";
-      } else {
-        gate.classList.remove("hidden");
-        profile.classList.add("hidden");
+      if (!title || !description) return;
+
+      const activeLoc = pendingEmergencyLiveLoc || currentLocation;
+      const newTask = {
+        id: "T-" + Math.floor(100000 + Math.random() * 900000),
+        title,
+        category,
+        whatsapp,
+        isEmergency,
+        dealFinalized: false,
+        description,
+        photo: fromEmergencyHub ? pendingEmergencyPhotoData : "",
+        location: activeLoc?.areaName || "এলাকা ডিলের মাধ্যমে শেয়ার হবে",
+        coords: activeLoc && typeof activeLoc.lat === "number" ? { lat: activeLoc.lat, lng: activeLoc.lng } : null,
+        worker: {
+          name: workerProfile.name || user?.displayName || "TASKY Worker",
+          photo: workerProfile.photo || user?.photoURL || "https://via.placeholder.com/150",
+          skills: workerProfile.skills || [category],
+          about: workerProfile.about || ""
+        }
+      };
+
+      allTasks.unshift(newTask);
+      localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+      if (typeof saveTaskToCloud === "function") saveTaskToCloud(newTask);
+
+      if (isEmergency) {
+        emergencyChat.push({
+          id: "EMG-" + Date.now(),
+          sender: newTask.worker.name,
+          text: `🚨 জরুরি কাজ: ${title} — ${description}`,
+          mapUrl: newTask.coords ? `https://www.google.com/maps?q=${newTask.coords.lat},${newTask.coords.lng}` : "",
+          time: new Date().toLocaleTimeString()
+        });
+        localStorage.setItem("tasky_emergency_chat", JSON.stringify(emergencyChat));
+        renderEmergencyChat();
       }
-    }
 
-    window.setAuthMode = function (mode) {
-      window.__taskyAuthMode = mode;
-      const isSignup = mode === "signup";
-      document.getElementById("tab-signin").className = !isSignup
-        ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 dark:bg-slate-800 text-white"
-        : "flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
-      document.getElementById("tab-signup").className = isSignup
-        ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 dark:bg-slate-800 text-white"
-        : "flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
-      document.getElementById("signup-name-box").classList.toggle("hidden", !isSignup);
-    };
+      pendingEmergencyPhotoData = "";
+      pendingEmergencyLiveLoc = null;
+      document.getElementById("emg-photo-preview-box")?.classList.add("hidden");
+      document.getElementById("emg-live-loc-tag").textContent = "";
 
-    window.updateContactPlaceholder = function () {
-      const ch = document.getElementById("otp-channel").value;
-      const inp = document.getElementById("otp-contact");
-      if (ch === "phone") {
-        inp.placeholder = currentLang === "bn" ? "+971568362867 বা +8801XXXXXXXXX" : "+971568362867 or +8801XXXXXXXXX";
+      if (fromEmergencyHub) {
+        document.getElementById("emg-title").value = "";
+        document.getElementById("emg-desc").value = "";
       } else {
-        inp.placeholder = "name@gmail.com";
+        document.getElementById("task-form").reset();
+        closePostModal();
       }
-    };
 
-    function applyLanguageUI() {
-      const isBn = currentLang === "bn";
-      document.documentElement.lang = isBn ? "bn" : "en";
-
-      document.getElementById("lang-btn").textContent = isBn ? "English" : "বাংলা";
-      document.getElementById("gate-lang-btn").textContent = isBn ? "English" : "বাংলা";
-      document.getElementById("gate-sub").textContent = isBn
-        ? "সহজ লগইন • ফ্রি রিকোয়েস্ট • হোয়াটসঅ্যাপ ডিল"
-        : "Fast Sign-In • Free Requests • WhatsApp Deal";
-      document.getElementById("or-divider-lbl").textContent = isBn ? "অথবা ইমেইল / OTP" : "or use OTP / Link";
-      document.getElementById("lbl-fullname").textContent = isBn ? "আপনার নাম" : "Your Name";
-      document.getElementById("lbl-channel").textContent = isBn ? "লগইন মাধ্যম" : "Sign-In Method";
-      document.getElementById("lbl-contact").textContent = isBn ? "জিমেইল বা মোবাইল নম্বর" : "Gmail or Mobile Number";
-      document.getElementById("otp-fullname").placeholder = isBn ? "যেমন: মোমিন ব্যাপারী" : "e.g. Momin Bepary";
-      document.getElementById("otp-input").placeholder = isBn ? "৬ ডিজিটের কোড" : "6-digit OTP code";
-      document.getElementById("search-input").placeholder = isBn ? "এসি, ইলেকট্রিক, প্লাম্বিং বা এলাকা খুঁজুন..." : "Search AC, electrical, plumbing or area...";
-      document.getElementById("ai-command-input").placeholder = isBn
-        ? "AI-কে বলুন: 'ডার্ক মোড', 'ইংরেজি', 'এলাকা', 'এসি'..."
-        : "Ask AI: e.g. 'dark mode', 'bangla', 'my area', 'AC leak'...";
-      document.getElementById("ai-cmd-btn").textContent = isBn ? "যান" : "Go";
-      document.getElementById("priority-lbl").textContent = isBn ? "সেরা ম্যাচ" : "Best Match";
-
-      document.getElementById("tab-signin").textContent = isBn ? "লগইন" : "Sign In";
-      document.getElementById("tab-signup").textContent = isBn ? "নতুন অ্যাকাউন্ট" : "Create Account";
-      document.getElementById("send-otp-btn").innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>${isBn ? "ভেরিফিকেশন পাঠান" : "Send Verification"}</span>`;
-      document.getElementById("verify-otp-btn").textContent = isBn ? "ভেরিফাই করে প্রবেশ করুন" : "Verify & Open TASKY";
-      document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-sm"></i><span>${isBn ? "গুগল দিয়ে দ্রুত লগইন করুন" : "Continue with Google"}</span>`;
-      document.getElementById("hero-badge").textContent = isBn
-        ? "ফ্রি সার্ভিস রিকোয়েস্ট • সরাসরি হোয়াটসঅ্যাপ ডিল"
-        : "Free Service Requests • Direct WhatsApp Deal";
-      document.getElementById("hero-title").textContent = isBn ? "দ্রুত দক্ষ টেকনিশিয়ান খুঁজুন" : "Find Trusted Technicians Fast";
-      document.getElementById("feed-heading").textContent = isBn ? "সার্ভিস রিকোয়েস্টসমূহ" : "Available Service Requests";
-      document.getElementById("deals-heading").textContent = isBn ? "আমার ডিল ও বুকিং" : "My Deals & Bookings";
-      document.getElementById("nav-home-lbl").textContent = isBn ? "হোম" : "Home";
-      document.getElementById("nav-post-lbl").textContent = isBn ? "ফ্রি পোস্ট" : "Post Free";
-      document.getElementById("nav-deals-lbl").textContent = isBn ? "ডিল" : "Deals";
-      document.getElementById("emergency-lbl").textContent = isBn ? "ইমারজেন্সি" : "Emergency";
-      document.getElementById("track-btn-lbl").textContent = isBn ? "এলাকা খুঁজুন" : "Track Now";
-      document.getElementById("post-modal-title").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট পোস্ট করুন" : "Post Free Service Request";
-      document.getElementById("lbl-emergency-check").textContent = isBn ? "জরুরি / ইমারজেন্সি সার্ভিস" : "Urgent / Emergency Service";
-      document.getElementById("publish-task-btn").textContent = isBn ? "ফ্রি রিকোয়েস্ট প্রকাশ করুন" : "Publish Free Request";
-
-      updateContactPlaceholder();
-      syncProfileAndUI();
-      renderDealsList();
+      renderNearbyEmergencyAlerts();
       renderTasksList(getFilteredTasks());
+    };
+
+    window.openDealModal = function (id) {
+      const task = allTasks.find((t) => t.id === id);
+      if (!task) return;
+      if (task.dealFinalized) {
+        alert("এই কাজের ডিল ইতিমধ্যেই ফাইনাল হয়ে গেছে—নতুন বুকিং বন্ধ আছে।");
+        return;
+      }
+      selectedTaskForDeal = task;
+      document.getElementById("deal-task-info").textContent = `${task.title} • ${task.worker?.name || "Technician"}`;
+      document.getElementById("deal-message").value = "";
+      document.getElementById("deal-modal").classList.remove("hidden");
+    };
+    window.closeDealModal = () => document.getElementById("deal-modal").classList.add("hidden");
+
+    // Confirm deal or finalize deal (locks booking permanently for that task)
+    window.confirmMessageDeal = function (openWhatsApp, finalizeDeal = false) {
+      if (!selectedTaskForDeal) return;
+      const msg = document.getElementById("deal-message").value.trim()
+        || (finalizeDeal ? "ডিল ফাইনাল করা হয়েছে এবং কাজ নিশ্চিত করা হলো।" : "কাজের বিষয়ে কথা বলতে চাই।");
+
+      const record = {
+        id: "DEAL-" + Math.floor(100000 + Math.random() * 900000),
+        taskId: selectedTaskForDeal.id,
+        taskTitle: selectedTaskForDeal.title,
+        category: selectedTaskForDeal.category,
+        message: msg,
+        status: finalizeDeal ? "Finalized (Booked)" : "Pending",
+        whatsapp: (selectedTaskForDeal.whatsapp || "").replace(/\D/g, ""),
+        createdAt: new Date().toLocaleString()
+      };
+
+      deals.unshift(record);
+      localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
+
+      if (finalizeDeal) {
+        allTasks = allTasks.map((t) => (t.id === selectedTaskForDeal.id ? { ...t, dealFinalized: true } : t));
+        localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+        const updatedTask = allTasks.find((t) => t.id === selectedTaskForDeal.id);
+        if (updatedTask && typeof markTaskFinalizedInCloud === "function") {
+          markTaskFinalizedInCloud(updatedTask);
+        }
+      }
+
+      renderDealsList();
+      renderNearbyEmergencyAlerts();
+      renderTasksList(getFilteredTasks());
+      closeDealModal();
+
+      if (openWhatsApp && record.whatsapp) {
+        const text = encodeURIComponent(`TASKY (${record.taskTitle}): ${record.message}`);
+        window.open(`https://wa.me/${record.whatsapp}?text=${text}`, "_blank");
+      } else if (finalizeDeal) {
+        alert("ডিল ফাইনাল হয়েছে! এই কাজের বুকিং এখন বন্ধ করা হয়েছে।");
+      } else {
+        alert("ডিল মেসেজ সেভ হয়েছে।");
+      }
+    };
+
+    function renderTasksList(tasks) {
+      const container = document.getElementById("tasks-container");
+      document.getElementById("task-count").textContent = `${tasks.length} কাজ`;
+      if (!tasks.length) {
+        container.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-8 rounded-2xl text-center text-xs text-slate-400">কোনো সার্ভিস রিকোয়েস্ট পাওয়া যায়নি।</div>`;
+        return;
+      }
+
+      container.innerHTML = tasks.map((task) => {
+        const w = task.worker || workerProfile;
+        const skillChips = (w.skills || []).slice(0, 3)
+          .map((s) => `<span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">${escapeHtml(s)}</span>`)
+          .join("");
+
+        const statusBadge = task.dealFinalized
+          ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"><i class="fa-solid fa-lock mr-1"></i>ডিল ফাইনাল (বুকিং বন্ধ)</span>`
+          : task.isEmergency
+          ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">ইমারজেন্সি</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">ওপেন</span>`;
+
+        const actionBtn = task.dealFinalized
+          ? `<button type="button" disabled class="px-3.5 py-1.5 rounded-lg bg-slate-300 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-extrabold cursor-not-allowed"><i class="fa-solid fa-lock mr-1"></i>বুকিং বন্ধ</button>`
+          : `<button type="button" onclick="openDealModal('${escapeHtml(task.id)}')" class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold">ডিল ও বুক</button>`;
+
+        return `
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between shadow-sm space-y-3">
+            <div class="space-y-2">
+              <!-- Worker Profile Header shown to whoever books/assigns work -->
+              <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <img src="${escapeHtml(w.photo || "https://via.placeholder.com/150")}" alt="${escapeHtml(w.name || "Worker")}" class="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0">
+                  <div class="truncate">
+                    <div class="text-xs font-extrabold truncate">${escapeHtml(w.name || "TASKY Worker")}</div>
+                    <div class="text-[10px] text-slate-500 truncate">${escapeHtml(w.about || "")}</div>
+                  </div>
+                </div>
+                ${statusBadge}
+              </div>
+
+              <div class="flex flex-wrap gap-1">${skillChips}</div>
+
+              <div>
+                <span class="text-[10px] font-extrabold uppercase text-brand-600">${escapeHtml(task.category || "General")}</span>
+                <h3 class="text-sm font-extrabold">${escapeHtml(task.title || "")}</h3>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-400">${escapeHtml(task.description || "")}</p>
+              ${task.photo ? `<img src="${escapeHtml(task.photo)}" alt="Work Photo" class="w-full h-36 object-cover rounded-xl border border-slate-200 dark:border-slate-800">` : ""}
+              <p class="text-[10px] text-slate-500">📍 ${escapeHtml(task.location || "এলাকা শেয়ার হবে")}</p>
+            </div>
+
+            <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-[11px] font-semibold text-slate-500">${task.dealFinalized ? "ডিল সম্পন্ন হয়েছে" : "সরাসরি ডিল"}</span>
+              ${actionBtn}
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
-    window.toggleLang = function () {
-      currentLang = currentLang === "en" ? "bn" : "en";
-      localStorage.setItem("tasky_lang", currentLang);
-      applyLanguageUI();
-    };
+    function renderDealsList() {
+      const box = document.getElementById("deals-list");
+      if (!deals.length) {
+        box.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-6 rounded-2xl text-center text-xs text-slate-400">এখনও কোনো ডিল বা বুকিং নেই।</div>`;
+        return;
+      }
+      box.innerHTML = deals.map((d) => `
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div class="flex justify-between items-center gap-2">
+            <span class="font-extrabold text-brand-600 truncate">${escapeHtml(d.taskTitle)}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">${escapeHtml(d.status || "Pending")}</span>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300">${escapeHtml(d.message)}</p>
+          <div class="text-[10px] text-slate-400">${escapeHtml(d.createdAt)}</div>
+        </div>
+      `).join("");
+    }
 
-    window.toggleDarkMode = function () {
-      const isDark = document.documentElement.classList.toggle("dark");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-    };
-    if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark");
-
+    // Utility & UI controls
     window.trackCurrentLocation = function () {
       const statusEl = document.getElementById("loc-status-text");
       const badgeEl = document.getElementById("live-loc-badge");
       const mapBtn = document.getElementById("open-map-btn");
-      statusEl.textContent = currentLang === "bn" ? "আপনার এলাকা খোঁজা হচ্ছে..." : "Detecting your area...";
-      if (!navigator.geolocation) {
-        statusEl.textContent = currentLang === "bn" ? "GPS সাপোর্ট নেই, Settings থেকে এলাকা লিখুন" : "GPS unavailable; enter area in Settings";
-        return;
-      }
+      statusEl.textContent = "লোকেশন খোঁজা হচ্ছে...";
+      if (!navigator.geolocation) return;
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           const lat = Number(pos.coords.latitude.toFixed(5));
           const lng = Number(pos.coords.longitude.toFixed(5));
           let areaName = `GPS ${lat}, ${lng}`;
-
           try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             if (res.ok) {
@@ -992,103 +1204,68 @@
               if (area || country) areaName = [area, country].filter(Boolean).join(", ");
             }
           } catch (_) {}
-
           currentLocation = { lat, lng, areaName };
           localStorage.setItem("tasky_last_location", JSON.stringify(currentLocation));
           badgeEl.textContent = `📍 ${areaName}`;
           statusEl.textContent = areaName;
           if (mapBtn) mapBtn.classList.remove("hidden");
           syncProfileAndUI();
+          renderNearbyEmergencyAlerts();
           renderTasksList(getFilteredTasks());
         },
         () => {
-          statusEl.textContent = currentLang === "bn" ? "লোকেশন অনুমতি দিন বা Settings-এ এলাকা লিখুন" : "Allow location or set area in Settings";
+          statusEl.textContent = "লোকেশন অনুমতি দিন";
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     };
 
     window.openCurrentLocationInMaps = function () {
-      if (!currentLocation) return;
-      if (typeof currentLocation.lat === "number" && typeof currentLocation.lng === "number") {
-        window.open(`https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`, "_blank");
-      } else if (currentLocation.areaName) {
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentLocation.areaName)}`, "_blank");
+      if (!currentLocation || typeof currentLocation.lat !== "number") return;
+      window.open(`https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`, "_blank");
+    };
+
+    window.executeAiCommand = function () {
+      const inp = document.getElementById("ai-command-input");
+      const raw = (inp?.value || "").trim();
+      const cmd = raw.toLowerCase();
+      if (!cmd) return;
+      if (cmd.includes("dark") || cmd.includes("ডার্ক")) window.toggleDarkMode();
+      else if (cmd.includes("ইমারজেন্সি") || cmd.includes("emergency")) window.openEmergencyCenterModal();
+      else if (cmd.includes("প্রোফাইল") || cmd.includes("profile")) window.openWorkerProfileModal();
+      else if (cmd.includes("লোকেশন") || cmd.includes("gps") || cmd.includes("location")) window.trackCurrentLocation();
+      else if (cmd.includes("পোস্ট") || cmd.includes("post")) window.openPostModal();
+      else {
+        document.getElementById("search-input").value = raw;
+        window.filterTasks();
       }
+      inp.value = "";
     };
 
-    window.switchMobileTab = function (tab) {
-      const homeSec = document.getElementById("tab-home");
-      const dealSec = document.getElementById("tab-deals");
-      if (tab === "deals") {
-        homeSec.classList.add("hidden", "md:block");
-        dealSec.classList.remove("hidden");
-        renderDealsList();
-      } else {
-        homeSec.classList.remove("hidden");
-        dealSec.classList.add("hidden", "md:block");
-      }
-    };
-
-    window.openPostModal = () => {
-      const areaInp = document.getElementById("task-desc");
-      if (areaInp && !areaInp.value && currentLocation?.areaName) {
-        areaInp.placeholder = currentLang === "bn"
-          ? `সমস্যার বিবরণ লিখুন (এলাকা: ${currentLocation.areaName})...`
-          : `Describe problem (Area: ${currentLocation.areaName})...`;
-      }
-      document.getElementById("post-modal").classList.remove("hidden");
-    };
-    window.closePostModal = () => document.getElementById("post-modal").classList.add("hidden");
-    window.openSettingsModal = () => {
-      document.getElementById("settings-modal").classList.remove("hidden");
-      syncProfileAndUI();
-    };
-    window.closeSettingsModal = () => document.getElementById("settings-modal").classList.add("hidden");
-
-    window.handleAddTask = function (e) {
-      e.preventDefault();
-      const user = getRealUser();
-      const title = document.getElementById("task-title").value.trim();
-      const category = document.getElementById("task-category").value;
-      const whatsapp = document.getElementById("task-whatsapp").value.trim();
-      const isEmergency = document.getElementById("task-emergency").checked;
-      const description = document.getElementById("task-desc").value.trim();
-      if (!title || !description) return;
-
-      const newTask = {
-        id: "T-" + Math.floor(100000 + Math.random() * 900000),
-        title,
-        category,
-        whatsapp,
-        isEmergency,
-        description,
-        location: currentLocation?.areaName || (currentLang === "bn" ? "ডিলের মাধ্যমে এলাকা শেয়ার হবে" : "Area shared on deal"),
-        authorName: user?.displayName || (currentLang === "bn" ? "ইউজার" : "User")
+    window.startVoiceAiCommand = function () {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return;
+      const rec = new SR();
+      rec.lang = currentLang === "bn" ? "bn-BD" : "en-US";
+      rec.onresult = (ev) => {
+        document.getElementById("ai-command-input").value = ev.results[0][0].transcript;
+        executeAiCommand();
       };
+      rec.start();
+    };
 
-      allTasks.unshift(newTask);
-      localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
-      if (typeof saveTaskToCloud === "function") saveTaskToCloud(newTask);
-
-      document.getElementById("task-form").reset();
-      closePostModal();
-      renderTasksList(getFilteredTasks());
+    window.smartAutoFillFromInput = function () {
+      const txt = `${document.getElementById("task-title")?.value || ""} ${document.getElementById("task-desc")?.value || ""}`.toLowerCase();
+      const sel = document.getElementById("task-category");
+      if (txt.includes("ac") || txt.includes("এসি")) sel.value = "AC";
+      else if (txt.includes("pipe") || txt.includes("water") || txt.includes("পানি") || txt.includes("পাইপ")) sel.value = "Plumbing";
+      else if (txt.includes("wire") || txt.includes("mcb") || txt.includes("electric") || txt.includes("কারেন্ট")) sel.value = "Electrical";
+      else if (txt.includes("wood") || txt.includes("door") || txt.includes("কাঠ") || txt.includes("দরজা")) sel.value = "Carpenter";
+      else if (txt.includes("paint") || txt.includes("রং")) sel.value = "Painter";
     };
 
     window.toggleEmergencyFilter = function () {
       emergencyOnly = !emergencyOnly;
-      document.getElementById("emergency-btn").className = emergencyOnly
-        ? "px-3 py-2 rounded-xl bg-white text-red-600 border border-white text-xs font-extrabold flex items-center gap-1.5 shadow-md"
-        : "px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md";
-      renderTasksList(getFilteredTasks());
-    };
-
-    window.toggleSmartPrioritySort = function () {
-      smartPrioritySort = !smartPrioritySort;
-      document.getElementById("priority-sort-btn").className = smartPrioritySort
-        ? "px-2.5 py-2 rounded-xl bg-white text-slate-900 text-xs font-extrabold flex items-center gap-1"
-        : "px-2.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-xs font-bold flex items-center gap-1";
       renderTasksList(getFilteredTasks());
     };
 
@@ -1108,173 +1285,135 @@
 
     function getFilteredTasks() {
       const term = (document.getElementById("search-input").value || "").toLowerCase();
-      const areaKey = (currentLocation?.areaName || "").toLowerCase().split(",")[0].trim();
-
-      let list = allTasks.filter((t) => {
+      return allTasks.filter((t) => {
+        const skillsStr = (t.worker?.skills || []).join(" ").toLowerCase();
         const matchCat = currentCategory === "All" || (t.category || "General") === currentCategory;
         const matchEmerg = !emergencyOnly || Boolean(t.isEmergency);
         const matchSearch = (t.title || "").toLowerCase().includes(term)
           || (t.description || "").toLowerCase().includes(term)
-          || (t.location || "").toLowerCase().includes(term);
+          || (t.location || "").toLowerCase().includes(term)
+          || (t.worker?.name || "").toLowerCase().includes(term)
+          || skillsStr.includes(term);
         return matchCat && matchEmerg && matchSearch;
       });
-
-      if (smartPrioritySort) {
-        list = [...list].sort((a, b) => {
-          const scoreA = (a.isEmergency ? 10 : 0) + (areaKey && (a.location || "").toLowerCase().includes(areaKey) ? 5 : 0);
-          const scoreB = (b.isEmergency ? 10 : 0) + (areaKey && (b.location || "").toLowerCase().includes(areaKey) ? 5 : 0);
-          return scoreB - scoreA;
-        });
-      }
-      return list;
     }
 
-    function renderTasksList(tasks) {
-      const container = document.getElementById("tasks-container");
-      document.getElementById("task-count").textContent = `${tasks.length} ${currentLang === "bn" ? "টি কাজ" : "Tasks"}`;
-      if (!tasks.length) {
-        container.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-8 rounded-2xl text-center text-xs text-slate-400">${currentLang === "bn" ? "কোনো সার্ভিস রিকোয়েস্ট পাওয়া যায়নি।" : "No service requests found."}</div>`;
-        return;
-      }
-      container.innerHTML = tasks.map((task) => {
-        const badge = task.isEmergency
-          ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">${currentLang === "bn" ? "জরুরি" : "EMERGENCY"}</span>`
-          : `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">${currentLang === "bn" ? "ফ্রি" : "FREE"}</span>`;
-        return `
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between shadow-sm">
-            <div>
-              <div class="flex justify-between items-start gap-2 mb-2">
-                <div>
-                  <div class="flex items-center gap-1.5 mb-0.5">
-                    <span class="text-[10px] font-extrabold uppercase text-brand-600">${escapeHtml(task.category || "General")}</span>
-                    ${badge}
-                  </div>
-                  <h3 class="text-sm font-extrabold">${escapeHtml(task.title || "")}</h3>
-                </div>
-                <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">WhatsApp Deal</span>
-              </div>
-              <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">${escapeHtml(task.description || "")}</p>
-              <p class="text-[10px] text-slate-500 mb-3">📍 ${escapeHtml(task.location || "Area shared on deal")}</p>
-            </div>
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-              <span class="text-[11px] text-slate-500">${escapeHtml(task.authorName || "User")}</span>
-              <button type="button" onclick="openDealModal('${escapeHtml(task.id)}')" class="px-3.5 py-1.5 rounded-lg bg-brand-600 text-white text-[11px] font-bold">
-                ${currentLang === "bn" ? "মেসেজ ও বুক" : "Message & Book"}
-              </button>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    window.openDealModal = function (id) {
-      const task = allTasks.find((t) => t.id === id);
-      if (!task) return;
-      selectedTaskForDeal = task;
-      document.getElementById("deal-task-info").textContent = `${task.title} • ${task.category}`;
-      document.getElementById("deal-message").value = "";
-      document.getElementById("deal-modal").classList.remove("hidden");
-    };
-    window.closeDealModal = () => document.getElementById("deal-modal").classList.add("hidden");
-
-    window.confirmMessageDeal = function (openWhatsApp) {
-      if (!selectedTaskForDeal) return;
-      const msg = document.getElementById("deal-message").value.trim()
-        || (currentLang === "bn" ? "আমি এই কাজের জন্য আগ্রহী, সময় ও কাজের বিষয়ে কথা বলতে চাই।" : "Interested in this service. Let's discuss timing and details.");
-      const record = {
-        id: "DEAL-" + Math.floor(100000 + Math.random() * 900000),
-        taskTitle: selectedTaskForDeal.title,
-        category: selectedTaskForDeal.category,
-        message: msg,
-        status: "Pending",
-        whatsapp: (selectedTaskForDeal.whatsapp || "").replace(/\D/g, ""),
-        createdAt: new Date().toLocaleString()
-      };
-      deals.unshift(record);
-      localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
-      if (typeof saveDealToCloud === "function") saveDealToCloud(record);
-      renderDealsList();
-      closeDealModal();
-
-      if (openWhatsApp && record.whatsapp) {
-        const text = encodeURIComponent(`TASKY (${record.taskTitle}): ${record.message}`);
-        window.open(`https://wa.me/${record.whatsapp}?text=${text}`, "_blank");
+    window.switchMobileTab = function (tab) {
+      const homeSec = document.getElementById("tab-home");
+      const dealSec = document.getElementById("tab-deals");
+      if (tab === "deals") {
+        homeSec.classList.add("hidden", "md:block");
+        dealSec.classList.remove("hidden");
+        renderDealsList();
       } else {
-        alert(currentLang === "bn" ? "আপনার বুকিং ও মেসেজ সেভ হয়েছে!" : "Your booking & message have been saved!");
+        homeSec.classList.remove("hidden");
+        dealSec.classList.add("hidden", "md:block");
       }
     };
 
-    window.cycleDealStatus = function (dealId) {
-      const order = ["Pending", "Accepted", "Completed"];
-      deals = deals.map((d) => {
-        if (d.id !== dealId) return d;
-        const nextIdx = (order.indexOf(d.status || "Pending") + 1) % order.length;
-        return { ...d, status: order[nextIdx] };
-      });
-      localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
-      renderDealsList();
+    window.openPostModal = () => document.getElementById("post-modal").classList.remove("hidden");
+    window.closePostModal = () => document.getElementById("post-modal").classList.add("hidden");
+    window.openSettingsModal = () => {
+      document.getElementById("settings-modal").classList.remove("hidden");
+      syncProfileAndUI();
+    };
+    window.closeSettingsModal = () => document.getElementById("settings-modal").classList.add("hidden");
+
+    window.saveUserPreferences = function () {
+      const nameVal = (document.getElementById("pref-name-input")?.value || "").trim();
+      const areaVal = (document.getElementById("pref-area-input")?.value || "").trim();
+      let user = getRealUser() || { displayName: "TASKY User", email: "", phoneNumber: "", photoURL: "https://via.placeholder.com/150", verified: true };
+      if (nameVal) {
+        user.displayName = nameVal;
+        workerProfile.name = nameVal;
+        localStorage.setItem("tasky_worker_profile", JSON.stringify(workerProfile));
+      }
+      localStorage.setItem("tasky_real_user", JSON.stringify(user));
+      if (areaVal) {
+        currentLocation = { ...(currentLocation || {}), areaName: areaVal };
+        localStorage.setItem("tasky_last_location", JSON.stringify(currentLocation));
+        document.getElementById("live-loc-badge").textContent = `📍 ${areaVal}`;
+        document.getElementById("loc-status-text").textContent = areaVal;
+      }
+      applySessionUI(user);
+      syncProfileAndUI();
+      renderTasksList(getFilteredTasks());
+      alert("সেভ হয়েছে!");
     };
 
-    function formatDealStatusBadge(status) {
-      const isBn = currentLang === "bn";
-      const s = status || "Pending";
-      if (s === "Completed") {
-        return `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">${isBn ? "সম্পন্ন" : "Completed"}</span>`;
+    function syncProfileAndUI() {
+      const user = getRealUser();
+      const box = document.getElementById("settings-auto-profile-box");
+      if (document.getElementById("pref-name-input") && user?.displayName) {
+        document.getElementById("pref-name-input").value = user.displayName;
       }
-      if (s === "Accepted") {
-        return `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">${isBn ? "গৃহীত" : "Accepted"}</span>`;
+      if (document.getElementById("pref-area-input") && currentLocation?.areaName) {
+        document.getElementById("pref-area-input").value = currentLocation.areaName;
       }
-      return `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">${isBn ? "অপেক্ষমাণ" : "Pending"}</span>`;
-    }
-
-    function renderDealsList() {
-      const box = document.getElementById("deals-list");
-      if (!deals.length) {
-        box.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 p-6 rounded-2xl text-center text-xs text-slate-400">${currentLang === "bn" ? "এখনও কোনো ডিল বা বুকিং নেই। কোনো কাজের কার্ডে 'মেসেজ ও বুক' চাপুন।" : "No deals or bookings yet. Tap 'Message & Book' on any request."}</div>`;
+      if (!box) return;
+      if (!user) {
+        box.innerHTML = `<div class="text-slate-500">সাইন-ইন করলে প্রোফাইল দেখাবে।</div>`;
         return;
       }
-      box.innerHTML = deals.map((d) => `
-        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
-          <div class="flex justify-between items-center gap-2">
-            <span class="font-extrabold text-brand-600 truncate">${escapeHtml(d.taskTitle)}</span>
-            <button type="button" onclick="cycleDealStatus('${escapeHtml(d.id)}')" title="Change Status">
-              ${formatDealStatusBadge(d.status)}
-            </button>
-          </div>
-          <p class="text-slate-600 dark:text-slate-300">${escapeHtml(d.message)}</p>
-          <div class="flex justify-between items-center text-[10px] text-slate-400">
-            <span>${escapeHtml(d.createdAt)}</span>
-            <span>${currentLang === "bn" ? "স্ট্যাটাস বদলাতে ব্যাজে চাপুন" : "Tap badge to update status"}</span>
-          </div>
-        </div>
-      `).join("");
+      box.innerHTML = `
+        <div class="flex justify-between"><span>নাম:</span><b>${escapeHtml(user.displayName)}</b></div>
+        <div class="flex justify-between"><span>এলাকা:</span><b>${escapeHtml(currentLocation?.areaName || "সেট করা হয়নি")}</b></div>
+      `;
     }
 
-    window.runTaskyAi = function () {
-      const prompt = (document.getElementById("ai-prompt-input").value || "").trim();
-      const out = document.getElementById("ai-output-box");
-      if (!prompt) return;
+    function applySessionUI(user) {
+      const gate = document.getElementById("auth-gate");
+      const profile = document.getElementById("user-profile");
+      if (!gate || !profile) return;
+      if (user && user.verified) {
+        gate.classList.add("hidden");
+        profile.classList.remove("hidden");
+        document.getElementById("user-avatar").src = user.photoURL || "https://via.placeholder.com/150";
+        document.getElementById("user-name-badge").textContent = user.displayName || "User";
+      } else {
+        gate.classList.remove("hidden");
+        profile.classList.add("hidden");
+      }
+    }
 
-      const info = detectSmartCategoryAndUrgency(prompt);
-      const cat = info.category || "General";
-      const urgent = info.urgent;
-      const isBn = currentLang === "bn";
-      out.classList.remove("hidden");
-      out.innerHTML = `
-        <div><b>${isBn ? "ক্যাটাগরি" : "Category"}:</b> ${escapeHtml(cat)}</div>
-        <div><b>${isBn ? "জরুরি অবস্থা" : "Priority"}:</b> ${urgent ? (isBn ? "জরুরি" : "Urgent") : (isBn ? "সাধারণ" : "Normal")}</div>
-        <div><b>${isBn ? "প্রস্তাবিত মেসেজ" : "Suggested Message"}:</b> "${isBn ? `হ্যালো, আমার ${escapeHtml(cat)} কাজের জন্য সাহায্য দরকার (${escapeHtml(prompt)})।` : `Hi, I need ${escapeHtml(cat)} help for: ${escapeHtml(prompt)}. Can we discuss timing and details?`}"</div>
-      `;
+    window.setAuthMode = function (mode) {
+      const isSignup = mode === "signup";
+      document.getElementById("signup-name-box").classList.toggle("hidden", !isSignup);
     };
 
-    if (currentLocation) {
-      const label = currentLocation.areaName || `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
-      document.getElementById("live-loc-badge").textContent = `📍 ${label}`;
-      document.getElementById("loc-status-text").textContent = label;
+    window.autoDetectChannelFromInput = function () {
+      const val = (document.getElementById("otp-contact")?.value || "").trim();
+      const sel = document.getElementById("otp-channel");
+      if (val.includes("@")) sel.value = "email";
+      else if (val.startsWith("+") || /^\d{8,}$/.test(val)) sel.value = "phone";
+    };
+
+    window.updateContactPlaceholder = function () {};
+
+    window.toggleLang = function () {
+      currentLang = currentLang === "bn" ? "en" : "bn";
+      localStorage.setItem("tasky_lang", currentLang);
+      document.getElementById("lang-btn").textContent = currentLang === "bn" ? "English" : "বাংলা";
+      document.getElementById("gate-lang-btn").textContent = currentLang === "bn" ? "English" : "বাংলা";
+    };
+
+    window.toggleDarkMode = function () {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    };
+    if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark");
+
+    if (currentLocation?.areaName) {
+      document.getElementById("live-loc-badge").textContent = `📍 ${currentLocation.areaName}`;
+      document.getElementById("loc-status-text").textContent = currentLocation.areaName;
       document.getElementById("open-map-btn")?.classList.remove("hidden");
     }
-    runSelfHealDiagnostic(false);
-    recordHeal(currentLang === "bn" ? "TASKY প্রস্তুত আছে।" : "TASKY is ready.");
+
+    applySessionUI(getRealUser());
+    syncProfileAndUI();
+    renderNearbyEmergencyAlerts();
+    renderTasksList(getFilteredTasks());
+    renderDealsList();
   </script>
 </body>
 </html>
