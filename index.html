@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>TASKY AI — Autonomous Service &amp; Smart Deal Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>TASKY AI — Smart Cloud Service &amp; Dispatch Platform</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,25 +24,29 @@
     };
   </script>
   <style>
-    body { font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .glass-card { backdrop-filter: blur(14px); }
+    .glass-card { backdrop-filter: blur(16px); }
   </style>
 </head>
-<body id="tasky-body" class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors">
+<body id="tasky-body" class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 transition-colors">
 
   <!-- Real Auth Gate (Firebase Phone SMS OTP, Email Link & Google Sign-In Only) -->
-  <div id="auth-gate" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+  <div id="auth-gate" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 via-orange-600 to-ai-600 text-white flex items-center justify-center shadow-lg">
             <i class="fa-solid fa-microchip"></i>
           </div>
           <div>
-            <h1 class="text-lg font-extrabold tracking-tight">TASKY AI</h1>
-            <p id="gate-sub" class="text-[11px] text-slate-500">Real Auth • AI Controlled • Self-Healing</p>
+            <h1 class="text-lg font-extrabold tracking-tight">TASKY SMART AI</h1>
+            <p id="gate-sub" class="text-[11px] text-slate-500">Cloud Sync • Smart Dispatch • Real Auth</p>
           </div>
         </div>
         <button type="button" onclick="toggleLang()" id="gate-lang-btn" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">বাংলা</button>
@@ -53,7 +57,7 @@
         <button type="button" onclick="setAuthMode('signup')" id="tab-signup" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Sign Up</button>
       </div>
 
-      <div id="auth-status-banner" class="hidden p-2.5 rounded-xl text-[11px] font-semibold border"></div>
+      <div id="auth-status-banner" class="hidden p-3 rounded-xl text-[11px] font-semibold border leading-relaxed"></div>
 
       <div class="space-y-3">
         <div id="signup-name-box" class="hidden">
@@ -65,13 +69,17 @@
           <label id="lbl-channel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Verification Channel</label>
           <select id="otp-channel" onchange="updateContactPlaceholder()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
             <option value="phone">Mobile SMS OTP (Firebase Real SMS)</option>
-            <option value="email">Email Verification Link (Firebase Real Email)</option>
+            <option value="email">Email Verification Link (Instant Gmail Link)</option>
           </select>
         </div>
 
         <div>
           <label id="lbl-contact" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Mobile (+CountryCode) or Email</label>
-          <input type="text" id="otp-contact" placeholder="+9715XXXXXXXX or name@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+          <input type="text" id="otp-contact" placeholder="+971568362867 or name@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+        </div>
+
+        <div id="recaptcha-wrapper" class="flex justify-center overflow-hidden rounded-xl">
+          <div id="recaptcha-container"></div>
         </div>
 
         <button type="button" onclick="sendRealVerification()" id="send-otp-btn" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2">
@@ -80,21 +88,21 @@
 
         <div id="otp-verify-box" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
           <p id="otp-live-hint" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"></p>
-          <input type="text" id="otp-input" maxlength="6" placeholder="Enter SMS OTP code" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
+          <input type="text" id="otp-input" maxlength="6" inputmode="numeric" placeholder="Enter 6-digit SMS OTP" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-500 bg-slate-50 dark:bg-slate-950 text-sm font-bold tracking-widest text-center">
           <button type="button" onclick="verifyRealSmsOtp()" id="verify-otp-btn" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs">
             Verify Real OTP &amp; Continue
           </button>
         </div>
 
         <button type="button" onclick="loginWithRealGoogle()" id="google-login-btn" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs flex items-center justify-center gap-2">
-          <i class="fa-brands fa-google text-brand-600"></i><span>Continue with Google (Firebase)</span>
+          <i class="fa-brands fa-google text-brand-600"></i><span>Continue with Google (Smart Popup/Redirect)</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Modern Header -->
-  <header class="bg-white/90 dark:bg-slate-900/90 glass-card border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
+  <!-- Header -->
+  <header class="bg-white/90 dark:bg-slate-900/90 glass-card border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40 pt-3">
     <div class="max-w-5xl mx-auto px-3.5 py-2.5 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-ai-600 text-white flex items-center justify-center shadow-md shrink-0">
@@ -103,7 +111,7 @@
         <div class="truncate">
           <div class="flex items-center gap-1.5">
             <span class="text-lg font-extrabold tracking-tight">TASKY</span>
-            <span id="ai-health-pill" class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">AI AUTO</span>
+            <span id="cloud-sync-pill" class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">SMART CLOUD</span>
           </div>
           <p id="live-loc-badge" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">📍 Location not tracked yet</p>
         </div>
@@ -119,7 +127,7 @@
         </button>
         <div id="user-profile" class="hidden flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 pl-1 pr-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           <img id="user-avatar" src="https://via.placeholder.com/150" alt="User" class="w-6 h-6 rounded-full object-cover">
-          <span id="user-name-badge" class="text-[11px] font-bold max-w-[80px] truncate"></span>
+          <span id="user-name-badge" class="text-[11px] font-bold max-w-[75px] truncate"></span>
           <button type="button" onclick="logoutRealUser()" class="text-slate-400 hover:text-red-500 text-xs px-1" title="Logout">
             <i class="fa-solid fa-power-off"></i>
           </button>
@@ -131,19 +139,24 @@
   <!-- Main Content -->
   <main class="flex-grow max-w-5xl mx-auto w-full px-3.5 pt-4 space-y-4">
 
-    <!-- Hero + AI Command Controller -->
+    <!-- Smart Hero + AI Command & Priority Dispatch -->
     <section class="rounded-3xl bg-gradient-to-r from-brand-600 via-orange-600 to-ai-700 p-4 text-white shadow-xl space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
           <span id="hero-badge" class="inline-block bg-white/20 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full mb-1">
-            AI Controlled • Real Auth • Instant Deals
+            Smart Priority • Cloud Sync • Voice AI
           </span>
           <h1 id="hero-title" class="text-lg sm:text-xl font-extrabold">Smart Home Services &amp; AI Dispatch</h1>
         </div>
-        <button type="button" onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
-          <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
-          <span id="emergency-lbl">Emergency</span>
-        </button>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="toggleSmartPrioritySort()" id="priority-sort-btn" class="px-2.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-xs font-bold flex items-center gap-1">
+            <i class="fa-solid fa-arrow-up-wide-short"></i><span id="priority-lbl">Smart Sort</span>
+          </button>
+          <button type="button" onclick="toggleEmergencyFilter()" id="emergency-btn" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+            <span id="emergency-lbl">Emergency</span>
+          </button>
+        </div>
       </div>
 
       <!-- Search -->
@@ -152,26 +165,33 @@
         <input type="text" id="search-input" oninput="filterTasks()" placeholder="Search service or area..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none">
       </div>
 
-      <!-- Direct AI Control Command Bar -->
+      <!-- Voice + Text AI Control Bar -->
       <div class="bg-black/20 rounded-2xl p-2.5 space-y-2">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-robot text-amber-300 text-sm pl-1"></i>
-          <input type="text" id="ai-command-input" onkeydown="if(event.key==='Enter') executeAiCommand()" placeholder="AI Command: e.g. 'dark mode', 'bangla', 'track gps', 'fix errors'..." class="flex-1 bg-white/15 placeholder:text-white/70 text-white text-xs px-3 py-2 rounded-xl focus:outline-none">
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="startVoiceAiCommand()" id="voice-ai-btn" title="Voice AI Command" class="w-9 h-9 rounded-xl bg-white/20 hover:bg-white/30 text-amber-200 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+          <input type="text" id="ai-command-input" onkeydown="if(event.key==='Enter') executeAiCommand()" placeholder="AI Command: 'dark mode', 'bangla', 'gps', 'post'..." class="flex-1 bg-white/15 placeholder:text-white/70 text-white text-xs px-3 py-2 rounded-xl focus:outline-none min-w-0">
           <button type="button" onclick="executeAiCommand()" id="ai-cmd-btn" class="px-3 py-2 rounded-xl bg-white text-slate-900 font-extrabold text-xs shrink-0">
             AI Run
           </button>
         </div>
         <p id="ai-controller-status" class="text-[11px] text-amber-100 px-1 truncate">
-          AI ready to control UI, filters, GPS &amp; auto-heal issues.
+          Smart AI Engine ready: Auto-heal, priority dispatch &amp; cloud sync active.
         </p>
       </div>
 
-      <!-- Location Bar -->
+      <!-- Smart GPS + Maps Bar -->
       <div class="flex items-center justify-between gap-2 text-[11px] bg-black/15 rounded-xl px-3 py-2">
         <span id="loc-status-text" class="truncate">Location tracking off</span>
-        <button type="button" onclick="trackCurrentLocation()" id="track-now-btn" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold shrink-0">
-          <i class="fa-solid fa-location-crosshairs mr-1"></i><span id="track-btn-lbl">Track Now</span>
-        </button>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="openCurrentLocationInMaps()" id="open-map-btn" class="hidden px-2 py-1 rounded-lg bg-white/20 text-white font-bold">
+            <i class="fa-solid fa-map-location-dot"></i>
+          </button>
+          <button type="button" onclick="trackCurrentLocation()" id="track-now-btn" class="px-2.5 py-1 rounded-lg bg-white text-brand-700 font-extrabold">
+            <i class="fa-solid fa-location-crosshairs mr-1"></i><span id="track-btn-lbl">Track Now</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -185,10 +205,10 @@
       <button type="button" onclick="filterCategory('Painter')" data-cat="Painter" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">Painter</button>
     </section>
 
-    <!-- Free Tasks Feed -->
+    <!-- Live Tasks Feed -->
     <section id="tab-home" class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 id="feed-heading" class="text-base font-extrabold">Free Service Requests</h2>
+        <h2 id="feed-heading" class="text-base font-extrabold">Live Service Requests</h2>
         <span id="task-count" class="bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-400 text-[11px] font-extrabold px-2.5 py-1 rounded-full">0 Tasks</span>
       </div>
       <div id="tasks-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
@@ -216,7 +236,7 @@
     </div>
   </nav>
 
-  <!-- Post Free Task Modal -->
+  <!-- Post Free Task Modal with Smart Auto-Detect -->
   <div id="post-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
@@ -224,7 +244,7 @@
         <button type="button" onclick="closePostModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
       <form id="task-form" onsubmit="handleAddTask(event)" class="space-y-3">
-        <input type="text" id="task-title" required placeholder="Service Title (e.g., AC Leak Fix)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
+        <input type="text" id="task-title" oninput="smartAutoFillFromInput()" required placeholder="Service Title (e.g., AC Leak Fix)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
         <div class="grid grid-cols-2 gap-2.5">
           <select id="task-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm">
             <option value="Electrical">Electrical</option>
@@ -240,8 +260,8 @@
           <input type="checkbox" id="task-emergency" class="rounded">
           <span id="lbl-emergency-check">Mark as Emergency Service</span>
         </label>
-        <textarea id="task-desc" required rows="3" placeholder="Problem details &amp; area..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
-        <button type="submit" id="publish-task-btn" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-sm">Publish Free Request</button>
+        <textarea id="task-desc" oninput="smartAutoFillFromInput()" required rows="3" placeholder="Problem details &amp; area..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm"></textarea>
+        <button type="submit" id="publish-task-btn" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-sm">Publish to Cloud &amp; Feed</button>
       </form>
     </div>
   </div>
@@ -264,17 +284,16 @@
     </div>
   </div>
 
-  <!-- Settings, Auto Profile/Location, Self-Heal & AI Assistant Modal -->
+  <!-- Settings, Cloud Sync, Self-Heal & AI Assistant Modal -->
   <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4 max-h-[88vh] overflow-y-auto">
       <div class="flex justify-between items-center">
         <h3 class="text-base font-extrabold flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-brand-600"></i><span>Settings, Self-Heal &amp; AI</span>
+          <i class="fa-solid fa-sliders text-brand-600"></i><span>Settings, Cloud &amp; AI System</span>
         </h3>
         <button type="button" onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">&times;</button>
       </div>
 
-      <!-- Profile & Location -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
         <div class="font-bold">Profile, Theme &amp; GPS</div>
         <div class="flex items-center justify-between">
@@ -282,24 +301,22 @@
           <button type="button" onclick="toggleDarkMode()" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">Toggle Theme</button>
         </div>
         <div class="flex items-center justify-between">
-          <span>Live Location &amp; Profile Sync</span>
+          <span>Live GPS &amp; Area Name</span>
           <button type="button" onclick="trackCurrentLocation()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">Sync GPS</button>
         </div>
         <div id="settings-auto-profile-box" class="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1 text-[11px]"></div>
       </div>
 
-      <!-- AI Self-Heal & Diagnostic Log -->
       <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/70 dark:border-indigo-900 space-y-2.5 text-xs">
         <div class="flex items-center justify-between">
           <span class="font-extrabold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
-            <i class="fa-solid fa-stethoscope"></i><span>AI Auto-Fix &amp; Heal Log</span>
+            <i class="fa-solid fa-stethoscope"></i><span>AI Auto-Fix &amp; Cloud Log</span>
           </span>
           <button type="button" onclick="runSelfHealDiagnostic(true)" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px]">Scan &amp; Fix</button>
         </div>
         <div id="ai-heal-log" class="max-h-28 overflow-y-auto bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800 text-[11px] space-y-1"></div>
       </div>
 
-      <!-- Smart AI Task Advisor -->
       <div class="p-3.5 rounded-2xl bg-gradient-to-br from-brand-50 to-amber-50 dark:from-slate-900 dark:to-slate-950 border border-brand-200/70 dark:border-slate-800 space-y-2.5">
         <div class="flex items-center gap-2 text-xs font-extrabold text-brand-700 dark:text-brand-400">
           <i class="fa-solid fa-wand-magic-sparkles"></i><span>TASKY Smart AI Advisor</span>
@@ -311,10 +328,7 @@
     </div>
   </div>
 
-  <!-- Firebase reCAPTCHA container -->
-  <div id="recaptcha-container"></div>
-
-  <!-- Real Firebase Authentication Module (No Demo OTP) -->
+  <!-- Firebase Auth (Popup + Redirect Fallback + Visible reCAPTCHA) & Firestore Cloud Sync -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
@@ -324,11 +338,23 @@
       signInWithPhoneNumber,
       GoogleAuthProvider,
       signInWithPopup,
+      signInWithRedirect,
+      getRedirectResult,
       sendSignInLinkToEmail,
       isSignInWithEmailLink,
       signInWithEmailLink,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      onSnapshot,
+      query,
+      orderBy,
+      limit,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCrDNpRQXFEOahpyDA_jxTmI5N5nC3KdRg",
@@ -340,7 +366,9 @@
       measurementId: "G-TEBQZKPRSQ"
     };
 
-    let auth = null;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
     let phoneConfirmation = null;
 
     function showAuthBanner(msg, isError = true) {
@@ -348,68 +376,70 @@
       if (!el) return;
       el.classList.remove("hidden");
       el.className = isError
-        ? "p-2.5 rounded-xl text-[11px] font-semibold border bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900"
-        : "p-2.5 rounded-xl text-[11px] font-semibold border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900";
+        ? "p-3 rounded-xl text-[11px] font-semibold border bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900 leading-relaxed"
+        : "p-3 rounded-xl text-[11px] font-semibold border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900 leading-relaxed";
       el.textContent = msg;
     }
 
-    function ensureRealFirebaseReady() {
-      if (!auth) {
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        bindAuthListener();
-      }
-      return true;
-    }
-
-    function getRecaptcha() {
-      if (!window.recaptchaVerifier) {
+    function renderVisibleRecaptcha() {
+      try {
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.clear();
+          window.recaptchaVerifier = null;
+        }
+        const container = document.getElementById("recaptcha-container");
+        if (container) container.innerHTML = "";
         window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "invisible"
+          size: "normal",
+          callback: () => {
+            showAuthBanner("reCAPTCHA verified. Click Send Real OTP / Link now.", false);
+          }
         });
+        window.recaptchaVerifier.render();
+      } catch (e) {
+        console.warn("reCAPTCHA init:", e);
       }
-      return window.recaptchaVerifier;
     }
 
-    function bindAuthListener() {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const savedName = (document.getElementById("otp-fullname")?.value || "").trim();
-          const profile = {
-            uid: user.uid,
-            displayName: user.displayName || savedName || user.email?.split("@")[0] || user.phoneNumber || "TASKY User",
-            email: user.email || "",
-            phoneNumber: user.phoneNumber || "",
-            photoURL: user.photoURL || "https://via.placeholder.com/150",
-            verified: true
-          };
-          localStorage.setItem("tasky_real_user", JSON.stringify(profile));
-          if (typeof applySessionUI === "function") applySessionUI(profile);
-          if (typeof syncProfileAndUI === "function") syncProfileAndUI();
-        } else {
-          localStorage.removeItem("tasky_real_user");
-          if (typeof applySessionUI === "function") applySessionUI(null);
-        }
-      });
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const savedName = (document.getElementById("otp-fullname")?.value || "").trim();
+        const profile = {
+          uid: user.uid,
+          displayName: user.displayName || savedName || user.email?.split("@")[0] || user.phoneNumber || "TASKY User",
+          email: user.email || "",
+          phoneNumber: user.phoneNumber || "",
+          photoURL: user.photoURL || "https://via.placeholder.com/150",
+          verified: true
+        };
+        localStorage.setItem("tasky_real_user", JSON.stringify(profile));
+        if (typeof applySessionUI === "function") applySessionUI(profile);
+        if (typeof syncProfileAndUI === "function") syncProfileAndUI();
+      } else {
+        localStorage.removeItem("tasky_real_user");
+        if (typeof applySessionUI === "function") applySessionUI(null);
+        renderVisibleRecaptcha();
+      }
+    });
 
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem("tasky_email_for_signin");
-        if (!email) {
-          email = window.prompt("Enter your email to finish sign-in:");
-        }
-        if (email) {
-          signInWithEmailLink(auth, email, window.location.href)
-            .then(() => {
-              window.localStorage.removeItem("tasky_email_for_signin");
-              window.history.replaceState({}, document.title, window.location.pathname);
-            })
-            .catch((err) => showAuthBanner(err.message || err.code, true));
-        }
+    getRedirectResult(auth).catch((err) => {
+      if (err && err.code) showAuthBanner(err.message || err.code, true);
+    });
+
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem("tasky_email_for_signin");
+      if (!email) email = window.prompt("Enter your Gmail to complete sign-in:");
+      if (email) {
+        signInWithEmailLink(auth, email, window.location.href)
+          .then(() => {
+            window.localStorage.removeItem("tasky_email_for_signin");
+            window.history.replaceState({}, document.title, window.location.pathname);
+          })
+          .catch((err) => showAuthBanner(err.message || err.code, true));
       }
     }
 
     window.sendRealVerification = async function () {
-      if (!ensureRealFirebaseReady()) return;
       const channel = document.getElementById("otp-channel")?.value || "phone";
       const contact = (document.getElementById("otp-contact")?.value || "").trim();
       const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
@@ -422,16 +452,16 @@
       try {
         if (channel === "phone") {
           const phone = contact.startsWith("+") ? contact : `+${contact}`;
-          const verifier = getRecaptcha();
-          phoneConfirmation = await signInWithPhoneNumber(auth, phone, verifier);
+          if (!window.recaptchaVerifier) renderVisibleRecaptcha();
+          phoneConfirmation = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
           document.getElementById("otp-verify-box")?.classList.remove("hidden");
           const hint = document.getElementById("otp-live-hint");
           if (hint) {
             hint.textContent = isBn
-              ? `${phone} নম্বরে আসল SMS OTP পাঠানো হয়েছে। কোডটি লিখুন।`
-              : `Real SMS OTP sent to ${phone}. Enter the 6-digit code.`;
+              ? `${phone} নম্বরে SMS OTP পাঠানো হয়েছে। নিচে কোড লিখুন।`
+              : `SMS OTP sent to ${phone}. Enter the 6-digit code below.`;
           }
-          showAuthBanner(isBn ? "SMS OTP পাঠানো হয়েছে।" : "SMS OTP sent.", false);
+          showAuthBanner(isBn ? "SMS OTP পাঠানো হয়েছে!" : "SMS OTP sent!", false);
         } else {
           const actionCodeSettings = {
             url: window.location.href.split("?")[0],
@@ -447,12 +477,19 @@
           );
         }
       } catch (err) {
-        showAuthBanner((err.message || err.code), true);
+        const code = err.code || "";
+        let friendly = err.message || code;
+        if (code.includes("captcha") || code.includes("invalid-app-credential") || code.includes("unauthorized-domain")) {
+          friendly = isBn
+            ? `SMS ব্লক হয়েছে (${code}): WebView বা Firebase Blaze/SMS Region নীতির কারণে SMS আটকাতে পারে। "Continue with Google" বা "Email Verification Link" ব্যবহার করুন, অথবা Firebase Phone Test Number যুক্ত করুন।`
+            : `SMS blocked (${code}): WebView or Firebase Blaze/SMS region policy may block SMS. Use Google/Email link or add a Firebase Phone Test Number.`;
+        }
+        showAuthBanner(friendly, true);
+        renderVisibleRecaptcha();
       }
     };
 
     window.verifyRealSmsOtp = async function () {
-      if (!ensureRealFirebaseReady()) return;
       const code = (document.getElementById("otp-input")?.value || "").trim();
       const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
       if (!phoneConfirmation || !code) {
@@ -461,36 +498,92 @@
       }
       try {
         await phoneConfirmation.confirm(code);
-        showAuthBanner(isBn ? "ভেরিফিকেশন সফল হয়েছে!" : "Verified successfully!", false);
+        showAuthBanner(isBn ? "ভেরিফিকেশন সফল!" : "Verified successfully!", false);
       } catch (err) {
-        showAuthBanner((err.message || err.code), true);
+        showAuthBanner(err.message || err.code, true);
       }
     };
 
     window.loginWithRealGoogle = async function () {
-      if (!ensureRealFirebaseReady()) return;
+      const provider = new GoogleAuthProvider();
       try {
-        const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
       } catch (err) {
-        showAuthBanner((err.message || err.code), true);
+        if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
+          try {
+            await signInWithRedirect(auth, provider);
+            return;
+          } catch (redirErr) {
+            showAuthBanner(redirErr.message || redirErr.code, true);
+            return;
+          }
+        }
+        showAuthBanner(err.message || err.code, true);
       }
     };
 
     window.logoutRealUser = async function () {
       localStorage.removeItem("tasky_real_user");
-      if (auth) {
-        try {
-          await signOut(auth);
-        } catch (_) {}
-      }
+      try {
+        await signOut(auth);
+      } catch (_) {}
       if (typeof applySessionUI === "function") applySessionUI(null);
     };
 
-    ensureRealFirebaseReady();
+    window.saveTaskToCloud = async function (taskObj) {
+      try {
+        await addDoc(collection(db, "tasky_requests"), {
+          ...taskObj,
+          createdAt: serverTimestamp()
+        });
+        if (typeof recordHeal === "function") recordHeal("Task synced to Firebase Cloud Firestore.");
+      } catch (_) {
+        if (typeof recordHeal === "function") recordHeal("Saved locally; cloud sync will retry.");
+      }
+    };
+
+    window.saveDealToCloud = async function (dealObj) {
+      try {
+        await addDoc(collection(db, "tasky_deals"), {
+          ...dealObj,
+          cloudTs: serverTimestamp()
+        });
+      } catch (_) {}
+    };
+
+    try {
+      const qTasks = query(collection(db, "tasky_requests"), orderBy("createdAt", "desc"), limit(30));
+      onSnapshot(qTasks, (snap) => {
+        if (!snap.empty && typeof mergeCloudTasks === "function") {
+          const cloudItems = snap.docs.map((d) => {
+            const data = d.data();
+            return {
+              ...data,
+              id: data.id || d.id
+            };
+          });
+          mergeCloudTasks(cloudItems);
+        }
+      });
+
+      const qDeals = query(collection(db, "tasky_deals"), orderBy("cloudTs", "desc"), limit(30));
+      onSnapshot(qDeals, (snap) => {
+        if (!snap.empty && typeof mergeCloudDeals === "function") {
+          const cloudDeals = snap.docs.map((d) => {
+            const data = d.data();
+            return {
+              ...data,
+              id: data.id || d.id,
+              createdAt: data.createdAt || new Date().toLocaleString()
+            };
+          });
+          mergeCloudDeals(cloudDeals);
+        }
+      });
+    } catch (_) {}
   </script>
 
-  <!-- Core App + Autonomous AI Controller & Self-Healing Engine -->
+  <!-- Core App + Smart AI Dispatch + Self-Healing Engine -->
   <script>
     window.__taskyAuthMode = "signin";
     let currentLang = localStorage.getItem("tasky_lang") || "en";
@@ -498,6 +591,7 @@
     let deals = safeJsonParse(localStorage.getItem("tasky_message_deals"), []);
     let selectedTaskForDeal = null;
     let emergencyOnly = false;
+    let smartPrioritySort = true;
     let currentCategory = "All";
     let healLogs = [];
 
@@ -510,7 +604,7 @@
         whatsapp: "971500000000",
         location: "Al Ruwais / Abu Dhabi",
         isEmergency: true,
-        authorName: "TASKY Dispatch"
+        authorName: "TASKY Smart Dispatch"
       },
       {
         id: "T-102",
@@ -520,7 +614,7 @@
         whatsapp: "971500000000",
         location: "Munshiganj / Sonarong",
         isEmergency: false,
-        authorName: "TASKY Dispatch"
+        authorName: "TASKY Smart Dispatch"
       }
     ];
 
@@ -548,6 +642,62 @@
       return safeJsonParse(localStorage.getItem("tasky_real_user"), null);
     }
 
+    function detectSmartCategoryAndUrgency(text) {
+      const lower = String(text || "").toLowerCase();
+      let category = null;
+      if (lower.includes("ac") || lower.includes("cooling") || lower.includes("split") || lower.includes("এসি")) category = "AC";
+      else if (lower.includes("pipe") || lower.includes("leak") || lower.includes("water") || lower.includes("plumb") || lower.includes("পানি") || lower.includes("পাইপ")) category = "Plumbing";
+      else if (lower.includes("wire") || lower.includes("light") || lower.includes("mcb") || lower.includes("breaker") || lower.includes("electric") || lower.includes("কারেন্ট") || lower.includes("তার")) category = "Electrical";
+      else if (lower.includes("wood") || lower.includes("door") || lower.includes("lock") || lower.includes("carpent") || lower.includes("কাঠ") || lower.includes("দরজা")) category = "Carpenter";
+      else if (lower.includes("paint") || lower.includes("wall") || lower.includes("রং")) category = "Painter";
+
+      const urgent = lower.includes("urgent") || lower.includes("emergency") || lower.includes("leak") || lower.includes("spark") || lower.includes("trip") || lower.includes("জরুরি") || lower.includes("শর্ট");
+      return { category, urgent };
+    }
+
+    window.smartAutoFillFromInput = function () {
+      const title = document.getElementById("task-title")?.value || "";
+      const desc = document.getElementById("task-desc")?.value || "";
+      const info = detectSmartCategoryAndUrgency(`${title} ${desc}`);
+      const catSelect = document.getElementById("task-category");
+      const emergCheck = document.getElementById("task-emergency");
+      if (info.category && catSelect) catSelect.value = info.category;
+      if (info.urgent && emergCheck) emergCheck.checked = true;
+    };
+
+    window.mergeCloudTasks = function (cloudItems) {
+      const existingIds = new Set(allTasks.map((t) => t.id));
+      let added = 0;
+      cloudItems.forEach((item) => {
+        if (!existingIds.has(item.id)) {
+          allTasks.unshift(item);
+          existingIds.add(item.id);
+          added++;
+        }
+      });
+      if (added > 0) {
+        localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+        renderTasksList(getFilteredTasks());
+        recordHeal(`Synced ${added} live task(s) from Cloud.`);
+      }
+    };
+
+    window.mergeCloudDeals = function (cloudDeals) {
+      const existingIds = new Set(deals.map((d) => d.id));
+      let added = 0;
+      cloudDeals.forEach((item) => {
+        if (!existingIds.has(item.id)) {
+          deals.unshift(item);
+          existingIds.add(item.id);
+          added++;
+        }
+      });
+      if (added > 0) {
+        localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
+        renderDealsList();
+      }
+    };
+
     function recordHeal(message) {
       const time = new Date().toLocaleTimeString();
       healLogs.unshift(`[${time}] ${message}`);
@@ -562,7 +712,6 @@
 
     window.runSelfHealDiagnostic = function (verbose = false) {
       let fixes = 0;
-
       if (!Array.isArray(allTasks)) {
         allTasks = [...DEFAULT_TASKS];
         localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
@@ -587,13 +736,13 @@
         recordHeal(
           fixes > 0
             ? `Auto-healed ${fixes} state/storage issue(s) & synced UI.`
-            : "AI Self-Heal scan complete: All modules & UI healthy."
+            : "AI Self-Heal scan complete: All modules & Cloud healthy."
         );
       }
     };
 
     window.addEventListener("error", (event) => {
-      recordHeal(`Runtime error caught & recovered: ${event.message || "Unknown error"}`);
+      recordHeal(`Runtime error recovered: ${event.message || "Unknown error"}`);
       try {
         runSelfHealDiagnostic(false);
       } catch (_) {}
@@ -601,8 +750,32 @@
 
     window.addEventListener("unhandledrejection", (event) => {
       const reason = event.reason?.message || String(event.reason || "Promise issue");
-      recordHeal(`Async issue caught & stabilized: ${reason}`);
+      recordHeal(`Async issue stabilized: ${reason}`);
     });
+
+    window.startVoiceAiCommand = function () {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const isBn = currentLang === "bn";
+      if (!SpeechRecognition) {
+        recordHeal(isBn ? "এই WebView-তে Voice AI সাপোর্ট নেই, টাইপ করে কমান্ড দিন।" : "Voice AI not supported here; type command instead.");
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = isBn ? "bn-BD" : "en-US";
+      recognition.interimResults = false;
+      recordHeal(isBn ? "শুনছি... কমান্ড বলুন..." : "Listening... speak your command...");
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const input = document.getElementById("ai-command-input");
+        if (input) input.value = transcript;
+        executeAiCommand();
+      };
+      recognition.onerror = () => {
+        recordHeal(isBn ? "ভয়েস শোনা যায়নি, মাইক্রোফোন অনুমতি দিন।" : "Voice capture failed; check mic permission.");
+      };
+      recognition.start();
+    };
 
     window.executeAiCommand = function () {
       const input = document.getElementById("ai-command-input");
@@ -625,7 +798,7 @@
         recordHeal("AI Controller switched language to English.");
       } else if (cmd.includes("gps") || cmd.includes("location") || cmd.includes("লোকেশন")) {
         window.trackCurrentLocation();
-        recordHeal("AI Controller triggered GPS tracking.");
+        recordHeal("AI Controller triggered GPS & Area lookup.");
       } else if (cmd.includes("emergency") || cmd.includes("ইমারজেন্সি")) {
         window.toggleEmergencyFilter();
         recordHeal("AI Controller toggled Emergency filter.");
@@ -634,7 +807,7 @@
         recordHeal("AI Controller opened Free Request modal.");
       } else if (cmd.includes("settings") || cmd.includes("সেটিং")) {
         window.openSettingsModal();
-        recordHeal("AI Controller opened Settings & Self-Heal.");
+        recordHeal("AI Controller opened Settings & Cloud Log.");
       } else if (cmd.includes("fix") || cmd.includes("heal") || cmd.includes("ফিক্স") || cmd.includes("ঠিক")) {
         runSelfHealDiagnostic(true);
       } else {
@@ -658,7 +831,7 @@
       }
 
       const locText = currentLocation
-        ? `GPS ${currentLocation.lat}, ${currentLocation.lng}`
+        ? (currentLocation.areaName || `GPS ${currentLocation.lat}, ${currentLocation.lng}`)
         : isBn
         ? "এখনও ট্র্যাক হয়নি"
         : "Not tracked yet";
@@ -703,7 +876,7 @@
       const ch = document.getElementById("otp-channel").value;
       const inp = document.getElementById("otp-contact");
       if (ch === "phone") {
-        inp.placeholder = currentLang === "bn" ? "+9715XXXXXXXX বা +8801XXXXXXXXX" : "+9715XXXXXXXX or +8801XXXXXXXXX";
+        inp.placeholder = currentLang === "bn" ? "+971568362867 বা +8801XXXXXXXXX" : "+971568362867 or +8801XXXXXXXXX";
       } else {
         inp.placeholder = "name@gmail.com";
       }
@@ -716,29 +889,30 @@
       document.getElementById("lang-btn").textContent = isBn ? "English" : "বাংলা";
       document.getElementById("gate-lang-btn").textContent = isBn ? "English" : "বাংলা";
       document.getElementById("gate-sub").textContent = isBn
-        ? "রিয়েল অথ • AI নিয়ন্ত্রিত • সেলফ-হিলিং"
-        : "Real Auth • AI Controlled • Self-Healing";
+        ? "ক্লাউড সিঙ্ক • স্মার্ট ডিসপ্যাচ • রিয়েল অথ"
+        : "Cloud Sync • Smart Dispatch • Real Auth";
       document.getElementById("lbl-fullname").textContent = isBn ? "পুরো নাম" : "Full Name";
       document.getElementById("lbl-channel").textContent = isBn ? "ভেরিফিকেশন মাধ্যম" : "Verification Channel";
       document.getElementById("lbl-contact").textContent = isBn ? "মোবাইল (+কোডসহ) বা ইমেইল" : "Mobile (+CountryCode) or Email";
       document.getElementById("otp-fullname").placeholder = isBn ? "আপনার পুরো নাম" : "Enter full name";
-      document.getElementById("otp-input").placeholder = isBn ? "৬ ডিজিটের SMS OTP" : "Enter SMS OTP code";
+      document.getElementById("otp-input").placeholder = isBn ? "৬ ডিজিটের SMS OTP" : "Enter 6-digit SMS OTP";
       document.getElementById("search-input").placeholder = isBn ? "সার্ভিস বা এলাকা খুঁজুন..." : "Search service or area...";
       document.getElementById("ai-command-input").placeholder = isBn
-        ? "AI কমান্ড: যেমন 'ডার্ক মোড', 'ইংরেজি', 'লোকেশন', 'ফিক্স'..."
-        : "AI Command: e.g. 'dark mode', 'bangla', 'track gps', 'fix errors'...";
+        ? "AI কমান্ড: 'ডার্ক মোড', 'ইংরেজি', 'লোকেশন', 'ফিক্স'..."
+        : "AI Command: 'dark mode', 'bangla', 'gps', 'post'...";
       document.getElementById("ai-cmd-btn").textContent = isBn ? "AI চালান" : "AI Run";
+      document.getElementById("priority-lbl").textContent = isBn ? "স্মার্ট সর্ট" : "Smart Sort";
 
       document.getElementById("tab-signin").textContent = isBn ? "লগইন" : "Sign In";
       document.getElementById("tab-signup").textContent = isBn ? "সাইন আপ" : "Sign Up";
       document.getElementById("send-otp-btn").innerHTML = `<i class="fa-solid fa-shield-halved"></i><span>${isBn ? "রিয়েল OTP / লিংক পাঠান" : "Send Real OTP / Link"}</span>`;
       document.getElementById("verify-otp-btn").textContent = isBn ? "রিয়েল OTP ভেরিফাই করুন" : "Verify Real OTP & Continue";
-      document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-brand-600"></i><span>${isBn ? "গুগল দিয়ে সাইন-ইন (Firebase)" : "Continue with Google (Firebase)"}</span>`;
+      document.getElementById("google-login-btn").innerHTML = `<i class="fa-brands fa-google text-brand-600"></i><span>${isBn ? "গুগল দিয়ে লগইন (স্মার্ট মোড)" : "Continue with Google (Smart Popup/Redirect)"}</span>`;
       document.getElementById("hero-badge").textContent = isBn
-        ? "AI নিয়ন্ত্রিত • রিয়েল ভেরিফিকেশন • সরাসরি ডিল"
-        : "AI Controlled • Real Auth • Instant Deals";
+        ? "স্মার্ট প্রায়োরিটি • ক্লাউড সিঙ্ক • ভয়েস AI"
+        : "Smart Priority • Cloud Sync • Voice AI";
       document.getElementById("hero-title").textContent = isBn ? "স্মার্ট হোম সার্ভিস ও AI ডিসপ্যাচ" : "Smart Home Services & AI Dispatch";
-      document.getElementById("feed-heading").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট" : "Free Service Requests";
+      document.getElementById("feed-heading").textContent = isBn ? "লাইভ সার্ভিস রিকোয়েস্ট" : "Live Service Requests";
       document.getElementById("deals-heading").textContent = isBn ? "মেসেজ ডিল ও বুকিং" : "Message Deals & Bookings";
       document.getElementById("nav-home-lbl").textContent = isBn ? "হোম" : "Home";
       document.getElementById("nav-post-lbl").textContent = isBn ? "ফ্রি পোস্ট" : "Post Free";
@@ -747,7 +921,7 @@
       document.getElementById("track-btn-lbl").textContent = isBn ? "ট্র্যাক করুন" : "Track Now";
       document.getElementById("post-modal-title").textContent = isBn ? "ফ্রি সার্ভিস রিকোয়েস্ট পোস্ট করুন" : "Post Free Service Request";
       document.getElementById("lbl-emergency-check").textContent = isBn ? "ইমারজেন্সি সার্ভিস হিসেবে চিহ্নিত করুন" : "Mark as Emergency Service";
-      document.getElementById("publish-task-btn").textContent = isBn ? "ফ্রি রিকোয়েস্ট প্রকাশ করুন" : "Publish Free Request";
+      document.getElementById("publish-task-btn").textContent = isBn ? "ক্লাউড ও ফিডে প্রকাশ করুন" : "Publish to Cloud & Feed";
 
       updateContactPlaceholder();
       syncProfileAndUI();
@@ -770,28 +944,49 @@
     window.trackCurrentLocation = function () {
       const statusEl = document.getElementById("loc-status-text");
       const badgeEl = document.getElementById("live-loc-badge");
-      statusEl.textContent = currentLang === "bn" ? "লোকেশন ট্র্যাক করা হচ্ছে..." : "Tracking GPS location...";
+      const mapBtn = document.getElementById("open-map-btn");
+      statusEl.textContent = currentLang === "bn" ? "লোকেশন ও এলাকা খোঁজা হচ্ছে..." : "Tracking GPS & area name...";
       if (!navigator.geolocation) {
         statusEl.textContent = currentLang === "bn" ? "এই ডিভাইসে GPS সাপোর্ট নেই" : "Geolocation unsupported";
         return;
       }
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          currentLocation = {
-            lat: Number(pos.coords.latitude.toFixed(5)),
-            lng: Number(pos.coords.longitude.toFixed(5))
-          };
+        async (pos) => {
+          const lat = Number(pos.coords.latitude.toFixed(5));
+          const lng = Number(pos.coords.longitude.toFixed(5));
+          let areaName = `GPS ${lat}, ${lng}`;
+
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            if (res.ok) {
+              const data = await res.json();
+              const addr = data.address || {};
+              const area = addr.suburb || addr.town || addr.city || addr.state || "";
+              const country = addr.country || "";
+              if (area || country) {
+                areaName = [area, country].filter(Boolean).join(", ");
+              }
+            }
+          } catch (_) {}
+
+          currentLocation = { lat, lng, areaName };
           localStorage.setItem("tasky_last_location", JSON.stringify(currentLocation));
-          const txt = `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
-          badgeEl.textContent = `📍 ${txt}`;
-          statusEl.textContent = currentLang === "bn" ? `ট্র্যাকড: ${txt}` : `Tracked: ${txt}`;
+          badgeEl.textContent = `📍 ${areaName}`;
+          statusEl.textContent = currentLang === "bn" ? `এলাকা: ${areaName}` : `Area: ${areaName}`;
+          if (mapBtn) mapBtn.classList.remove("hidden");
           syncProfileAndUI();
+          renderTasksList(getFilteredTasks());
         },
         () => {
           statusEl.textContent = currentLang === "bn" ? "লোকেশন অনুমতি দিন" : "Location permission needed";
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
+    };
+
+    window.openCurrentLocationInMaps = function () {
+      if (!currentLocation) return;
+      window.open(`https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`, "_blank");
     };
 
     window.switchMobileTab = function (tab) {
@@ -832,12 +1027,14 @@
         whatsapp,
         isEmergency,
         description,
-        location: currentLocation ? `GPS ${currentLocation.lat}, ${currentLocation.lng}` : "Area shared on deal",
+        location: currentLocation ? (currentLocation.areaName || `GPS ${currentLocation.lat}, ${currentLocation.lng}`) : "Area shared on deal",
         authorName: user?.displayName || "Verified User"
       };
 
       allTasks.unshift(newTask);
       localStorage.setItem("tasky_tasks", JSON.stringify(allTasks));
+      if (typeof saveTaskToCloud === "function") saveTaskToCloud(newTask);
+
       document.getElementById("task-form").reset();
       closePostModal();
       renderTasksList(getFilteredTasks());
@@ -848,6 +1045,14 @@
       document.getElementById("emergency-btn").className = emergencyOnly
         ? "px-3 py-2 rounded-xl bg-white text-red-600 border border-white text-xs font-extrabold flex items-center gap-1.5 shadow-md"
         : "px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 border border-white/30 text-xs font-extrabold flex items-center gap-1.5 shadow-md";
+      renderTasksList(getFilteredTasks());
+    };
+
+    window.toggleSmartPrioritySort = function () {
+      smartPrioritySort = !smartPrioritySort;
+      document.getElementById("priority-sort-btn").className = smartPrioritySort
+        ? "px-2.5 py-2 rounded-xl bg-white text-slate-900 text-xs font-extrabold flex items-center gap-1"
+        : "px-2.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-xs font-bold flex items-center gap-1";
       renderTasksList(getFilteredTasks());
     };
 
@@ -867,7 +1072,9 @@
 
     function getFilteredTasks() {
       const term = (document.getElementById("search-input").value || "").toLowerCase();
-      return allTasks.filter((t) => {
+      const areaKey = (currentLocation?.areaName || "").toLowerCase().split(",")[0].trim();
+
+      let list = allTasks.filter((t) => {
         const matchCat = currentCategory === "All" || (t.category || "General") === currentCategory;
         const matchEmerg = !emergencyOnly || Boolean(t.isEmergency);
         const matchSearch = (t.title || "").toLowerCase().includes(term)
@@ -875,6 +1082,15 @@
           || (t.location || "").toLowerCase().includes(term);
         return matchCat && matchEmerg && matchSearch;
       });
+
+      if (smartPrioritySort) {
+        list = [...list].sort((a, b) => {
+          const scoreA = (a.isEmergency ? 10 : 0) + (areaKey && (a.location || "").toLowerCase().includes(areaKey) ? 5 : 0);
+          const scoreB = (b.isEmergency ? 10 : 0) + (areaKey && (b.location || "").toLowerCase().includes(areaKey) ? 5 : 0);
+          return scoreB - scoreA;
+        });
+      }
+      return list;
     }
 
     function renderTasksList(tasks) {
@@ -889,7 +1105,7 @@
           ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">EMERGENCY</span>`
           : `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">FREE</span>`;
         return `
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between shadow-sm">
             <div>
               <div class="flex justify-between items-start gap-2 mb-2">
                 <div>
@@ -938,6 +1154,7 @@
       };
       deals.unshift(record);
       localStorage.setItem("tasky_message_deals", JSON.stringify(deals));
+      if (typeof saveDealToCloud === "function") saveDealToCloud(record);
       renderDealsList();
       closeDealModal();
 
@@ -945,7 +1162,7 @@
         const text = encodeURIComponent(`TASKY Deal (${record.taskTitle}): ${record.message}`);
         window.open(`https://wa.me/${record.whatsapp}?text=${text}`, "_blank");
       } else {
-        alert(currentLang === "bn" ? "মেসেজ ডিল সেভ হয়েছে!" : "Deal message saved!");
+        alert(currentLang === "bn" ? "মেসেজ ডিল সেভ ও ক্লাউডে সিঙ্ক হয়েছে!" : "Deal message saved & synced!");
       }
     };
 
@@ -972,15 +1189,9 @@
       const out = document.getElementById("ai-output-box");
       if (!prompt) return;
 
-      const lower = prompt.toLowerCase();
-      let cat = "General";
-      if (lower.includes("ac") || lower.includes("cooling") || lower.includes("এসি")) cat = "AC";
-      else if (lower.includes("pipe") || lower.includes("leak") || lower.includes("water") || lower.includes("plumb") || lower.includes("পানি") || lower.includes("পাইপ")) cat = "Plumbing";
-      else if (lower.includes("wire") || lower.includes("light") || lower.includes("mcb") || lower.includes("electric") || lower.includes("কারেন্ট") || lower.includes("তার")) cat = "Electrical";
-      else if (lower.includes("wood") || lower.includes("door") || lower.includes("carpent") || lower.includes("কাঠ") || lower.includes("দরজা")) cat = "Carpenter";
-      else if (lower.includes("paint") || lower.includes("রং")) cat = "Painter";
-
-      const urgent = lower.includes("urgent") || lower.includes("emergency") || lower.includes("leak") || lower.includes("spark") || lower.includes("জরুরি") || lower.includes("শর্ট");
+      const info = detectSmartCategoryAndUrgency(prompt);
+      const cat = info.category || "General";
+      const urgent = info.urgent;
       const isBn = currentLang === "bn";
       out.classList.remove("hidden");
       out.innerHTML = `
@@ -991,11 +1202,13 @@
     };
 
     if (currentLocation) {
-      document.getElementById("live-loc-badge").textContent = `📍 GPS ${currentLocation.lat}, ${currentLocation.lng}`;
-      document.getElementById("loc-status-text").textContent = `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
+      const label = currentLocation.areaName || `GPS ${currentLocation.lat}, ${currentLocation.lng}`;
+      document.getElementById("live-loc-badge").textContent = `📍 ${label}`;
+      document.getElementById("loc-status-text").textContent = label;
+      document.getElementById("open-map-btn")?.classList.remove("hidden");
     }
     runSelfHealDiagnostic(false);
-    recordHeal("TASKY AI Controller & Self-Heal active.");
+    recordHeal("TASKY Smart AI & Cloud Sync active.");
   </script>
 </body>
 </html>
