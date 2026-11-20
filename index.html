@@ -32,7 +32,7 @@
 </head>
 <body id="tasky-body" class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors">
 
-  <!-- Real Auth Gate (Firebase Phone SMS OTP, Email Verification & Google Sign-In Only) -->
+  <!-- Real Auth Gate (Firebase Phone SMS OTP, Email Link & Google Sign-In Only) -->
   <div id="auth-gate" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -330,19 +330,15 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // Set your real Firebase Web App credentials here
     const firebaseConfig = {
-      apiKey: "YOUR_REAL_FIREBASE_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCrDNpRQXFEOahpyDA_jxTmI5N5nC3KdRg",
+      authDomain: "tasky-b8e5b.firebaseapp.com",
+      projectId: "tasky-b8e5b",
+      storageBucket: "tasky-b8e5b.firebasestorage.app",
+      messagingSenderId: "27035947125",
+      appId: "1:27035947125:web:dc66829cb61eded04ea83c",
+      measurementId: "G-TEBQZKPRSQ"
     };
-
-    const isConfigured =
-      firebaseConfig.apiKey &&
-      !firebaseConfig.apiKey.startsWith("YOUR_") &&
-      firebaseConfig.projectId &&
-      !firebaseConfig.projectId.startsWith("YOUR_");
 
     let auth = null;
     let phoneConfirmation = null;
@@ -358,16 +354,6 @@
     }
 
     function ensureRealFirebaseReady() {
-      const isBn = (localStorage.getItem("tasky_lang") || "en") === "bn";
-      if (!isConfigured) {
-        showAuthBanner(
-          isBn
-            ? "রিয়েল OTP/Google চালুর জন্য কোডে আপনার আসল Firebase কনফিগারেশন বসান এবং GitHub Pages ডোমেইন Authorized Domains-এ যুক্ত করুন।"
-            : "Set your real Firebase config in code and add your GitHub Pages domain to Firebase Authorized Domains.",
-          true
-        );
-        return false;
-      }
       if (!auth) {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
@@ -406,7 +392,6 @@
         }
       });
 
-      // Complete Email Sign-In Link if user opened link from email
       if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = window.localStorage.getItem("tasky_email_for_signin");
         if (!email) {
@@ -502,9 +487,7 @@
       if (typeof applySessionUI === "function") applySessionUI(null);
     };
 
-    if (isConfigured) {
-      ensureRealFirebaseReady();
-    }
+    ensureRealFirebaseReady();
   </script>
 
   <!-- Core App + Autonomous AI Controller & Self-Healing Engine -->
@@ -577,7 +560,6 @@
       if (statusEl) statusEl.textContent = message;
     }
 
-    // Autonomous Self-Heal Engine: repairs corrupted storage, missing UI states, or runtime errors
     window.runSelfHealDiagnostic = function (verbose = false) {
       let fixes = 0;
 
@@ -597,7 +579,6 @@
         fixes++;
       }
 
-      // Ensure critical UI elements are visible & synced
       applyLanguageUI();
       applySessionUI(getRealUser());
       syncProfileAndUI();
@@ -623,7 +604,6 @@
       recordHeal(`Async issue caught & stabilized: ${reason}`);
     });
 
-    // AI Command Controller: lets user control the app naturally via text commands
     window.executeAiCommand = function () {
       const input = document.getElementById("ai-command-input");
       if (!input) return;
@@ -658,7 +638,6 @@
       } else if (cmd.includes("fix") || cmd.includes("heal") || cmd.includes("ফিক্স") || cmd.includes("ঠিক")) {
         runSelfHealDiagnostic(true);
       } else {
-        // Treat as task search/category filter
         const searchEl = document.getElementById("search-input");
         if (searchEl) searchEl.value = input.value.trim();
         window.filterTasks();
